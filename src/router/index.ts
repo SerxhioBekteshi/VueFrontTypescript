@@ -3,12 +3,25 @@ import { createRouter, createWebHistory } from "vue-router";
 import Home from "../views/Home.vue";
 import RegisterView from "../views/RegisterView.vue";
 import LoginView from "../views/LoginView.vue";
-
+import PrivateRoute from "../PrivateRoute.vue"
+import LayoutWrapper from "../components/LayoutWrapper.vue"
 const routes = [
   {
-    path: "/",
+    path: "/home",
     name: "Home",
-    component: Home,
+    // component: PrivateRoute,
+    children: [
+      {
+        path: '',
+        component: LayoutWrapper,
+        children: [
+          {
+            path: '',
+            component: Home
+          }
+        ]
+      }
+    ]
   },
   {
     path: "/register",
