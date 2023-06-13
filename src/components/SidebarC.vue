@@ -18,21 +18,6 @@ export default defineComponent({
         Sidebar, Menu
     },
     methods: {
-        getSeverity(product: any) {
-            switch (product.inventoryStatus) {
-                case 'INSTOCK':
-                    return 'success';
-
-                case 'LOWSTOCK':
-                    return 'warning';
-
-                case 'OUTOFSTOCK':
-                    return 'danger';
-
-                default:
-                    return null;
-            }
-        }
     },
     data() {
         return {

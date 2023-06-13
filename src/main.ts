@@ -9,6 +9,8 @@ import "primevue/resources/themes/lara-light-indigo/theme.css";
 import "primevue/resources/primevue.min.css";
 import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
+import '@/assets/styles.scss';
+
 // import rootReducer from './reducers';
 
 // const store = configureStore({
@@ -17,4 +19,6 @@ import 'primeflex/primeflex.css';
 
   
 createApp(App).use(router)
-.use(ToastPlugin, { position: "top" }).use(PrimeVue, {ripple: true}).mount('#app')
+.use(ToastPlugin, { position: "top" })
+.use(PrimeVue, {ripple: true})
+.mount('#app')

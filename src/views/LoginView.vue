@@ -45,7 +45,7 @@ import Button from "primevue/button"
 import ValidationError from "../components/ValidationError.vue"
 import useVuelidate from '@vuelidate/core'
 import { required, email, helpers } from '@vuelidate/validators'
-
+import AuthManager from '../utils/authManager'
 
 export default {
     name: "LoginView",
@@ -60,17 +60,24 @@ export default {
     methods: {
         async handleLoginSubmit() {
             this.v$.$validate()
+            const loginUser = {
+                email: this.email,
+                password: this.password
+            }
             try {
-                const res = await axios.put("http://localhost:8080/auth/login", {
-                    email: this.email,
-                    password: this.password,
-                });
-                if (res.token) {
-                    this.$toast.open({
-                        message: "Loged in successfully",
-                        type: "success",
-                    });
-                }
+                await AuthManager.login(loginUser);
+                // const res = await axios.post("http://localhost:8082/auth/login", {
+                //     email: this.email,
+                //     password: this.password,
+                // });
+                // if (res.token) {
+                //     this.$toast.open({
+                //         message: "Loged in successfully",
+                //         type: "success",
+                //     });
+                //     window.localStorage.setItem("TokenForLocalStorage", res.token);
+
+                // }
             } catch (err) {
                 this.$toast.open({
                     message: err.message,
