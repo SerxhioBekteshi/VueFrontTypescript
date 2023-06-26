@@ -3,6 +3,7 @@ import axios from "axios";
 import { IUserState, setUser } from "../store/stores/user.store";
 // import eRoleType from "../assets/enums/eRoleType";
 import { navigateTo } from "../store/stores/navigation.store";
+import { useRouter } from "vue-router";
 
 export interface IUserInfo {
   user: any;
@@ -42,33 +43,34 @@ class AuthManager {
     credentials: any,
     // dispatch: any,
     // navigate: any
+    router: any
   ): Promise<void> {
     const res = await axios.post("auth/login", credentials);
-    console.log(res.data.data, "USERINFO");
-
-    const data = res?.data.data;
+    console.log(router, "ROUTER")
+    const data = res?.data;
     let response: any = null;
-    console.log(res, "RES")
-    if (data?.accessToken && data?.refreshToken) {
-      const userInfo = AuthManager.parseJwt(data.accessToken);
+    if (data?.token || data?.refreshToken) {
+      const userInfo = AuthManager.parseJwt(data.token);
+      console.log(userInfo, "AWDA")
       response = {
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
+        accessToken: data.token,
+        // refreshToken: data.refreshToken,
         user: {
           email: userInfo.email,
-          id: userInfo.Id,
-          role: userInfo.role,
-          firstName: userInfo.firstName,
-          lastName: userInfo.lastName,
+          id: userInfo.userId,
+          // role: userInfo.role,
+          firstName: userInfo.name,
+          // lastName: userInfo.lastName,
         },
       };
     }
-
-    if (response.user && response.accessToken && response.refreshToken) {
+    if (response.user && response.accessToken || response.refreshToken) {
+     
       JwtManager.setAccessToken(response.accessToken);
-      JwtManager.setRefreshToken(response.refreshToken);
+      // JwtManager.setRefreshToken(response.refreshToken);
       // dispatch(setUser(response.user));
-      console.log(response.user, "USER RESPONSE");
+   
+      router.push("/dashboard");
       // if (response.user.role === eRoleType.Manager) {
       //   navigate(`/${response.user.role.toLowerCase()}/dashboard`);
       // } else {

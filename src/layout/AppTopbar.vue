@@ -3,6 +3,8 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 import Menu from 'primevue/menu';
+import JwtManager from '../utils/jwtManager'
+
 
 const { layoutConfig, onMenuToggle } = useLayout();
 
@@ -29,7 +31,8 @@ const onTopBarMenuButton = () => {
 };
 const onSettingsClick = () => {
     topbarMenuActive.value = false;
-    router.push('/');
+    router.push('/login');
+    JwtManager.clearToken()
 };
 const topbarMenuClasses = computed(() => {
     return {
@@ -111,9 +114,11 @@ const items = ref([
                 <span>Profile</span>
             </button>
             <button @click="onSettingsClick()" class="p-link layout-topbar-button">
-                <i class="pi pi-cog"></i>
+                <i class="pi pi-sign-out"></i>
                 <span>Settings</span>
             </button>
+
+
         </div>
     </div>
 

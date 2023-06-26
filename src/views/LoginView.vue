@@ -46,6 +46,7 @@ import ValidationError from "../components/ValidationError.vue"
 import useVuelidate from '@vuelidate/core'
 import { required, email, helpers } from '@vuelidate/validators'
 import AuthManager from '../utils/authManager'
+import router from '../router'
 
 export default {
     name: "LoginView",
@@ -64,8 +65,9 @@ export default {
                 email: this.email,
                 password: this.password
             }
+            console.log(loginUser, "LOGIN USER")
             try {
-                await AuthManager.login(loginUser);
+                await AuthManager.login(loginUser, router);
                 // const res = await axios.post("http://localhost:8082/auth/login", {
                 //     email: this.email,
                 //     password: this.password,
