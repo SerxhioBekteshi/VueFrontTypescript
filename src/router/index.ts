@@ -6,7 +6,7 @@ import LoginView from "../views/LoginView.vue";
 import PrivateRoute from "../PrivateRoute.vue"
 import LayoutWrapper from "../components/LayoutWrapper.vue"
 import AppLayout from "../layout/AppLayout.vue";
-
+import LandingPage from "../views/LandingPage.vue"
 const routes = [
   {
     path: "/dashboard",
@@ -18,6 +18,11 @@ const routes = [
             component: Home
         }
     ]
+  },
+  {
+    path: "/",
+    component: LandingPage,
+    name: "Landing Page"
   },
   {
     path: "/register",

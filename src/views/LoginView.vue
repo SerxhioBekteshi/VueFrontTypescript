@@ -11,14 +11,17 @@
 
                     <div class="flex flex-wrap  mb-1 gap-1">
                         <label for="email" class="p-sr-only">email</label>
-                        <InputText class="fullWidth" id="email" style="width: 100%;" placeholder="Email" v-model="email" />
+                        <InputText class="fullWidth" id="email"
+                            :style="{ width: '100%', borderColor: v$.email.$error ? 'red' : '' }" placeholder="Email"
+                            v-model="email" />
                         <ValidationError v-if="v$.email.$error" style="width: 100%; background: none;" severity="error">{{
                             v$.email.$errors[0].$message }}
                         </ValidationError>
                     </div>
                     <div class="flex flex-wrap  mb-1  gap-1">
                         <label for="password" class="p-sr-only">Password</label>
-                        <InputText class="fullWidth" type="password" style="width: 100%;" id="password"
+                        <InputText class="fullWidth" type="password"
+                            :style="{ width: '100%', borderColor: v$.password.$error ? 'red' : '' }" id="password"
                             placeholder="Password" v-model="password" />
                         <ValidationError v-if="v$.password.$error" style="width: 100%; background: none" severity="error">{{
                             v$.password.$errors[0].$message }}
@@ -58,6 +61,7 @@ export default {
             password: "",
         };
     },
+
     methods: {
         async handleLoginSubmit() {
             this.v$.$validate()
@@ -65,7 +69,6 @@ export default {
                 email: this.email,
                 password: this.password
             }
-            console.log(loginUser, "LOGIN USER")
             try {
                 await AuthManager.login(loginUser, router);
                 // const res = await axios.post("http://localhost:8082/auth/login", {
