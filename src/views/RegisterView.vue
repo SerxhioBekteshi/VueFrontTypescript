@@ -11,10 +11,10 @@
             <template #content>
                 <form>
                     <div class="flex flex-wrap  mb-1 gap-1">
-                        <label for="name" class="p-sr-only">name</label>
-                        <InputText style="width: 100%;" class="fullWidth" id="name" placeholder="name" v-model="name" />
+                        <label for="name" class="p-sr-only">Name</label>
+                        <InputText style="width: 100%;" class="fullWidth" id="name" placeholder="Name" v-model="name" />
                         <ValidationError v-if="v$.name.$error" style="width: 100%; background: none;">{{
-                            v$.email.$errors[0].$message }}
+                            v$.name.$errors[0].$message }}
                         </ValidationError>
                     </div>
                     <div class="flex flex-wrap  mb-1  gap-1">
@@ -45,6 +45,14 @@
 
                         <ValidationError v-if="v$.password.confirm.$error" style="width: 100%; background: none;">{{
                             v$.password.confirm.$errors[0].$message }}
+                        </ValidationError>
+                    </div>
+
+                    <div v-if="this.currentPath === '/registerProvider'">
+                        <label for="NIPT" class="p-sr-only">NIPT</label>
+                        <InputText style="width: 100%;" class="fullWidth" id="NIPT" placeholder="NIPT" v-model="nipt" />
+                        <ValidationError v-if="v$.nipt.$error" style="width: 100%; background: none;">{{
+                            v$.nipt.$errors[0].$message }}
                         </ValidationError>
                     </div>
 
@@ -83,6 +91,8 @@ export default {
                 confirm: '',
             },
             name: "",
+            currentPath: "",
+            nipt: ""
         };
     },
     validations() {
@@ -92,29 +102,60 @@ export default {
                 password: { required: helpers.withMessage('Field is required', required), minLength: minLength(6) },
                 confirm: { required: helpers.withMessage('Field is required', required), sameAs: sameAs(this.password.password) }
             },
-            name: { required: helpers.withMessage('Field is required', required) }
+            name: { required: helpers.withMessage('Field is required', required) },
+            nipt: { required: helpers.withMessage('Field is required', required) },
+            // termsAgreed: { required: helpers.withMessage('Field is required', required) }
         }
+    },
+    mounted() {
+        const path = this.$route.path;
+        this.currentPath = path
     },
     methods: {
         async handleRegister() {
             this.v$.$validate()
 
+            if (this.v$.$errors.length != 0) {
+                return;
+            }
+
             try {
-                const res = await axios.put("http://localhost:8082/auth/signup", {
-                    email: this.email,
-                    password: this.password.password,
-                    name: this.name,
-                });
-                if (res.data.message === "User created!") {
-                    this.$toast.open({
-                        message: "Registerd",
-                        type: "success",
-                        // all of other options may go here
+                let res;
+                if (this.currentPath === '/registerProvider') {
+                    res = await axios.put("http://localhost:8082/auth/signupProvider", {
+                        email: this.email,
+                        password: this.password.password,
+                        name: this.name,
+                        nipt: this.nipt
                     });
-                    this.$router.push({ name: "LoginView" });
+                    // if (res.data.message) {
+                    //     this.$toast.open({
+                    //         message: "Registered",
+                    //         type: "success",
+                    //         // all of other options may go here
+                    //     });
+                    //     this.$router.push({ name: "LoginView" });
+                    // }
                 }
+                else {
+                    res = await axios.put("http://localhost:8082/auth/signup", {
+                        email: this.email,
+                        password: this.password.password,
+                        name: this.name,
+                    });
+                    // if (res.data.message) {
+                    //     this.$toast.open({
+                    //         message: "Registered",
+                    //         type: "success",
+                    //         // all of other options may go here
+                    //     });
+                    //     this.$router.push({ name: "LoginView" });
+                    // }
+                }
+
+
             } catch (err) {
-                console.log(err, "ERROR")
+                console.log(err, 'EERRROR')
                 this.$toast.open({
                     message: err.response.data.message || err.message,
                     type: "error",
