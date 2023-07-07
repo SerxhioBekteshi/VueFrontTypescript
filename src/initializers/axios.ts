@@ -1,15 +1,16 @@
 import axios, { AxiosRequestConfig } from "axios";
 import JwtManager from "../utils/jwtManager";
-// import eHttpResponse from "../assets/enums/eHttpResponse";
 import eNotificationType from "../assets/eNotificationType";
-// import { toast } from "VUE-toastify";
 // import { navigateTo } from "../store/stores/navigation/navigation.store";
 import AuthManager from "../utils/authManager";
+import eHttpResponse from "@/assets/eHttpResponse";
+
 
 interface IAxiosRequestConfigRetry extends AxiosRequestConfig {
   _retry: boolean;
   _noAuth: boolean;
 }
+
 
 const clearSession = () => {
   JwtManager.clearToken();
@@ -19,29 +20,36 @@ const clearSession = () => {
 
 const handleResponseMessage = (
   message: string,
-  notificationType: any
+  status: number,
+  statusText: string,
+  notificationType: any,
+  useToast: any
 ) => {
+  const $toast = useToast();
   switch (notificationType) {
     case eNotificationType.Success:
-        // this.$toast.open({
+        // $toast.open({
         //     message: message,
         //     type: "success",
         //     // all of other options may go here
         // });
+
       break;
     case eNotificationType.Error:
-        // this.$toast.open({
-        //     message: message,
-        //     type: "error",
-        //     // all of other options may go here
-        // });
+        $toast.open({
+            message: message + `\n Status: ${status}, ${statusText}`,
+            type: "error",
+            position: 'top-right',
+            duration: 3000,
+        });
+
       break;
     default:
       Error("handleResponseMessage: Notification Type not handled");
   }
 };
 
-const axiosInit = async () => {
+const axiosInit = async (useToast: any) => {
   axios.defaults.baseURL = `${process.env.VUE_APP_API_URL}`;
   axios.interceptors.request.use((request: any) => {
     const jwt = JwtManager.accessToken;
@@ -50,6 +58,7 @@ const axiosInit = async () => {
     }
     return request;
   });
+
   //undefined ka qene null
   axios.interceptors.response.use(null, async (error) => {
     const originalRequest: IAxiosRequestConfigRetry = error.config;
@@ -57,12 +66,13 @@ const axiosInit = async () => {
       throw error.response;
     }
     if (error.response) {
-      if (
-        error.response.status === "Unauthorized" &&
-        !originalRequest._retry
-      ) {
-        originalRequest._retry = true;
-        try {
+
+      // if (
+      //   error.response.status === eHttpResponse.Unauthorized &&
+      //   !originalRequest._retry
+      // ) {
+      //   originalRequest._retry = true;
+      //   try {
           // const res = await AuthManager.refreshToken(
           //   JwtManager.accessToken,
           //   JwtManager.refreshToken
@@ -72,17 +82,21 @@ const axiosInit = async () => {
           //   return axios(originalRequest);
           // }
           // clearSession();
-        } catch {
-          clearSession();
-        }
-      }
-      if (error.response.data?.Message) {
+      //   } catch {
+      //     clearSession();
+      //   }
+      // }
+
+      if (error.response.data?.message || error.response.status !== 200 || error.response.status !== 201 ) {
         handleResponseMessage(
-          error.response.data?.Message,
-          eNotificationType.Error
+          error.response.data?.message,
+          error.response.status,
+          error.response.statusText,
+          eNotificationType.Error,
+          useToast
         );
       }
-      if (error.response.status === "Not Found") {
+      if (error.response.status === eHttpResponse.NotFound) {
         Error("axiosInit: action not found");
       }
     }

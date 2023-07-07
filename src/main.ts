@@ -3,7 +3,7 @@ import App from './App.vue'
 // import { configureStore } from '@reduxjs/toolkit';
 import router from "./router/index";
 import PrimeVue from 'primevue/config';
-import ToastPlugin from "vue-toast-notification";
+import ToastPlugin, {useToast} from "vue-toast-notification";
 import "vue-toast-notification/dist/theme-default.css";
 import "primevue/resources/themes/lara-light-indigo/theme.css";     
 import "primevue/resources/primevue.min.css";
@@ -23,4 +23,4 @@ createApp(App).use(router)
 .use(ToastPlugin, { position: "top" })
 .use(PrimeVue, {ripple: true})
 .mount('#app')
-await axiosInit()
+await axiosInit(useToast)

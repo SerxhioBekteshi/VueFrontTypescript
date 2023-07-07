@@ -128,14 +128,13 @@ export default {
                         name: this.name,
                         nipt: this.nipt
                     });
-                    // if (res.data.message) {
-                    //     this.$toast.open({
-                    //         message: "Registered",
-                    //         type: "success",
-                    //         // all of other options may go here
-                    //     });
-                    //     this.$router.push({ name: "LoginView" });
-                    // }
+                    if (res.data.message) {
+                        this.$toast.open({
+                            message: "Your business account should be submitted by the admin",
+                            type: "success",
+                        });
+                        this.$router.push({ name: "LoginView" });
+                    }
                 }
                 else {
                     res = await axios.put("http://localhost:8082/auth/signup", {
@@ -143,14 +142,13 @@ export default {
                         password: this.password.password,
                         name: this.name,
                     });
-                    // if (res.data.message) {
-                    //     this.$toast.open({
-                    //         message: "Registered",
-                    //         type: "success",
-                    //         // all of other options may go here
-                    //     });
-                    //     this.$router.push({ name: "LoginView" });
-                    // }
+                    if (res.data.message) {
+                        this.$toast.open({
+                            message: "Registered",
+                            type: "success",
+                        });
+                        this.$router.push({ name: "LoginView" });
+                    }
                 }
 
 
