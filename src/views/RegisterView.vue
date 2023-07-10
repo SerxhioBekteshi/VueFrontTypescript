@@ -153,7 +153,6 @@ export default {
 
 
             } catch (err) {
-                console.log(err, 'EERRROR')
                 this.$toast.open({
                     message: err.response.data.message || err.message,
                     type: "error",

@@ -4,6 +4,7 @@ import { IUserState, setUser } from "../store/stores/user.store";
 // import eRoleType from "../assets/enums/eRoleType";
 import { navigateTo } from "../store/stores/navigation.store";
 import { useRouter } from "vue-router";
+import eRoleType from "@/assets/eRoleType";
 
 export interface IUserInfo {
   user: any;
@@ -46,20 +47,20 @@ class AuthManager {
     router: any
   ): Promise<void> {
     const res = await axios.post("auth/login", credentials);
-    console.log(router, "ROUTER")
     const data = res?.data;
     let response: any = null;
     if (data?.token || data?.refreshToken) {
       const userInfo = AuthManager.parseJwt(data.token);
-      console.log(userInfo, "AWDA")
+
       response = {
         accessToken: data.token,
         // refreshToken: data.refreshToken,
         user: {
           email: userInfo.email,
           id: userInfo.userId,
-          // role: userInfo.role,
+          role: userInfo.roleName,
           firstName: userInfo.name,
+          roleId: userInfo.roleId
           // lastName: userInfo.lastName,
         },
       };
@@ -67,15 +68,19 @@ class AuthManager {
     if (response.user && response.accessToken || response.refreshToken) {
      
       JwtManager.setAccessToken(response.accessToken);
+      console.log(response, 'RESPONSE')
       // JwtManager.setRefreshToken(response.refreshToken);
       // dispatch(setUser(response.user));
    
-      router.push("/dashboard");
-      // if (response.user.role === eRoleType.Manager) {
-      //   navigate(`/${response.user.role.toLowerCase()}/dashboard`);
-      // } else {
-      //   navigate(`/${response.user.role.toLowerCase().slice(0, -8)}`);
-      // }
+      if (response.user.roleId === eRoleType.Admin) {
+        router.push("/admin/dashboard");
+      } else if ( response.user.roleId === eRoleType.Provider){
+        router.push("/provider/dashboard");
+      }
+      else 
+        {
+          router.push("/");
+        }
     }
   }
 

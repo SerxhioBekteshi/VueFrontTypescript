@@ -7,17 +7,40 @@ import PrivateRoute from "../PrivateRoute.vue"
 import LayoutWrapper from "../components/LayoutWrapper.vue"
 import AppLayout from "../layout/AppLayout.vue";
 import LandingPage from "../views/LandingPage.vue"
-
+import Quiz from "../views/Quiz.vue"
+import ProvidersRegistration from "../views/ProvidersRegistration.vue"
 
 const routes = [
   {
-    path: "/dashboard",
+    path: "/admin/dashboard",
     component: AppLayout,
     children: [
         {
-            path: "/home",
-            name: "Home",
+            path: "",
+            name: "Dashboard",
             component: Home
+        }
+    ]
+  },
+  {
+    path: "/admin/quiz",
+    component: AppLayout,
+    children: [
+        {
+            path: "",
+            name: "Quiz",
+            component: Quiz
+        }
+    ]
+  },
+  {
+    path: "/admin/providers/registration",
+    component: AppLayout,
+    children: [
+        {
+            path: "",
+            name: "ProvidersRegistration",
+            component: ProvidersRegistration
         }
     ]
   },
