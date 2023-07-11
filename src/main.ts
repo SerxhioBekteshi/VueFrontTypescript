@@ -11,7 +11,9 @@ import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
 import '@/assets/styles.scss';
 import axiosInit from './initializers/axios';
-
+// import BootstrapVue3 from 'bootstrap-vue-3'
+// import 'bootstrap/dist/css/bootstrap.css'
+// import 'bootstrap-vue-3/dist/bootstrap-vue-3.css'
 // import rootReducer from './reducers';
 
 // const store = configureStore({
@@ -22,5 +24,6 @@ import axiosInit from './initializers/axios';
 createApp(App).use(router)
 .use(ToastPlugin, { position: "top" })
 .use(PrimeVue, {ripple: true})
+// .use(BootstrapVue3)
 .mount('#app')
 await axiosInit(useToast)

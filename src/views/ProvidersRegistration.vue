@@ -1,9 +1,13 @@
 <template>
     <div class="card">
+        <Message :closable="false">Press the button in order to submit the account for the
+            provider</Message>
+
         <PickList v-model="generalDataAccounts" listStyle="height: fit-content" dataKey="id" :stripedRows="true"
             :showTargetControls="false" :showSourceControls="false" @move-to-target="handleMoveToTarget">
-            <template #sourceheader> Available </template>
-            <template #targetheader> Selected </template>
+            <!--  :class="{ 'p-disabled': JSON.parse(JSON.stringify(generalDataAccounts))[0].length === 0 }" -->
+            <template #sourceheader> Unsubmitted accounts </template>
+            <template #targetheader> Submitted accounts </template>
             <template #item="slotProps">
                 <div class="flex flex-wrap p-2 align-items-center gap-3">
                     <div class="flex-1 flex flex-column gap-2">
@@ -21,17 +25,17 @@
   
 <script lang="ts">
 import PickList from "primevue/picklist"
+import Message from 'primevue/message';
 
 import axios from "axios";
-import { defineComponent } from "vue"
+import { defineComponent, DirectiveBinding } from "vue"
 
 export default defineComponent({
     name: "ProvidersRegistration",
-    components: { PickList },
+    components: { PickList, Message },
     data() {
         return {
             generalDataAccounts: [] as object[][],
-
         }
     },
     methods: {
@@ -42,15 +46,27 @@ export default defineComponent({
             }
         },
         async handleMoveToTarget(event: { items: HTMLElement[] }) {
-            console.log(JSON.parse(JSON.stringify(event.items)), 'ITEMS')
-            const res = await axios.put(`/submitAccount/${JSON.parse(JSON.stringify(event.items))[0].id}`)
-        }
-    },
-    mounted() {
+            const res = await axios.put(`providers/submitAccount/${JSON.parse(JSON.stringify(event.items))[0].id}`)
+            if (res.data) {
+                this.$toast.open({
+                    message: res.data.message,
+                    type: "success",
+                    position: "top-right"
+                });
+            }
+        },
 
+    },
+    async mounted() {
         this.fetchSubmittedAndNotProviders()
-    }
+    },
 });
 </script>
-<style></style>
+<style>
+.p-picklist-buttons button:nth-child(2),
+.p-picklist-buttons button:nth-child(3),
+.p-picklist-buttons button:nth-child(4) {
+    display: none;
+}
+</style>
   

@@ -26,13 +26,16 @@ const handleResponseMessage = (
   useToast: any
 ) => {
   const $toast = useToast();
+  console.log(message, 'awdawd')
+
   switch (notificationType) {
     case eNotificationType.Success:
-        // $toast.open({
-        //     message: message,
-        //     type: "success",
-        //     // all of other options may go here
-        // });
+      //   $toast.open({
+      //     message: message,
+      //     type: "success",
+      //     position: 'top-right',
+      //     duration: 3000,
+      // });
 
       break;
     case eNotificationType.Error:
