@@ -1,24 +1,24 @@
 <template>
-  <div class="card flex justify-content-center">
-    <Sidebar style="position: relative" :visible="openDrawer" position="right" class="w-full md:w-20rem lg:w-30rem">
-      <template #header>
-        <div class="flex">
-          <h2>{{ title }}</h2>
-        </div>
-      </template>
-      <template #closeicon>
-        <i @click="handleDrawerClose" class="pi pi-times" style="font-size: 1rem"></i>
-      </template>
-      <slot></slot>
-      <div class="actions">
-        <div class="actionsAlign">
-          <div v-for="(action, index) in actions" :key="index">
-            <component :is="action.component" v-bind="action.props"></component>
-          </div>
+  <!-- <div class="card flex justify-content-center"> -->
+  <Sidebar style="position: relative" :visible="openDrawer" position="right" class="w-full md:w-20rem lg:w-30rem">
+    <template #header>
+      <div class="flex">
+        <h2>{{ title }}</h2>
+      </div>
+    </template>
+    <template #closeicon>
+      <i @click="handleDrawerClose" class="pi pi-times" style="font-size: 1rem"></i>
+    </template>
+    <slot></slot>
+    <div class="actions">
+      <div class="actionsAlign">
+        <div v-for="(action, index) in actions" :key="index">
+          <component :is="action.component" v-bind="action.props"></component>
         </div>
       </div>
-    </Sidebar>
-  </div>
+    </div>
+  </Sidebar>
+  <!-- </div> -->
 </template>
 
 <script lang="ts">
@@ -58,7 +58,7 @@ export default defineComponent({
 // eslint-disable-next-line vue/comment-directive
 
 interface Action {
-  component: string;
+  component: any;
   props: Record<string, unknown>;
 }
 
