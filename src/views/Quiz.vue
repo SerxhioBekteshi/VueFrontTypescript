@@ -1,55 +1,60 @@
 <template>
-    <Button label="Serxhio" style="margin-bottom: 2rem;" />
     <div class="grid">
-        <div class="col-12 md:col-6 lg:col-6" style="display: flex; flex-direction: column; gap: 2rem; ">
-            <div style="width: 100%; display: flex; justify-content: center;" v-for="button in  questionType "
-                :key="button.id">
-                <Button :id="button.id.toString()" @click="openDrawerFunction(button.type)" :label="button.type"
-                    size="large" style="width: 75%;" />
+        <div class="col-12 sm:col-4 md:col-4" style="display: flex; justify-content: center;"
+            v-for="button in  questionType " :key="button.id">
+            <Button :id="button.id.toString()" @click="openDrawerFunction(button.type)" :label="button.type"
+                style="width: 100%;" />
+        </div>
+    </div>
+    <div v-for="(question, index) in quizQuestion" :key="question.id">
+        <div class="flex flex-start gap-3">
+            <div>
+                <Tag severity="success" style="font-size: 1rem;"> {{ `${index + 1}: ${question.questionName}` }}
+                </Tag>
+
+            </div>
+            <div class="flex gap-2">
+                <Button @click="updateQuestion(question.id, question)" severity="warning" size="small"
+                    style="padding: 3.5px 5.6px;" icon="pi pi-angle-double-right" />
+                <Button @click="handleRemoveQuestionQuiz(question.id)" severity="danger" size="small"
+                    style="padding: 3.5px 5.6px;" icon="pi pi-delete-left" />
+
             </div>
         </div>
-        <div class="col-12 md:col-6 lg:col-6">
-            <div v-for="(question) in quizQuestion" :key="question.id">
-                <label>{{ question.questionName }}</label>
-
-                <div v-if="question.fieldType === 'select'">
-                    <div>
-                        <Listbox :options="JSON.parse(JSON.stringify(question.fieldAnswers)).map((element: any) => { return { label: element.label, value: element.value } }
-                        )" optionLabel="name" class="w-full md:w-14rem" />
-                    </div>
-                </div>
-
-
-                <div v-if="question.fieldType === 'radio'" class="card flex justify-content-center">
-                    <div class="flex flex-column gap-3">
-                        <div class="flex align-items-center" v-for="field in question.fieldAnswers" :key="field._id">
-                            <!-- {{ value }} -->
-                            <RadioButton :inputId="field.value" :value="field.label" />
-                            <label :for="field.value" class="ml-2">{{ field.name }}</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div v-if="question.fieldType === 'radio'" class="card flex justify-content-center">
-                    <div class="flex flex-column gap-3">
-                        <div class="flex align-items-center" v-for="field in question.fieldAnswers" :key="field._id">
-                            <Checkbox :inputId="field.value" :value="field.label" />
-                            <label :for="field.value" class="ml-2">{{ field.name }}</label>
-                        </div>
-                    </div>
-                </div>
-
-
-                <!-- :options="question.fieldAnswers.map((element: any) => { return { value: element.value, label: element.label } })"  -->
+        <div class=" mb-3 mt-3 flex  quizContent" style="width: 100%S;" v-if="question.fieldType === 'select'">
+            <div>
+                <Listbox style="width: 100%;" :options="JSON.parse(JSON.stringify(question.fieldAnswers)).map((element: any) => { return { label: element.label, value: element.value } }
+                )" optionLabel="label" class="w-full md:w-14rem" />
             </div>
         </div>
+
+
+        <div v-if="question.fieldType === 'radio'" class=" mb-3 mt-3 flex ">
+            <div class="flex gap-5">
+                <div class="flex align-items-center" v-for="field in question.fieldAnswers" :key="field._id">
+                    <RadioButton :inputId="field.value" :value="field.value" />
+                    <label :for="field.value" class="ml-2">{{ field.label }}</label>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="question.fieldType === 'checkbox'" class="mb-3 mt-3 flexlex ">
+            <div class="flex gap-3">
+                <div class="flex align-items-center" v-for="field in question.fieldAnswers" :key="field._id">
+                    <Checkbox :inputId="field.value" :value="field.label" />
+                    <label :for="field.value" class="ml-2">{{ field.label }}</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- :options="question.fieldAnswers.map((element: any) => { return { value: element.value, label: element.label } })"  -->
     </div>
 
     <Drawer v-model:openDrawer="openDrawer" @handleClose="handleCloseDrawer" :title="'Question Type'"
         :actions="drawerActions">
         <form>
             <div class="flex flex-wrap  mb-3 gap-1">
-                <label for="question">Determine the question</label>
+                <label for="question" style="font-weight: bold;">Determine the question</label>
                 <InputText :style="{ width: '100%', borderColor: v$.question.$error ? 'red' : '' }" class="fullWidth"
                     id="question" placeholder="Question" v-model="question" />
                 <ValidationError v-if="v$.question.$error" style="width: 100%; background: none;" severity="error">{{
@@ -58,7 +63,7 @@
             </div>
 
             <div class="flex flex-wrap  mb-3 gap-1">
-                <label for="questionOptions">Give the options</label>
+                <label style="font-weight: bold;" for="questionOptions">Give the options</label>
                 <InputText v-tooltip="'Values should be separated with comma'"
                     :style="{ width: '100%', borderColor: v$.questionOptions.$error ? 'red' : '' }" class="fullWidth"
                     id="questionOptions" placeholder="questionOptions" v-model="questionOptions" />
@@ -85,12 +90,13 @@ import ValidationError from "../components/ValidationError.vue"
 import useVuelidate from '@vuelidate/core'
 import { required, email, helpers } from '@vuelidate/validators'
 import axios from "axios"
+import Tag from 'primevue/tag';
 
 
 export default defineComponent({
     // eslint-disable-next-line vue/multi-word-component-names
     name: "Quiz",
-    components: { Button, Drawer, ValidationError, InputText },
+    components: { Button, Drawer, InputText, RadioButton, Checkbox, Listbox, Tag, ValidationError },
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     data() {
         return {
@@ -134,6 +140,7 @@ export default defineComponent({
 
         handleCloseDrawer() {
             this.openDrawer = false;
+            // (this as any).$v.reset()
         },
         async getQuiz() {
             try {
@@ -152,6 +159,28 @@ export default defineComponent({
                 })
             }
 
+        },
+        async handleRemoveQuestionQuiz(id: number) {
+            try {
+                const res: any = await axios.delete(`/quiz/delete/${id}`)
+                if (res.data.message) {
+                    this.$toast.open({
+                        type: "success",
+                        message: res.data.message,
+                        duration: 3000,
+                        position: "top-right"
+                    })
+                    this.getQuiz()
+                }
+            } catch (err) {
+                console.log(err, 'errererer')
+            }
+
+        },
+        async updateQuestion(id: number, question: any) {
+            this.openDrawer = true;
+            this.question = question.questionName;
+            this.questionOptions = question.fieldAnswers.map((field: any) => field.label).join(',');
         },
         async submitForm() {
             this.v$.$validate()
