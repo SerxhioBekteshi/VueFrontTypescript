@@ -20,6 +20,7 @@ export default defineComponent({
         async function getUserData() {
             const res = await axios.get('/applicationMenu/get-all');
             model.value[0].items = res.data.menuItems; // Access the items property on the first object
+            console.log(res, ' res')
         }
 
         onMounted(() => {
