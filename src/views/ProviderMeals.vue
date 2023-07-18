@@ -1,13 +1,16 @@
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, reactive, watch } from "vue";
+import * as yup from "yup";
 // import { ProductService } from '@/service/ProductService';
 import DataView from 'primevue/dataview';
 import DataViewLayoutOptions from 'primevue/dataviewlayoutoptions'   // optional
 import Rating from 'primevue/rating';
-import Button from 'primevue/button';
 import Tag from "primevue/tag"
 import Drawer from "../components/Drawer.vue"
+import { useForm, useField } from 'vee-validate';
+import InputText from 'primevue/inputtext';
+import Button from "primevue/button";
 
 onMounted(() => {
     // ProductService.getProducts().then((data) => (products.value = data.slice(0, 12)));
@@ -36,6 +39,31 @@ const products = ref<any>([{
     inventoryStatus: 'INSTOCK',
     rating: 5
 },]);
+
+const form = ref({
+    name: '',
+    email: '',
+    password: '',
+});
+
+const formSchema = yup.object({
+    name: yup.string().required('Name is required'),
+    email: yup.string().email('Invalid email').required('Email is required'),
+});
+
+const { handleSubmit } = useForm({
+    validationSchema: formSchema,
+});
+
+const errors = useForm().errors ?? {};
+
+// const { setFieldValue, resetForm } = useForm();
+
+const { value: name, errorMessage: nameError } = useField('name');
+const { value: email, errorMessage: emailError } = useField('email');
+
+
+
 const layout = ref<'grid' | 'list' | undefined>('grid'); // Define the type for 'layout'
 const openDrawer = ref<boolean>(false);
 const drawerActions = ref<any[]>([
@@ -138,6 +166,17 @@ const handleCloseDrawer = () => {
         <Drawer v-model:openDrawer="openDrawer" @handleClose="handleCloseDrawer" :title="'Question Type'"
             :actions="drawerActions">
             <form>
+                <div class="p-field">
+                    <label for="name">Name</label>
+                    <InputText v-model="form.name" id="name" :class="{ 'p-invalid': errors.has('name') }"></InputText>
+                    <div class="p-error" v-if="errors.has('name')">{{ errors.first('name') }}</div>
+                </div>
+
+                <div class="p-field">
+                    <label for="email">Email</label>
+                    <InputText v-model="form.email" id="email" :class="{ 'p-invalid': errors.has('email') }"></InputText>
+                    <div class="p-error" v-if="errors.has('email')">{{ errors.first('email') }}</div>
+                </div>
 
             </form>
         </Drawer>
