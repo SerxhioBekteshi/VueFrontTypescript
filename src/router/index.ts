@@ -9,6 +9,8 @@ import AppLayout from "../layout/AppLayout.vue";
 import LandingPage from "../views/LandingPage.vue"
 import Quiz from "../views/Quiz.vue"
 import ProvidersRegistration from "../views/ProvidersRegistration.vue"
+import ProviderOrders from "../views/ProviderOrders.vue";
+import ProviderMeals from "../views/ProviderMeals.vue";
 
 const routes = [
   {
@@ -41,6 +43,40 @@ const routes = [
             path: "",
             name: "ProvidersRegistration",
             component: ProvidersRegistration
+        }
+    ]
+  },
+  
+  {
+    path: "/provider/dashboard",
+    component: AppLayout,
+    children: [
+        {
+            path: "",
+            name: "ProviderDashboard",
+            component: Home
+        }
+    ]
+  },
+  {
+    path: "/provider/orders",
+    component: AppLayout,
+    children: [
+        {
+            path: "",
+            name: "ProviderOrders",
+            component: ProviderOrders
+        }
+    ]
+  },
+  {
+    path: "/provider/meals",
+    component: AppLayout,
+    children: [
+        {
+            path: "",
+            name: "ProviderMeals",
+            component: ProviderMeals
         }
     ]
   },
