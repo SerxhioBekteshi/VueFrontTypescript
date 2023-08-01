@@ -8,9 +8,19 @@ import Tag from "primevue/tag";
 import Drawer from "../components/Drawer.vue";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
+import { useForm } from "vee-validate";
+import ValidationError from "../components/ValidationError.vue";
+import InputNumber from "primevue/inputnumber";
 
-onMounted(() => {
-  // ProductService.getProducts().then((data) => (products.value = data.slice(0, 12)));
+// onMounted(() => {
+//   // ProductService.getProducts().then((data) => (products.value = data.slice(0, 12)));
+// });
+
+onMounted(async () => {
+  const data = await fetchData();
+  console.log(data, " DATAAAAA");
+
+  // resetForm({ values: data });
 });
 
 const products = ref<any>([
@@ -48,8 +58,41 @@ const form = ref({
 
 const formSchema = yup.object({
   name: yup.string().required("Name is required"),
-  email: yup.string().email("Invalid email").required("Email is required"),
+  cousine: yup.string().required("Cousine is required"),
+  carbonFootprint: yup.number().required("Carbon footprint is required"),
+  dietCategory: yup.string().required("Diet category is required"),
+  calories: yup.number().required("Calories are required"),
+  intolerance: yup.string().required("Intolereance is required"),
+  ingredients: yup.string().required("Ingredients are required"),
 });
+
+async function fetchData() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        name: "John Doe",
+        email: "test@email.com",
+      });
+    }, 1500);
+  });
+}
+
+const { errors, handleSubmit, defineInputBinds } = useForm({
+  validationSchema: formSchema,
+});
+
+const onSubmit = handleSubmit((values) => {
+  console.log(values, "vALUUESS VALUES");
+  alert(JSON.stringify(values, null, 2));
+});
+
+const name = defineInputBinds("name");
+const cousine = defineInputBinds("cousine");
+const carbonFootprint = defineInputBinds("carbonFootprint");
+const dietCategory = defineInputBinds("dietCategory");
+const calories = defineInputBinds("calories");
+const intolerance = defineInputBinds("intolerance");
+const ingredients = defineInputBinds("ingredients");
 
 const layout = ref<"grid" | "list" | undefined>("grid"); // Define the type for 'layout'
 const openDrawer = ref<boolean>(false);
@@ -61,6 +104,7 @@ const drawerActions = ref<any[]>([
       icon: "pi pi-times",
       label: "Submit",
       severity: "primary",
+      onclick: onSubmit,
     },
   },
   {
@@ -207,7 +251,116 @@ const handleCloseDrawer = () => {
       :title="'Question Type'"
       :actions="drawerActions"
     >
-      aadadadad
+      <form @submit="onSubmit">
+        <div class="flex flex-wrap mb-1 gap-1">
+          <label for="name" class="p-sr-only">Name</label>
+
+          <InputText
+            name="name"
+            @input="name.onChange"
+            class="fullWidth"
+            placeholder="Name"
+            :style="{ width: '100%', borderColor: errors.name ? 'red' : '' }"
+            v-bind="name"
+          />
+          <ValidationError v-if="errors.name">{{
+            errors.name
+          }}</ValidationError>
+        </div>
+
+        <div class="flex flex-wrap mb-1 gap-1">
+          <label for="cousine" class="p-sr-only">cousine</label>
+
+          <InputText
+            name="cousine"
+            @input="name.onChange"
+            class="fullWidth"
+            placeholder="Cousine"
+            :style="{ width: '100%', borderColor: errors.cousine ? 'red' : '' }"
+            v-bind="cousine"
+          />
+          <ValidationError v-if="errors.cousine">{{
+            errors.cousine
+          }}</ValidationError>
+        </div>
+
+        <div class="flex flex-wrap mb-1 gap-1">
+          <label for="carbonFootprint" class="p-sr-only"
+            >Carbon footprint</label
+          >
+          <InputNumber
+            name="carbonFootprint"
+            @input="carbonFootprint.onChange"
+            class="fullWidth"
+            placeholder="Carbon footprint"
+            :style="{
+              width: '100%',
+              borderColor: errors.carbonFootprint ? 'red' : '',
+            }"
+            v-bind="carbonFootprint"
+          />
+          <ValidationError v-if="errors.carbonFootprint">{{
+            errors.carbonFootprint
+          }}</ValidationError>
+        </div>
+
+        <div class="flex flex-wrap mb-1 gap-1">
+          <label for="dietCategory" class="p-sr-only">Diet Category</label>
+
+          <InputText
+            name="dietCategory"
+            @input="name.onChange"
+            class="fullWidth"
+            placeholder="Diet Category"
+            :style="{
+              width: '100%',
+              borderColor: errors.dietCategory ? 'red' : '',
+            }"
+            v-bind="dietCategory"
+          />
+          <ValidationError v-if="errors.dietCategory">{{
+            errors.dietCategory
+          }}</ValidationError>
+        </div>
+
+        <div class="flex flex-wrap mb-1 gap-1">
+          <label for="calories" class="p-sr-only">calories</label>
+
+          <InputText
+            name="calories"
+            @input="name.onChange"
+            class="fullWidth"
+            placeholder="Calories"
+            :style="{
+              width: '100%',
+              borderColor: errors.calories ? 'red' : '',
+            }"
+            v-bind="calories"
+          />
+          <ValidationError v-if="errors.calories">{{
+            errors.calories
+          }}</ValidationError>
+        </div>
+
+        <div class="flex flex-wrap mb-1 gap-1">
+          <label for="intolerance" class="p-sr-only">Intolerance</label>
+
+          <InputText
+            name="intolerance"
+            @input="intolerance.onChange"
+            class="fullWidth"
+            placeholder="Intolerance"
+            :style="{
+              width: '100%',
+              borderColor: errors.intolerance ? 'red' : '',
+            }"
+            v-bind="intolerance"
+          />
+          <ValidationError v-if="errors.intolerance">{{
+            errors.intolerance
+          }}</ValidationError>
+        </div>
+      </form>
     </Drawer>
   </div>
 </template>
