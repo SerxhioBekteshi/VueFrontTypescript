@@ -6,20 +6,27 @@ import DataViewLayoutOptions from "primevue/dataviewlayoutoptions"; // optional
 import Rating from "primevue/rating";
 import Tag from "primevue/tag";
 import Drawer from "../components/Drawer.vue";
-import InputText from "primevue/inputtext";
+// import InputText from "primevue/inputtext";
+import InputText from "../components/formElements/InputText.vue";
 import Button from "primevue/button";
-import { useForm } from "vee-validate";
+import {
+  useForm,
+  Field,
+  Form,
+  ErrorMessage,
+  FieldArray,
+  useFormValues,
+  useField,
+  useFieldArray,
+} from "vee-validate";
 import ValidationError from "../components/ValidationError.vue";
-import InputNumber from "primevue/inputnumber";
 
 // onMounted(() => {
 //   // ProductService.getProducts().then((data) => (products.value = data.slice(0, 12)));
 // });
 
 onMounted(async () => {
-  const data = await fetchData();
-  console.log(data, " DATAAAAA");
-
+  // const data = await fetchData();
   // resetForm({ values: data });
 });
 
@@ -49,50 +56,73 @@ const products = ref<any>([
     rating: 5,
   },
 ]);
-
-const form = ref({
-  name: "",
-  email: "",
-  password: "",
+const schema = yup.object().shape({
+  ingredients: yup
+    .array()
+    .of(
+      yup.object().shape({
+        name: yup.string().required().label("Name"),
+        portion: yup.number().required().label("Portion"),
+      })
+    )
+    .strict(),
 });
 
-const formSchema = yup.object({
-  name: yup.string().required("Name is required"),
-  cousine: yup.string().required("Cousine is required"),
-  carbonFootprint: yup.number().required("Carbon footprint is required"),
-  dietCategory: yup.string().required("Diet category is required"),
-  calories: yup.number().required("Calories are required"),
-  intolerance: yup.string().required("Intolereance is required"),
-  ingredients: yup.string().required("Ingredients are required"),
-});
+// const formSchema = yup.object({
+// email: yup.string().required().email(),
+// name: yup.string().required("Name is required"),
+// cousine: yup.string().required("Cousine is required"),
+// carbonFootprint: yup.number().required("Carbon footprint is required"),
+// dietCategory: yup.string().required("Diet category is required"),
+// // calories: yup.number().required("Calories are required"),
+// intolerance: yup.string().required("Intolereance is required"),
+// ingredients: yup.string().required("Ingredients are required"),
+// });
 
-async function fetchData() {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        name: "John Doe",
-        email: "test@email.com",
-      });
-    }, 1500);
-  });
-}
+// async function fetchData() {
+//   return new Promise((resolve) => {
+//     setTimeout(() => {
+//       resolve({
+//         name: "John Doe",
+//         email: "test@email.com",
+//       });
+//     }, 1500);
+//   });
+// }
+
+const initialData = {
+  ingredients: [
+    {
+      name: "",
+      portion: null,
+    },
+  ],
+};
 
 const { errors, handleSubmit, defineInputBinds } = useForm({
-  validationSchema: formSchema,
+  initialData,
+  validationSchema: schema,
 });
+const { values } = useFormValues();
+const { field, errorMessage } = useField("ingredients");
+const { fields, push, remove } = useFieldArray("ingredients");
 
 const onSubmit = handleSubmit((values) => {
   console.log(values, "vALUUESS VALUES");
-  alert(JSON.stringify(values, null, 2));
+  // alert(JSON.stringify(values, null, 2));
 });
 
-const name = defineInputBinds("name");
-const cousine = defineInputBinds("cousine");
-const carbonFootprint = defineInputBinds("carbonFootprint");
-const dietCategory = defineInputBinds("dietCategory");
-const calories = defineInputBinds("calories");
-const intolerance = defineInputBinds("intolerance");
-const ingredients = defineInputBinds("ingredients");
+// function onSubmit(values: any) {
+// console.log(values);
+// }
+
+// const name = defineInputBinds("name");
+// const cousine = defineInputBinds("cousine");
+// const carbonFootprint = defineInputBinds("carbonFootprint");
+// const dietCategory = defineInputBinds("dietCategory");
+// const calories = defineInputBinds("calories");
+// const intolerance = defineInputBinds("intolerance");
+// const ingredients = defineInputBinds("ingredients");
 
 const layout = ref<"grid" | "list" | undefined>("grid"); // Define the type for 'layout'
 const openDrawer = ref<boolean>(false);
@@ -128,9 +158,17 @@ const getSeverity = (product: any) => {
   }
 };
 
+// const handleRemovee = (id: number, fields: any) =>
+// {
+//   if (fields.length === 1)
+//   return else
+//     remove(id)
+// }
+
 const openDrawerFunction = () => {
   openDrawer.value = true;
 };
+
 const handleCloseDrawer = () => {
   openDrawer.value = false;
 };
@@ -248,32 +286,88 @@ const handleCloseDrawer = () => {
     <Drawer
       v-model:openDrawer="openDrawer"
       @handleClose="handleCloseDrawer"
-      :title="'Question Type'"
+      :title="'Add ingredients'"
       :actions="drawerActions"
     >
-      <form @submit="onSubmit">
-        <div class="flex flex-wrap mb-1 gap-1">
-          <label for="name" class="p-sr-only">Name</label>
+      <Form :initial-values="initialData" :validation-schema="schema">
+        <FieldArray
+          class="ingredients"
+          name="ingredients"
+          v-slot="{ fields, push, remove }"
+        >
+          <fieldset v-for="(field, idx) in fields" :key="field.key">
+            <legend>Ingredient #{{ idx }}</legend>
 
-          <InputText
-            name="name"
-            @input="name.onChange"
-            class="fullWidth"
-            placeholder="Name"
-            :style="{ width: '100%', borderColor: errors.name ? 'red' : '' }"
-            v-bind="name"
-          />
-          <ValidationError v-if="errors.name">{{
-            errors.name
-          }}</ValidationError>
-        </div>
+            <div class="grid">
+              <div
+                class="col-9"
+                :style="{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1rem',
+                }"
+              >
+                <div :style="{ display: 'flex', flexDirection: 'column' }">
+                  <label :for="`name_${idx}`">Name</label>
+                  <InputText
+                    :type="'text'"
+                    :id="`name_${idx}`"
+                    :name="`ingredients[${idx}].name`"
+                    :style="{ width: '100%' }"
+                  />
+                  <!-- <ErrorMessage :name="`ingredients[${idx}].name`" /> -->
+                </div>
 
-        <div class="flex flex-wrap mb-1 gap-1">
+                <div :style="{ display: 'flex', flexDirection: 'column' }">
+                  <label :for="`portion_${idx}`">Portion</label>
+                  <InputText
+                    :type="'number'"
+                    :id="`portion_${idx}`"
+                    :name="`ingredients[${idx}].portion`"
+                    :style="{ width: '100%' }"
+                  />
+                  <!-- <ErrorMessage :name="`ingredients[${idx}].portion`" /> -->
+                </div>
+              </div>
+
+              <div class="col-3" style="display: flex; align-items: center">
+                <Button
+                  class="p-button-rounded"
+                  severity="danger"
+                  @click="remove(idx)"
+                  :disabled="fields.length <= 1"
+                >
+                  <i class="pi pi-times"></i>
+                </Button>
+              </div>
+            </div>
+          </fieldset>
+
+          <Button
+            severity="success"
+            style="margin-top: 1rem"
+            @click="push({ name: '', portion: null })"
+          >
+            Add ingredient
+          </Button>
+        </FieldArray>
+
+        <!-- <button type="submit">Submit</button> -->
+      </Form>
+
+      <!-- <form @submit="onSubmit"> -->
+      <!-- <div class="flex flex-wrap mb-1 gap-1">
+          <label for="name" class="p-sr-only">name</label>
+
+          <InputText name="name" type="name" />onSubmit
+        </div> -->
+
+      <!-- <div class="flex flex-wrap mb-1 gap-1">
           <label for="cousine" class="p-sr-only">cousine</label>
 
           <InputText
             name="cousine"
-            @input="name.onChange"
+            @input="cousine.onChange"
             class="fullWidth"
             placeholder="Cousine"
             :style="{ width: '100%', borderColor: errors.cousine ? 'red' : '' }"
@@ -290,6 +384,7 @@ const handleCloseDrawer = () => {
           >
           <InputNumber
             name="carbonFootprint"
+            id="carbonFootprint"
             @input="carbonFootprint.onChange"
             class="fullWidth"
             placeholder="Carbon footprint"
@@ -309,7 +404,7 @@ const handleCloseDrawer = () => {
 
           <InputText
             name="dietCategory"
-            @input="name.onChange"
+            @input="dietCategory.onChange"
             class="fullWidth"
             placeholder="Diet Category"
             :style="{
@@ -326,9 +421,9 @@ const handleCloseDrawer = () => {
         <div class="flex flex-wrap mb-1 gap-1">
           <label for="calories" class="p-sr-only">calories</label>
 
-          <InputText
+          <InputNumber
             name="calories"
-            @input="name.onChange"
+            @input="calories.onChange"
             class="fullWidth"
             placeholder="Calories"
             :style="{
@@ -359,9 +454,20 @@ const handleCloseDrawer = () => {
           <ValidationError v-if="errors.intolerance">{{
             errors.intolerance
           }}</ValidationError>
-        </div>
-      </form>
+        </div> -->
+      <!-- </form> -->
     </Drawer>
   </div>
 </template>
-<style></style>
+<style scoped>
+.InputGroup {
+  padding: 10px;
+  border: 2px dotted black;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+::v-deep .ingredients {
+  all: unset !important;
+}
+</style>
