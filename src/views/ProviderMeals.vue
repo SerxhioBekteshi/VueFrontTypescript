@@ -1,34 +1,31 @@
 <script setup lang="ts">
-import { ref, onMounted, reactive, watch } from "vue";
+import { ref, onMounted } from "vue";
 import * as yup from "yup";
 import DataView from "primevue/dataview";
 import DataViewLayoutOptions from "primevue/dataviewlayoutoptions"; // optional
 import Rating from "primevue/rating";
 import Tag from "primevue/tag";
 import Drawer from "../components/Drawer.vue";
-// import InputText from "primevue/inputtext";
 import InputText from "../components/formElements/InputText.vue";
 import Button from "primevue/button";
-import {
-  useForm,
-  Field,
-  Form,
-  ErrorMessage,
-  FieldArray,
-  useFormValues,
-  useField,
-  useFieldArray,
-} from "vee-validate";
-import ValidationError from "../components/ValidationError.vue";
+import { useForm, FieldArray, useField } from "vee-validate";
+import axios from "axios";
+import { useToast } from "primevue/usetoast";
+import Accordion from "primevue/accordion";
+import AccordionTab from "primevue/accordiontab";
 
-// onMounted(() => {
-//   // ProductService.getProducts().then((data) => (products.value = data.slice(0, 12)));
-// });
+let meals = ref<any>([]);
+const fetchMeals = async () => {
+  const res: any = await axios.get("/meal/get-all");
+  console.log(res, "res ");
+  if (res.data) meals.value = res.data.meals;
+};
 
 onMounted(async () => {
-  // const data = await fetchData();
-  // resetForm({ values: data });
+  await fetchMeals();
 });
+
+const toast = useToast();
 
 const products = ref<any>([
   {
@@ -56,28 +53,46 @@ const products = ref<any>([
     rating: 5,
   },
 ]);
+
 const schema = yup.object().shape({
   ingredients: yup
     .array()
     .of(
       yup.object().shape({
-        name: yup.string().required().label("Name"),
-        portion: yup.number().required().label("Portion"),
+        name: yup
+          .string()
+          .required("Ingredient name is required")
+          .label("Name"),
+        portion: yup
+          .number()
+          .required("Ingredient portion is required")
+          .label("Portion"),
       })
     )
     .strict(),
+  name: yup.string().required("Name is required").label("Name"),
+  cousine: yup.string().required("Cousine is required").label("Cousine"),
+  carbonFootprint: yup
+    .number()
+    .required("Carbon footprint is required")
+    .label("Carbon footprint"),
+  dietCategory: yup
+    .string()
+    .required("Diet category is required")
+    .label("Diet category"),
+  calories: yup.number().required("Calories are required").label("Calories"),
+  intolerance: yup
+    .string()
+    .required("Intolerance is required")
+    .label("Intolerance"),
 });
 
-// const formSchema = yup.object({
-// email: yup.string().required().email(),
-// name: yup.string().required("Name is required"),
-// cousine: yup.string().required("Cousine is required"),
-// carbonFootprint: yup.number().required("Carbon footprint is required"),
-// dietCategory: yup.string().required("Diet category is required"),
-// // calories: yup.number().required("Calories are required"),
-// intolerance: yup.string().required("Intolereance is required"),
-// ingredients: yup.string().required("Ingredients are required"),
-// });
+const { field: name } = useField("name");
+const { field: cousine } = useField("cousine");
+const { field: carbonFootprint } = useField("carbonFootprint");
+const { field: dietCategory } = useField("dietCategory");
+const { field: calories } = useField("calories");
+const { field: intolerance } = useField("intolerance");
 
 // async function fetchData() {
 //   return new Promise((resolve) => {
@@ -97,32 +112,28 @@ const initialData = {
       portion: null,
     },
   ],
+  name: "",
 };
 
-const { errors, handleSubmit, defineInputBinds } = useForm({
-  initialData,
+const { handleSubmit, defineInputBinds, resetForm } = useForm({
+  initialValues: initialData,
   validationSchema: schema,
 });
-const { values } = useFormValues();
-const { field, errorMessage } = useField("ingredients");
-const { fields, push, remove } = useFieldArray("ingredients");
 
-const onSubmit = handleSubmit((values) => {
-  console.log(values, "vALUUESS VALUES");
-  // alert(JSON.stringify(values, null, 2));
-});
-
-// function onSubmit(values: any) {
-// console.log(values);
-// }
-
-// const name = defineInputBinds("name");
-// const cousine = defineInputBinds("cousine");
-// const carbonFootprint = defineInputBinds("carbonFootprint");
-// const dietCategory = defineInputBinds("dietCategory");
-// const calories = defineInputBinds("calories");
-// const intolerance = defineInputBinds("intolerance");
-// const ingredients = defineInputBinds("ingredients");
+async function onSubmit(values: any) {
+  const res: any = await axios.post("/meal/post", values);
+  if (res.data.message) {
+    toast.add({
+      life: 3000,
+      detail: "INFO",
+      severity: "success",
+      summary: res.data.message,
+    });
+    handleCloseDrawer();
+    resetForm();
+    fetchMeals();
+  }
+}
 
 const layout = ref<"grid" | "list" | undefined>("grid"); // Define the type for 'layout'
 const openDrawer = ref<boolean>(false);
@@ -134,7 +145,7 @@ const drawerActions = ref<any[]>([
       icon: "pi pi-times",
       label: "Submit",
       severity: "primary",
-      onclick: onSubmit,
+      onclick: handleSubmit(onSubmit),
     },
   },
   {
@@ -158,12 +169,11 @@ const getSeverity = (product: any) => {
   }
 };
 
-// const handleRemovee = (id: number, fields: any) =>
-// {
-//   if (fields.length === 1)
-//   return else
-//     remove(id)
-// }
+const fetchMeal = (meal: any) => {
+  const mealObject = JSON.parse(JSON.stringify(meal));
+  openDrawerFunction();
+  resetForm({ values: mealObject });
+};
 
 const openDrawerFunction = () => {
   openDrawer.value = true;
@@ -175,7 +185,7 @@ const handleCloseDrawer = () => {
 </script>
 <template>
   <div class="card">
-    <DataView :value="products" :layout="layout" dataKey="id">
+    <DataView :value="meals" :layout="layout" dataKey="id">
       <template #header>
         <div class="flex justify-content-between">
           <Button @click="openDrawerFunction"> Add Meal </Button>
@@ -209,9 +219,9 @@ const handleCloseDrawer = () => {
                 ></Rating>
                 <div class="flex align-items-center gap-3">
                   <span class="flex align-items-center gap-2">
-                    <i class="pi pi-tag"></i>
+                    <i class="pi pi-code"></i>
                     <span class="font-semibold">{{
-                      slotProps.data.category
+                      slotProps.data.dietCategory
                     }}</span>
                   </span>
                   <Tag
@@ -225,13 +235,15 @@ const handleCloseDrawer = () => {
                 class="flex sm:flex-column align-items-center sm:align-items-end gap-3 sm:gap-2"
               >
                 <span class="text-2xl font-semibold"
-                  >${{ slotProps.data.price }}</span
+                  >${{ slotProps.data.calories }}</span
                 >
                 <Button
-                  icon="pi pi-shopping-cart"
+                  @click="fetchMeal(slotProps.data)"
+                  severity="warning"
+                  icon="pi pi-file-edit"
                   rounded
-                  :disabled="slotProps.data.inventoryStatus === 'OUTOFSTOCK'"
-                ></Button>
+                >
+                </Button>
               </div>
             </div>
           </div>
@@ -245,8 +257,10 @@ const handleCloseDrawer = () => {
               class="flex flex-wrap align-items-center justify-content-between gap-2"
             >
               <div class="flex align-items-center gap-2">
-                <i class="pi pi-tag"></i>
-                <span class="font-semibold">{{ slotProps.data.category }}</span>
+                <i class="pi pi-code"></i>
+                <span class="font-semibold">{{
+                  slotProps.data.dietCategory
+                }}</span>
               </div>
               <Tag
                 :value="slotProps.data.inventoryStatus"
@@ -268,13 +282,40 @@ const handleCloseDrawer = () => {
             </div>
             <div class="flex align-items-center justify-content-between">
               <span class="text-2xl font-semibold"
-                >${{ slotProps.data.price }}</span
+                >{{ slotProps.data.calories }} Kj</span
               >
               <Button
-                icon="pi pi-shopping-cart"
+                @click="fetchMeal(slotProps.data)"
+                severity="warning"
+                icon="pi pi-file-edit"
                 rounded
-                :disabled="slotProps.data.inventoryStatus === 'OUTOFSTOCK'"
-              ></Button>
+              >
+              </Button>
+            </div>
+
+            <div :style="{ marginTop: '1rem' }">
+              <span :style="{ fontWeight: 'bold' }"> Carbon Footprint: </span>
+              {{ slotProps.data.carbonFootprint }} %
+            </div>
+
+            <div :style="{ marginTop: '1rem' }">
+              <span :style="{ fontWeight: 'bold' }"> Intolerance: </span>
+              {{ slotProps.data.intolerance }}
+            </div>
+            <div :style="{ marginTop: '1rem' }">
+              <Accordion :activeIndex="0">
+                <AccordionTab :key="'Ingredients'" :header="'Ingredients '">
+                  <div
+                    v-for="ingredient in slotProps.data.ingredients"
+                    v-bind:key="ingredient.id"
+                  >
+                    <ul>
+                      <li>ingredient: {{ ingredient.name }}</li>
+                      <li>amount: {{ ingredient.portion }}</li>
+                    </ul>
+                  </div>
+                </AccordionTab>
+              </Accordion>
             </div>
           </div>
         </div>
@@ -289,175 +330,129 @@ const handleCloseDrawer = () => {
       :title="'Add ingredients'"
       :actions="drawerActions"
     >
-      <Form :initial-values="initialData" :validation-schema="schema">
-        <FieldArray
-          class="ingredients"
-          name="ingredients"
-          v-slot="{ fields, push, remove }"
-        >
-          <fieldset v-for="(field, idx) in fields" :key="field.key">
-            <legend>Ingredient #{{ idx }}</legend>
+      <div style="margin-top: 1rem">
+        <InputText
+          name="name"
+          :label="'Meal Name'"
+          id="name"
+          placeholder="Meal Name"
+          v-bind="name"
+        />
+      </div>
 
-            <div class="grid">
-              <div
-                class="col-9"
-                :style="{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '1rem',
-                }"
-              >
-                <div :style="{ display: 'flex', flexDirection: 'column' }">
-                  <label :for="`name_${idx}`">Name</label>
-                  <InputText
-                    :type="'text'"
-                    :id="`name_${idx}`"
-                    :name="`ingredients[${idx}].name`"
-                    :style="{ width: '100%' }"
-                  />
-                  <!-- <ErrorMessage :name="`ingredients[${idx}].name`" /> -->
-                </div>
+      <div style="margin-top: 1rem">
+        <InputText
+          name="cousine"
+          :label="'Cousine'"
+          id="cousine"
+          placeholder="Cousine"
+          v-bind="cousine"
+        />
+      </div>
 
-                <div :style="{ display: 'flex', flexDirection: 'column' }">
-                  <label :for="`portion_${idx}`">Portion</label>
-                  <InputText
-                    :type="'number'"
-                    :id="`portion_${idx}`"
-                    :name="`ingredients[${idx}].portion`"
-                    :style="{ width: '100%' }"
-                  />
-                  <!-- <ErrorMessage :name="`ingredients[${idx}].portion`" /> -->
-                </div>
+      <div style="margin-top: 1rem">
+        <InputText
+          :label="'Diet Category'"
+          name="dietCategory"
+          id="dietCategory"
+          placeholder="Diet category"
+          v-bind="dietCategory"
+        />
+      </div>
+
+      <div style="margin-top: 1rem">
+        <InputText
+          :label="'Intolerance'"
+          name="intolerance"
+          id="intolerance"
+          placeholder="Intolerance"
+          v-bind="intolerance"
+        />
+      </div>
+
+      <div style="margin-top: 1rem">
+        <InputText
+          :label="'Calories'"
+          name="calories"
+          type="number"
+          id="calories"
+          placeholder="Calories"
+          v-bind="calories"
+        />
+      </div>
+
+      <div style="margin-top: 1rem">
+        <InputText
+          :label="'Carbon footprint'"
+          name="carbonFootprint"
+          type="number"
+          id="carbonFootprint"
+          placeholder="Carbon footprint"
+          v-bind="carbonFootprint"
+        />
+      </div>
+
+      <FieldArray
+        class="ingredients"
+        name="ingredients"
+        v-slot="{ fields, push, remove }"
+      >
+        <fieldset v-for="(field, idx) in fields" :key="field.key">
+          <legend>Ingredient #{{ idx }}</legend>
+
+          <div class="grid">
+            <div
+              class="col-9"
+              :style="{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem',
+              }"
+            >
+              <div :style="{ display: 'flex', flexDirection: 'column' }">
+                <label :for="`name_${idx}`">Name</label>
+                <InputText
+                  :type="'text'"
+                  :id="`name_${idx}`"
+                  :name="`ingredients[${idx}].name`"
+                />
+                <!-- <ErrorMessage :name="`ingredients[${idx}].name`" /> -->
               </div>
 
-              <div class="col-3" style="display: flex; align-items: center">
-                <Button
-                  class="p-button-rounded"
-                  severity="danger"
-                  @click="remove(idx)"
-                  :disabled="fields.length <= 1"
-                >
-                  <i class="pi pi-times"></i>
-                </Button>
+              <div :style="{ display: 'flex', flexDirection: 'column' }">
+                <label :for="`portion_${idx}`">Portion</label>
+                <InputText
+                  :type="'number'"
+                  :id="`portion_${idx}`"
+                  :name="`ingredients[${idx}].portion`"
+                />
+                <!-- <ErrorMessage :name="`ingredients[${idx}].portion`" /> -->
               </div>
             </div>
-          </fieldset>
 
-          <Button
-            severity="success"
-            style="margin-top: 1rem"
-            @click="push({ name: '', portion: null })"
-          >
-            Add ingredient
-          </Button>
-        </FieldArray>
+            <div class="col-3" style="display: flex; align-items: center">
+              <Button
+                icon="pi pi-times"
+                rounded
+                severity="danger"
+                @click="remove(idx)"
+                :disabled="fields.length <= 1"
+              />
+            </div>
+          </div>
+        </fieldset>
 
-        <!-- <button type="submit">Submit</button> -->
-      </Form>
-
-      <!-- <form @submit="onSubmit"> -->
-      <!-- <div class="flex flex-wrap mb-1 gap-1">
-          <label for="name" class="p-sr-only">name</label>
-
-          <InputText name="name" type="name" />onSubmit
-        </div> -->
-
-      <!-- <div class="flex flex-wrap mb-1 gap-1">
-          <label for="cousine" class="p-sr-only">cousine</label>
-
-          <InputText
-            name="cousine"
-            @input="cousine.onChange"
-            class="fullWidth"
-            placeholder="Cousine"
-            :style="{ width: '100%', borderColor: errors.cousine ? 'red' : '' }"
-            v-bind="cousine"
-          />
-          <ValidationError v-if="errors.cousine">{{
-            errors.cousine
-          }}</ValidationError>
-        </div>
-
-        <div class="flex flex-wrap mb-1 gap-1">
-          <label for="carbonFootprint" class="p-sr-only"
-            >Carbon footprint</label
-          >
-          <InputNumber
-            name="carbonFootprint"
-            id="carbonFootprint"
-            @input="carbonFootprint.onChange"
-            class="fullWidth"
-            placeholder="Carbon footprint"
-            :style="{
-              width: '100%',
-              borderColor: errors.carbonFootprint ? 'red' : '',
-            }"
-            v-bind="carbonFootprint"
-          />
-          <ValidationError v-if="errors.carbonFootprint">{{
-            errors.carbonFootprint
-          }}</ValidationError>
-        </div>
-
-        <div class="flex flex-wrap mb-1 gap-1">
-          <label for="dietCategory" class="p-sr-only">Diet Category</label>
-
-          <InputText
-            name="dietCategory"
-            @input="dietCategory.onChange"
-            class="fullWidth"
-            placeholder="Diet Category"
-            :style="{
-              width: '100%',
-              borderColor: errors.dietCategory ? 'red' : '',
-            }"
-            v-bind="dietCategory"
-          />
-          <ValidationError v-if="errors.dietCategory">{{
-            errors.dietCategory
-          }}</ValidationError>
-        </div>
-
-        <div class="flex flex-wrap mb-1 gap-1">
-          <label for="calories" class="p-sr-only">calories</label>
-
-          <InputNumber
-            name="calories"
-            @input="calories.onChange"
-            class="fullWidth"
-            placeholder="Calories"
-            :style="{
-              width: '100%',
-              borderColor: errors.calories ? 'red' : '',
-            }"
-            v-bind="calories"
-          />
-          <ValidationError v-if="errors.calories">{{
-            errors.calories
-          }}</ValidationError>
-        </div>
-
-        <div class="flex flex-wrap mb-1 gap-1">
-          <label for="intolerance" class="p-sr-only">Intolerance</label>
-
-          <InputText
-            name="intolerance"
-            @input="intolerance.onChange"
-            class="fullWidth"
-            placeholder="Intolerance"
-            :style="{
-              width: '100%',
-              borderColor: errors.intolerance ? 'red' : '',
-            }"
-            v-bind="intolerance"
-          />
-          <ValidationError v-if="errors.intolerance">{{
-            errors.intolerance
-          }}</ValidationError>
-        </div> -->
-      <!-- </form> -->
+        <Button
+          severity="success"
+          style="margin-top: 1rem"
+          @click="push({ email: '', portion: null })"
+        >
+          Add ingredient
+        </Button>
+      </FieldArray>
     </Drawer>
   </div>
+  <Toast />
 </template>
 <style scoped>
 .InputGroup {

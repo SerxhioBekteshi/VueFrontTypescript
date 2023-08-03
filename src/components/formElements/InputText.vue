@@ -1,9 +1,10 @@
 <template>
+  <label :for="name" :style="{ marginBottom: '1rem' }"> {{ label }}</label>
   <InputText
     :value="value"
     :type="type || 'text'"
-    style="style"
-    :style="{ borderColor: errorMessage ? 'red' : '' }"
+    :style="{ borderColor: errorMessage ? 'red' : '', width: '100%' }"
+    :placeholder="placeholder"
     :id="id"
     :class="{
       dirty: meta.dirty,
@@ -21,9 +22,12 @@ import { useField } from "vee-validate";
 import ValidationError from "../ValidationError.vue";
 import { defineProps, ref, watch } from "vue";
 import InputText from "primevue/inputtext";
+
 const props = defineProps({
-  name: String,
-  type: String,
+  name: { type: String, required: true },
+  type: { type: String, required: true },
+  placeholder: { type: String },
+  label: { type: String },
 });
 
 const { handleChange, value, handleBlur, errorMessage, meta } = useField(

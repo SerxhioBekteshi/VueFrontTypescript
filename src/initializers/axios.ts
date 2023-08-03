@@ -5,12 +5,10 @@ import eNotificationType from "../assets/eNotificationType";
 import AuthManager from "../utils/authManager";
 import eHttpResponse from "@/assets/eHttpResponse";
 
-
 interface IAxiosRequestConfigRetry extends AxiosRequestConfig {
   _retry: boolean;
   _noAuth: boolean;
 }
-
 
 const clearSession = () => {
   JwtManager.clearToken();
@@ -26,8 +24,11 @@ const handleResponseMessage = (
   useToast: any
 ) => {
   const $toast = useToast();
-  console.log(message, 'awdawd')
-
+  console.log(message, "awdawd");
+  if (message === "jwt expired") {
+    clearSession();
+    return;
+  }
   switch (notificationType) {
     case eNotificationType.Success:
       //   $toast.open({
@@ -39,12 +40,12 @@ const handleResponseMessage = (
 
       break;
     case eNotificationType.Error:
-        $toast.open({
-            message: message + `\n Status: ${status}, ${statusText}`,
-            type: "error",
-            position: 'top-right',
-            duration: 3000,
-        });
+      $toast.open({
+        message: message + `\n Status: ${status}, ${statusText}`,
+        type: "error",
+        position: "top-right",
+        duration: 3000,
+      });
 
       break;
     default:
@@ -69,28 +70,31 @@ const axiosInit = async (useToast: any) => {
       throw error.response;
     }
     if (error.response) {
-
       // if (
       //   error.response.status === eHttpResponse.Unauthorized &&
       //   !originalRequest._retry
       // ) {
       //   originalRequest._retry = true;
       //   try {
-          // const res = await AuthManager.refreshToken(
-          //   JwtManager.accessToken,
-          //   JwtManager.refreshToken
-          // );
-          // if (res && res.accessToken && res.refreshToken) {
-          //   originalRequest.headers.Authorization = `Bearer ${res.accessToken}`;
-          //   return axios(originalRequest);
-          // }
-          // clearSession();
+      // const res = await AuthManager.refreshToken(
+      //   JwtManager.accessToken,
+      //   JwtManager.refreshToken
+      // );
+      // if (res && res.accessToken && res.refreshToken) {
+      //   originalRequest.headers.Authorization = `Bearer ${res.accessToken}`;
+      //   return axios(originalRequest);
+      // }
+      // clearSession();
       //   } catch {
       //     clearSession();
       //   }
       // }
 
-      if (error.response.data?.message || error.response.status !== 200 || error.response.status !== 201 ) {
+      if (
+        error.response.data?.message ||
+        error.response.status !== 200 ||
+        error.response.status !== 201
+      ) {
         handleResponseMessage(
           error.response.data?.message,
           error.response.status,
