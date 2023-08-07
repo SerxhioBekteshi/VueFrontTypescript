@@ -31,12 +31,12 @@ const handleResponseMessage = (
   }
   switch (notificationType) {
     case eNotificationType.Success:
-      //   $toast.open({
-      //     message: message,
-      //     type: "success",
-      //     position: 'top-right',
-      //     duration: 3000,
-      // });
+      $toast.open({
+        message: message,
+        type: "success",
+        position: "top-right",
+        duration: 3000,
+      });
 
       break;
     case eNotificationType.Error:

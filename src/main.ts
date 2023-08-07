@@ -13,10 +13,6 @@ import "@/assets/styles.scss";
 import axiosInit from "./initializers/axios";
 import Tooltip from "primevue/tooltip";
 import ToastService from "primevue/toastservice";
-
-// import BootstrapVue3 from 'bootstrap-vue-3'
-// import 'bootstrap/dist/css/bootstrap.css'
-// import 'bootstrap-vue-3/dist/bootstrap-vue-3.css'
 // import rootReducer from './reducers';
 
 // const store = configureStore({

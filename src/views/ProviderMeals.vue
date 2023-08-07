@@ -13,11 +13,15 @@ import axios from "axios";
 import { useToast } from "primevue/usetoast";
 import Accordion from "primevue/accordion";
 import AccordionTab from "primevue/accordiontab";
+import Toast from "primevue/toast";
+import Modal from "../components/Modal.vue";
+import { getNameById } from "../utils/functions";
 
 let meals = ref<any>([]);
+let formDrawerMode = ref<string>("");
+
 const fetchMeals = async () => {
   const res: any = await axios.get("/meal/get-all");
-  console.log(res, "res ");
   if (res.data) meals.value = res.data.meals;
 };
 
@@ -26,33 +30,6 @@ onMounted(async () => {
 });
 
 const toast = useToast();
-
-const products = ref<any>([
-  {
-    id: "1000",
-    code: "f230fh0g3",
-    name: "Bamboo Watch",
-    description: "Product Description",
-    image: "bamboo-watch.jpg",
-    price: 65,
-    category: "Accessories",
-    quantity: 24,
-    inventoryStatus: "INSTOCK",
-    rating: 5,
-  },
-  {
-    id: "1000",
-    code: "f230fh0g3",
-    name: "Bamboo Watch",
-    description: "Product Description",
-    image: "bamboo-watch.jpg",
-    price: 65,
-    category: "Accessories",
-    quantity: 24,
-    inventoryStatus: "INSTOCK",
-    rating: 5,
-  },
-]);
 
 const schema = yup.object().shape({
   ingredients: yup
@@ -94,6 +71,30 @@ const { field: dietCategory } = useField("dietCategory");
 const { field: calories } = useField("calories");
 const { field: intolerance } = useField("intolerance");
 
+const openDrawerFunction = () => {
+  formDrawerMode.value = "create";
+  openDrawer.value = true;
+};
+
+const handleCloseDrawer = () => {
+  openDrawer.value = false;
+};
+
+const handleDeleteMethod = (mealId: number) => {
+  console.log(mealId, "dawdwa");
+  mealIdToDelete.value = mealId;
+  // mealObject.value = mealObject;
+  openModalFunction();
+};
+
+const openModalFunction = () => {
+  openModal.value = true;
+};
+
+const handleModalClose = () => {
+  openModal.value = false;
+};
+
 // async function fetchData() {
 //   return new Promise((resolve) => {
 //     setTimeout(() => {
@@ -121,13 +122,19 @@ const { handleSubmit, defineInputBinds, resetForm } = useForm({
 });
 
 async function onSubmit(values: any) {
-  const res: any = await axios.post("/meal/post", values);
+  let res: any = null;
+
+  if (formDrawerMode.value === "create")
+    res = await axios.post("/meal/post", values);
+  else formDrawerMode.value === "edit";
+  res = await axios.put(`/meal/edit/${values.id}`, values);
+
   if (res.data.message) {
     toast.add({
       life: 3000,
-      detail: "INFO",
+      detail: res.data.message,
       severity: "success",
-      summary: res.data.message,
+      summary: "info",
     });
     handleCloseDrawer();
     resetForm();
@@ -137,6 +144,10 @@ async function onSubmit(values: any) {
 
 const layout = ref<"grid" | "list" | undefined>("grid"); // Define the type for 'layout'
 const openDrawer = ref<boolean>(false);
+const openModal = ref<boolean>(false);
+const mealIdToDelete = ref<number>(0);
+const mealObject = ref<any>(null);
+
 const drawerActions = ref<any[]>([
   {
     component: Button,
@@ -150,9 +161,55 @@ const drawerActions = ref<any[]>([
   },
   {
     component: Button,
-    props: { label: "Cancel", icon: "pi pi-check", severity: "info" },
+    props: {
+      label: "Cancel",
+      icon: "pi pi-check",
+      severity: "info",
+      onclick: handleCloseDrawer,
+    },
   },
 ]);
+
+const deleteMeal = async (mealId: number) => {
+  try {
+    const res: any = await axios.delete(`/meal/delete/${mealIdToDelete.value}`);
+    if (res.data.message) {
+      toast.add({
+        life: 3000,
+        detail: res.data.message,
+        severity: "error",
+        summary: "info",
+      });
+      handleModalClose();
+      fetchMeals();
+    }
+  } catch (err) {
+    console.log(err, "ERROR");
+  }
+};
+
+const modalActions = ref<any[]>([
+  {
+    component: Button,
+    props: {
+      type: "Submit",
+      icon: "pi pi-times",
+      label: "Delete",
+      severity: "danger",
+      onclick: deleteMeal,
+    },
+  },
+  {
+    component: Button,
+    props: {
+      label: "Cancel",
+      icon: "pi pi-check",
+      severity: "info",
+      onclick: handleModalClose,
+    },
+  },
+]);
+
 const getSeverity = (product: any) => {
   switch (product.inventoryStatus) {
     case "INSTOCK":
@@ -172,15 +229,8 @@ const getSeverity = (product: any) => {
 const fetchMeal = (meal: any) => {
   const mealObject = JSON.parse(JSON.stringify(meal));
   openDrawerFunction();
+  formDrawerMode.value = "edit";
   resetForm({ values: mealObject });
-};
-
-const openDrawerFunction = () => {
-  openDrawer.value = true;
-};
-
-const handleCloseDrawer = () => {
-  openDrawer.value = false;
 };
 </script>
 <template>
@@ -224,6 +274,7 @@ const handleCloseDrawer = () => {
                       slotProps.data.dietCategory
                     }}</span>
                   </span>
+
                   <Tag
                     :value="slotProps.data.inventoryStatus"
                     :severity="getSeverity(slotProps.data)"
@@ -262,10 +313,16 @@ const handleCloseDrawer = () => {
                   slotProps.data.dietCategory
                 }}</span>
               </div>
-              <Tag
-                :value="slotProps.data.inventoryStatus"
-                :severity="getSeverity(slotProps.data)"
-              ></Tag>
+              <div>
+                <Button
+                  @click="handleDeleteMethod(slotProps.data.id)"
+                  severity="danger"
+                  outlined
+                  icon="pi pi-delete-left"
+                  rounded
+                >
+                </Button>
+              </div>
             </div>
             <div class="flex flex-column align-items-center gap-3 py-5">
               <img
@@ -279,6 +336,11 @@ const handleCloseDrawer = () => {
                 readonly
                 :cancel="false"
               ></Rating>
+              <Tag
+                :value="slotProps.data.inventoryStatus"
+                :severity="getSeverity(slotProps.data)"
+                >HERE MIGHT BE THE STOCK FOR THE FOOD</Tag
+              >
             </div>
             <div class="flex align-items-center justify-content-between">
               <span class="text-2xl font-semibold"
@@ -453,6 +515,16 @@ const handleCloseDrawer = () => {
     </Drawer>
   </div>
   <Toast />
+
+  <Modal
+    v-model:openModal="openModal"
+    @handleClose="handleModalClose"
+    :title="'Delete meal'"
+    :actions="modalActions"
+  >
+    Are you sure you want to delete this meal
+    <!-- {{ getNameById(mealObject, mealIdToDelete) }} -->
+  </Modal>
 </template>
 <style scoped>
 .InputGroup {

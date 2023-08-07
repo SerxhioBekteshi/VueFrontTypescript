@@ -1,68 +1,75 @@
 <template>
-    <Dialog closeIcon="true" ref="target" v-bind:visible="openModal" position="top" :modal="true" header="SOME HEADER"
-        :draggable="true" :closable="true">
-        <template #closeicon>
-            <i @click="handleModalClose" class="pi pi-times" style="font-size: 1rem"></i>
-        </template>
-        <slot></slot>
-        <template #footer>
-            <div class="actionsAlign">
-                <div v-for="(action, index) in actions" :key="index">
-                    <component :is="action.component" v-bind="action.props"></component>
-                </div>
-            </div>
-        </template>
-    </Dialog>
+  <Dialog
+    closeIcon="true"
+    ref="target"
+    v-bind:visible="openModal"
+    position="top"
+    :modal="true"
+    :header="title"
+    :draggable="true"
+    :closable="true"
+  >
+    <template #closeicon>
+      <i
+        @click="handleModalClose"
+        class="pi pi-times"
+        style="font-size: 1rem"
+      ></i>
+    </template>
+    <slot></slot>
+    <template #footer>
+      <div class="actionsAlign">
+        <div v-for="(action, index) in actions" :key="index">
+          <component :is="action.component" v-bind="action.props"></component>
+        </div>
+      </div>
+    </template>
+  </Dialog>
 </template>
-  
-<script lang="ts">
-import Dialog from 'primevue/dialog';
-import Button from 'primevue/button'
-import { defineComponent, ref } from 'vue';
 
+<script lang="ts">
+import Dialog from "primevue/dialog";
+import Button from "primevue/button";
+import { defineComponent, ref } from "vue";
 
 export default defineComponent({
-    // eslint-disable-next-line vue/multi-word-component-names
-    name: 'Modal',
-    props: {
-        openModal: { type: Boolean, required: true },
-        title: { type: String, required: true },
-        actions: { type: Array as () => Action[], required: true },
+  // eslint-disable-next-line vue/multi-word-component-names
+  name: "Modal",
+  props: {
+    openModal: { type: Boolean, required: true },
+    title: { type: String, required: true },
+    actions: { type: Array as () => Action[], required: true },
+  },
+  components: {
+    Dialog,
+    Button,
+  },
+  methods: {
+    handleModalClose(): void {
+      this.$emit("handleClose");
     },
-    components: {
-        Dialog,
-        Button
-    },
-    methods:
-    {
-        handleModalClose(): void {
-            this.$emit('handleClose')
-        },
-    },
-    data() {
-        return {
-        }
-    }
-})
+  },
+  data() {
+    return {};
+  },
+});
 
 interface Action {
-    component: string;
-    props: Record<string, unknown>;
+  component: string;
+  props: Record<string, unknown>;
 }
-
 </script>
 <style>
 .actions {
-    position: absolute;
-    bottom: 0;
-    margin-bottom: 1rem;
-    width: 90%;
+  position: absolute;
+  bottom: 0;
+  margin-bottom: 1rem;
+  width: 90%;
 }
 
 .actionsAlign {
-    display: flex;
-    gap: 1rem;
-    justify-content: start;
-
+  display: flex;
+  gap: 1rem;
+  justify-content: start;
 }
 </style>
