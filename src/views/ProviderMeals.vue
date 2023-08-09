@@ -16,17 +16,34 @@ import AccordionTab from "primevue/accordiontab";
 import Toast from "primevue/toast";
 import Modal from "../components/Modal.vue";
 import { getNameById } from "../utils/functions";
+import InputPV from "primevue/inputtext";
+import Paginator from "primevue/paginator";
+import ProgressSpinner from "primevue/progressspinner";
+import Skeleton from "primevue/skeleton";
 
 let meals = ref<any>([]);
 let formDrawerMode = ref<string>("");
 
-const fetchMeals = async () => {
-  const res: any = await axios.get("/meal/get-all");
-  if (res.data) meals.value = res.data.meals;
+const currentPage = ref<number>(1);
+const pageSize = ref<any>(3);
+const totalItems = ref<number>(0);
+const isLoading = ref<boolean>(false);
+
+const fetchMeals = async (currentPage: number, pageSize: number) => {
+  isLoading.value = true;
+  const res: any = await axios.post("/meal/get-all", {
+    currentPage: currentPage,
+    pageSize: pageSize,
+  });
+  if (res.data) {
+    meals.value = res.data.meals;
+    totalItems.value = res.data.totalItems;
+  }
+  isLoading.value = false;
 };
 
 onMounted(async () => {
-  await fetchMeals();
+  await fetchMeals(currentPage.value, pageSize.value);
 });
 
 const toast = useToast();
@@ -126,8 +143,8 @@ async function onSubmit(values: any) {
 
   if (formDrawerMode.value === "create")
     res = await axios.post("/meal/post", values);
-  else formDrawerMode.value === "edit";
-  res = await axios.put(`/meal/edit/${values.id}`, values);
+  else if (formDrawerMode.value === "edit")
+    res = await axios.put(`/meal/edit/${values.id}`, values);
 
   if (res.data.message) {
     toast.add({
@@ -138,7 +155,7 @@ async function onSubmit(values: any) {
     });
     handleCloseDrawer();
     resetForm();
-    fetchMeals();
+    fetchMeals(currentPage.value, pageSize.value);
   }
 }
 
@@ -181,7 +198,7 @@ const deleteMeal = async (mealId: number) => {
         summary: "info",
       });
       handleModalClose();
-      fetchMeals();
+      fetchMeals(currentPage.value, pageSize.value);
     }
   } catch (err) {
     console.log(err, "ERROR");
@@ -226,11 +243,29 @@ const getSeverity = (product: any) => {
   }
 };
 
+const handleKeyUp = (e: any) => {
+  console.log(e.target.value);
+  const res: any = axios.post("/meal/search", { searchValue: e.target.value });
+  if (res.data.data) {
+    meals.value = res.data.data;
+  }
+};
+
 const fetchMeal = (meal: any) => {
   const mealObject = JSON.parse(JSON.stringify(meal));
   openDrawerFunction();
   formDrawerMode.value = "edit";
   resetForm({ values: mealObject });
+};
+
+const handlePageChange = (event: any) => {
+  currentPage.value = event.page + 1;
+  fetchMeals(event.page + 1, pageSize.value);
+};
+
+const handleRowDropdownChange = (rowsPerPage: any) => {
+  pageSize.value = rowsPerPage;
+  fetchMeals(currentPage.value, rowsPerPage);
 };
 </script>
 <template>
@@ -239,9 +274,44 @@ const fetchMeal = (meal: any) => {
       <template #header>
         <div class="flex justify-content-between">
           <Button @click="openDrawerFunction"> Add Meal </Button>
+          <!-- <div class="p-inputgroup flex-1">
+            <span class="p-inputgroup-addon">
+              <i class="pi pi-user"></i>
+            </span>
+            <InputPV placeholder="Search..." @keyup.enter="handleKeyUp" />
+          </div> -->
+
           <DataViewLayoutOptions v-model="layout" />
         </div>
+        <div style="margin-top: 1rem">
+          <Paginator
+            :template="{
+              '640px': 'PrevPageLink CurrentPageReport NextPageLink ',
+              '960px':
+                'FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink ', //jumpToPageDropdown
+              '1300px':
+                'FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink ',
+              default:
+                'FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown',
+            }"
+            :rows="pageSize"
+            :totalRecords="totalItems"
+            :rowsPerPageOptions="[3, 5, 10]"
+            :rowPerPageDropdown="{ class: 'custom-dropdown-style' }"
+            @page="handlePageChange"
+            @update:rows="handleRowDropdownChange"
+            :pt="{
+              pageButton: ({ props, state, context }) => ({
+                class: context.active ? 'bg-primary' : undefined,
+              }),
+            }"
+          >
+          </Paginator>
+        </div>
       </template>
+      <!-- <div v-if="isLoading">
+        <ProgressSpinner />
+      </div> -->
 
       <template #list="slotProps">
         <div class="col-12">
@@ -300,84 +370,116 @@ const fetchMeal = (meal: any) => {
           </div>
         </div>
       </template>
-
       <template #grid="slotProps">
         <div class="col-12 sm:col-6 lg:col-12 xl:col-4 p-2">
           <div class="p-4 border-1 surface-border surface-card border-round">
-            <div
-              class="flex flex-wrap align-items-center justify-content-between gap-2"
-            >
-              <div class="flex align-items-center gap-2">
-                <i class="pi pi-code"></i>
-                <span class="font-semibold">{{
-                  slotProps.data.dietCategory
-                }}</span>
+            <div v-if="isLoading">
+              <div
+                class="flex flex-wrap align-items-center justify-content-between gap-2"
+              >
+                <Skeleton class="w-6rem border-round h-2rem" />
+                <Skeleton class="w-3rem border-round h-1rem" />
+              </div>
+              <div class="flex flex-column align-items-center gap-3 py-5">
+                <Skeleton class="w-9 shadow-2 border-round h-10rem" />
+                <Skeleton class="w-8rem border-round h-2rem" />
+                <Skeleton class="w-6rem border-round h-1rem" />
+              </div>
+              <div class="flex align-items-center justify-content-between">
+                <Skeleton class="w-4rem border-round h-2rem" />
+                <Skeleton shape="circle" class="w-3rem h-3rem" />
+              </div>
+              <div class="flex align-items-center justify-content-between">
+                <Skeleton shape="circle" class="w-3rem h-3rem" />
               </div>
               <div>
+                <Skeleton class="w-9 shadow-2 border-round h-2rem" />
+                <Skeleton class="w-9 shadow-2 border-round h-2rem" />
+                <Skeleton class="w-9 shadow-2 border-round h-2rem" />
+              </div>
+            </div>
+            <div v-else>
+              <div
+                class="flex flex-wrap align-items-center justify-content-between gap-2"
+              >
+                <div class="flex align-items-center gap-2">
+                  <i class="pi pi-code"></i>
+                  <span class="font-semibold">{{
+                    slotProps.data.dietCategory
+                  }}</span>
+                </div>
+                <div>
+                  <Button
+                    @click="handleDeleteMethod(slotProps.data.id)"
+                    severity="danger"
+                    outlined
+                    icon="pi pi-delete-left"
+                    rounded
+                  >
+                  </Button>
+                </div>
+              </div>
+
+              <div class="flex flex-column align-items-center gap-3 py-5">
+                <img
+                  class="w-9 shadow-2 border-round"
+                  :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.data.image}`"
+                  :alt="slotProps.data.name"
+                />
+                <div class="text-2xl font-bold">{{ slotProps.data.name }}</div>
+                <Rating
+                  :modelValue="slotProps.data.rating"
+                  readonly
+                  :cancel="false"
+                ></Rating>
+                <Tag
+                  :value="slotProps.data.inventoryStatus"
+                  :severity="getSeverity(slotProps.data)"
+                  >HERE MIGHT BE THE STOCK FOR THE FOOD</Tag
+                >
+              </div>
+
+              <div class="flex align-items-center justify-content-between">
+                <span class="text-2xl font-semibold"
+                  >{{ slotProps.data.calories }} Kj</span
+                >
                 <Button
-                  @click="handleDeleteMethod(slotProps.data.id)"
-                  severity="danger"
-                  outlined
-                  icon="pi pi-delete-left"
+                  @click="fetchMeal(slotProps.data)"
+                  severity="warning"
+                  icon="pi pi-file-edit"
                   rounded
                 >
                 </Button>
               </div>
-            </div>
-            <div class="flex flex-column align-items-center gap-3 py-5">
-              <img
-                class="w-9 shadow-2 border-round"
-                :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.data.image}`"
-                :alt="slotProps.data.name"
-              />
-              <div class="text-2xl font-bold">{{ slotProps.data.name }}</div>
-              <Rating
-                :modelValue="slotProps.data.rating"
-                readonly
-                :cancel="false"
-              ></Rating>
-              <Tag
-                :value="slotProps.data.inventoryStatus"
-                :severity="getSeverity(slotProps.data)"
-                >HERE MIGHT BE THE STOCK FOR THE FOOD</Tag
-              >
-            </div>
-            <div class="flex align-items-center justify-content-between">
-              <span class="text-2xl font-semibold"
-                >{{ slotProps.data.calories }} Kj</span
-              >
-              <Button
-                @click="fetchMeal(slotProps.data)"
-                severity="warning"
-                icon="pi pi-file-edit"
-                rounded
-              >
-              </Button>
-            </div>
 
-            <div :style="{ marginTop: '1rem' }">
-              <span :style="{ fontWeight: 'bold' }"> Carbon Footprint: </span>
-              {{ slotProps.data.carbonFootprint }} %
-            </div>
+              <div>
+                <div :style="{ marginTop: '1rem' }">
+                  <span :style="{ fontWeight: 'bold' }">
+                    Carbon Footprint:
+                  </span>
+                  {{ slotProps.data.carbonFootprint }} %
+                </div>
 
-            <div :style="{ marginTop: '1rem' }">
-              <span :style="{ fontWeight: 'bold' }"> Intolerance: </span>
-              {{ slotProps.data.intolerance }}
-            </div>
-            <div :style="{ marginTop: '1rem' }">
-              <Accordion :activeIndex="0">
-                <AccordionTab :key="'Ingredients'" :header="'Ingredients '">
-                  <div
-                    v-for="ingredient in slotProps.data.ingredients"
-                    v-bind:key="ingredient.id"
-                  >
-                    <ul>
-                      <li>ingredient: {{ ingredient.name }}</li>
-                      <li>amount: {{ ingredient.portion }}</li>
-                    </ul>
-                  </div>
-                </AccordionTab>
-              </Accordion>
+                <div :style="{ marginTop: '1rem' }">
+                  <span :style="{ fontWeight: 'bold' }"> Intolerance: </span>
+                  {{ slotProps.data.intolerance }}
+                </div>
+                <div :style="{ marginTop: '1rem' }">
+                  <Accordion :activeIndex="0">
+                    <AccordionTab :key="'Ingredients'" :header="'Ingredients '">
+                      <div
+                        v-for="ingredient in slotProps.data.ingredients"
+                        v-bind:key="ingredient.id"
+                      >
+                        <ul>
+                          <li>ingredient: {{ ingredient.name }}</li>
+                          <li>amount: {{ ingredient.portion }}</li>
+                        </ul>
+                      </div>
+                    </AccordionTab>
+                  </Accordion>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -507,7 +609,7 @@ const fetchMeal = (meal: any) => {
         <Button
           severity="success"
           style="margin-top: 1rem"
-          @click="push({ email: '', portion: null })"
+          @click="push({ name: '', portion: null })"
         >
           Add ingredient
         </Button>
@@ -536,5 +638,16 @@ const fetchMeal = (meal: any) => {
 
 ::v-deep .ingredients {
   all: unset !important;
+}
+
+::v-deep .p-paginator {
+  background-color: transparent !important;
+}
+::v-deep .custom-dropdown-style {
+  /* Your custom styles for the dropdown go here */
+  background-color: lightgray;
+  border: 1px solid gray;
+  padding: 5px;
+  border-radius: 4px;
 }
 </style>
