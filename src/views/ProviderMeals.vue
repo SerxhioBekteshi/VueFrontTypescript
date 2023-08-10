@@ -18,8 +18,9 @@ import Modal from "../components/Modal.vue";
 import { getNameById } from "../utils/functions";
 import InputPV from "primevue/inputtext";
 import Paginator from "primevue/paginator";
-import ProgressSpinner from "primevue/progressspinner";
 import Skeleton from "primevue/skeleton";
+import InlineMessage from "primevue/inlinemessage";
+import FileUpload from "primevue/fileupload";
 
 let meals = ref<any>([]);
 let formDrawerMode = ref<string>("");
@@ -28,6 +29,7 @@ const currentPage = ref<number>(1);
 const pageSize = ref<any>(3);
 const totalItems = ref<number>(0);
 const isLoading = ref<boolean>(false);
+const uploadPhotoForm = ref<boolean>(false);
 
 const fetchMeals = async (currentPage: number, pageSize: number) => {
   isLoading.value = true;
@@ -165,6 +167,14 @@ const openModal = ref<boolean>(false);
 const mealIdToDelete = ref<number>(0);
 const mealObject = ref<any>(null);
 
+const handlePhotoUpload = () => {
+  try {
+    const res: any = axios.put(`/meal/uploadImage/${mealIdToDelete.value}`);
+  } catch (err) {
+    console.log(err, "ERR");
+  }
+};
+
 const drawerActions = ref<any[]>([
   {
     component: Button,
@@ -243,12 +253,11 @@ const getSeverity = (product: any) => {
   }
 };
 
-const handleKeyUp = (e: any) => {
-  console.log(e.target.value);
-  const res: any = axios.post("/meal/search", { searchValue: e.target.value });
-  if (res.data.data) {
-    meals.value = res.data.data;
-  }
+const onAdvancedUpload = (event: any) => {
+  console.log(event, "VALUE");
+  // const formData = new FormData();
+  // formData.append("file", event.target.files[0]);
+  // console.log(formData, "awdawdawdawdawd");
 };
 
 const fetchMeal = (meal: any) => {
@@ -267,6 +276,14 @@ const handleRowDropdownChange = (rowsPerPage: any) => {
   pageSize.value = rowsPerPage;
   fetchMeals(currentPage.value, rowsPerPage);
 };
+
+const uploadPhoto = (mealId: number) => {
+  uploadPhotoForm.value = true;
+  mealIdToDelete.value = mealId;
+  openDrawerFunction();
+};
+
+const fileUploadRef = ref<any>(null);
 </script>
 <template>
   <div class="card">
@@ -363,6 +380,7 @@ const handleRowDropdownChange = (rowsPerPage: any) => {
                   severity="warning"
                   icon="pi pi-file-edit"
                   rounded
+                  outlined
                 >
                 </Button>
               </div>
@@ -389,13 +407,12 @@ const handleRowDropdownChange = (rowsPerPage: any) => {
                 <Skeleton class="w-4rem border-round h-2rem" />
                 <Skeleton shape="circle" class="w-3rem h-3rem" />
               </div>
-              <div class="flex align-items-center justify-content-between">
-                <Skeleton shape="circle" class="w-3rem h-3rem" />
+              <div class="flex flex-column gap-3 mb-3">
+                <Skeleton class="w-9 shadow-2 border-round h-2rem" />
+                <Skeleton class="w-9 shadow-2 border-round h-2rem" />
               </div>
               <div>
-                <Skeleton class="w-9 shadow-2 border-round h-2rem" />
-                <Skeleton class="w-9 shadow-2 border-round h-2rem" />
-                <Skeleton class="w-9 shadow-2 border-round h-2rem" />
+                <Skeleton class="shadow-2 border-round h-10rem" />
               </div>
             </div>
             <div v-else>
@@ -410,11 +427,21 @@ const handleRowDropdownChange = (rowsPerPage: any) => {
                 </div>
                 <div>
                   <Button
+                    @click="uploadPhoto(slotProps.data.id)"
+                    severity="help"
+                    text
+                    rounded
+                    icon="pi pi-file-import"
+                    style="width: 2.5rem"
+                  >
+                  </Button>
+                  <Button
                     @click="handleDeleteMethod(slotProps.data.id)"
                     severity="danger"
-                    outlined
-                    icon="pi pi-delete-left"
+                    text
                     rounded
+                    icon="pi pi-delete-left"
+                    style="width: 2.5rem"
                   >
                   </Button>
                 </div>
@@ -448,6 +475,7 @@ const handleRowDropdownChange = (rowsPerPage: any) => {
                   severity="warning"
                   icon="pi pi-file-edit"
                   rounded
+                  outlined
                 >
                 </Button>
               </div>
@@ -471,10 +499,17 @@ const handleRowDropdownChange = (rowsPerPage: any) => {
                         v-for="ingredient in slotProps.data.ingredients"
                         v-bind:key="ingredient.id"
                       >
-                        <ul>
-                          <li>ingredient: {{ ingredient.name }}</li>
-                          <li>amount: {{ ingredient.portion }}</li>
-                        </ul>
+                        <div v-if="slotProps.data.ingredients.length !== 0">
+                          <ul>
+                            <li>ingredient: {{ ingredient.name }}</li>
+                            <li>amount: {{ ingredient.portion }}</li>
+                          </ul>
+                        </div>
+                        <div v-else>
+                          <InlineMessage severity="error">
+                            No ingredients
+                          </InlineMessage>
+                        </div>
                       </div>
                     </AccordionTab>
                   </Accordion>
@@ -494,126 +529,151 @@ const handleRowDropdownChange = (rowsPerPage: any) => {
       :title="'Add ingredients'"
       :actions="drawerActions"
     >
-      <div style="margin-top: 1rem">
-        <InputText
-          name="name"
-          :label="'Meal Name'"
-          id="name"
-          placeholder="Meal Name"
-          v-bind="name"
-        />
-      </div>
-
-      <div style="margin-top: 1rem">
-        <InputText
-          name="cousine"
-          :label="'Cousine'"
-          id="cousine"
-          placeholder="Cousine"
-          v-bind="cousine"
-        />
-      </div>
-
-      <div style="margin-top: 1rem">
-        <InputText
-          :label="'Diet Category'"
-          name="dietCategory"
-          id="dietCategory"
-          placeholder="Diet category"
-          v-bind="dietCategory"
-        />
-      </div>
-
-      <div style="margin-top: 1rem">
-        <InputText
-          :label="'Intolerance'"
-          name="intolerance"
-          id="intolerance"
-          placeholder="Intolerance"
-          v-bind="intolerance"
-        />
-      </div>
-
-      <div style="margin-top: 1rem">
-        <InputText
-          :label="'Calories'"
-          name="calories"
-          type="number"
-          id="calories"
-          placeholder="Calories"
-          v-bind="calories"
-        />
-      </div>
-
-      <div style="margin-top: 1rem">
-        <InputText
-          :label="'Carbon footprint'"
-          name="carbonFootprint"
-          type="number"
-          id="carbonFootprint"
-          placeholder="Carbon footprint"
-          v-bind="carbonFootprint"
-        />
-      </div>
-
-      <FieldArray
-        class="ingredients"
-        name="ingredients"
-        v-slot="{ fields, push, remove }"
-      >
-        <fieldset v-for="(field, idx) in fields" :key="field.key">
-          <legend>Ingredient #{{ idx }}</legend>
-
-          <div class="grid">
-            <div
-              class="col-9"
-              :style="{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '1rem',
-              }"
-            >
-              <div :style="{ display: 'flex', flexDirection: 'column' }">
-                <label :for="`name_${idx}`">Name</label>
-                <InputText
-                  :type="'text'"
-                  :id="`name_${idx}`"
-                  :name="`ingredients[${idx}].name`"
-                />
-                <!-- <ErrorMessage :name="`ingredients[${idx}].name`" /> -->
-              </div>
-
-              <div :style="{ display: 'flex', flexDirection: 'column' }">
-                <label :for="`portion_${idx}`">Portion</label>
-                <InputText
-                  :type="'number'"
-                  :id="`portion_${idx}`"
-                  :name="`ingredients[${idx}].portion`"
-                />
-                <!-- <ErrorMessage :name="`ingredients[${idx}].portion`" /> -->
-              </div>
-            </div>
-
-            <div class="col-3" style="display: flex; align-items: center">
-              <Button
-                icon="pi pi-times"
-                rounded
-                severity="danger"
-                @click="remove(idx)"
-                :disabled="fields.length <= 1"
-              />
-            </div>
-          </div>
-        </fieldset>
-
-        <Button
-          severity="success"
-          style="margin-top: 1rem"
-          @click="push({ name: '', portion: null })"
+      <div v-if="uploadPhotoForm">
+        <FileUpload
+          url="../meal/uploadImage/test"
+          :multiple="false"
+          accept="image/*"
+          :maxFileSize="1000000"
+          @before-send="onAdvancedUpload($event)"
         >
-          Add ingredient
-        </Button>
-      </FieldArray>
+          <template #empty>
+            <p>Drag and drop files to here to upload.</p>
+          </template>
+        </FileUpload>
+
+        <!-- <FileUpload
+          class="uploaded-image"
+          ref="fileUploadRef"
+          @upload="onAdvancedUpload($event)"
+          :multiple="true"
+          accept="image/*"
+          :maxFileSize="1000000"
+        >
+          <template #empty> </template>
+        </FileUpload> -->
+      </div>
+      <div v-else>
+        <div style="margin-top: 1rem">
+          <InputText
+            name="name"
+            :label="'Meal Name'"
+            id="name"
+            placeholder="Meal Name"
+            v-bind="name"
+          />
+        </div>
+
+        <div style="margin-top: 1rem">
+          <InputText
+            name="cousine"
+            :label="'Cousine'"
+            id="cousine"
+            placeholder="Cousine"
+            v-bind="cousine"
+          />
+        </div>
+
+        <div style="margin-top: 1rem">
+          <InputText
+            :label="'Diet Category'"
+            name="dietCategory"
+            id="dietCategory"
+            placeholder="Diet category"
+            v-bind="dietCategory"
+          />
+        </div>
+
+        <div style="margin-top: 1rem">
+          <InputText
+            :label="'Intolerance'"
+            name="intolerance"
+            id="intolerance"
+            placeholder="Intolerance"
+            v-bind="intolerance"
+          />
+        </div>
+
+        <div style="margin-top: 1rem">
+          <InputText
+            :label="'Calories'"
+            name="calories"
+            type="number"
+            id="calories"
+            placeholder="Calories"
+            v-bind="calories"
+          />
+        </div>
+
+        <div style="margin-top: 1rem">
+          <InputText
+            :label="'Carbon footprint'"
+            name="carbonFootprint"
+            type="number"
+            id="carbonFootprint"
+            placeholder="Carbon footprint"
+            v-bind="carbonFootprint"
+          />
+        </div>
+        <FieldArray
+          class="ingredients"
+          name="ingredients"
+          v-slot="{ fields, push, remove }"
+        >
+          <fieldset v-for="(field, idx) in fields" :key="field.key">
+            <legend>Ingredient #{{ idx }}</legend>
+
+            <div class="grid">
+              <div
+                class="col-9"
+                :style="{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1rem',
+                }"
+              >
+                <div :style="{ display: 'flex', flexDirection: 'column' }">
+                  <label :for="`name_${idx}`">Name</label>
+                  <InputText
+                    :type="'text'"
+                    :id="`name_${idx}`"
+                    :name="`ingredients[${idx}].name`"
+                  />
+                  <!-- <ErrorMessage :name="`ingredients[${idx}].name`" /> -->
+                </div>
+
+                <div :style="{ display: 'flex', flexDirection: 'column' }">
+                  <label :for="`portion_${idx}`">Portion</label>
+                  <InputText
+                    :type="'number'"
+                    :id="`portion_${idx}`"
+                    :name="`ingredients[${idx}].portion`"
+                  />
+                  <!-- <ErrorMessage :name="`ingredients[${idx}].portion`" /> -->
+                </div>
+              </div>
+
+              <div class="col-3" style="display: flex; align-items: center">
+                <Button
+                  icon="pi pi-times"
+                  rounded
+                  severity="danger"
+                  @click="remove(idx)"
+                  :disabled="fields.length <= 1"
+                />
+              </div>
+            </div>
+          </fieldset>
+
+          <Button
+            severity="success"
+            style="margin-top: 1rem"
+            @click="push({ name: '', portion: null })"
+          >
+            Add ingredient
+          </Button>
+        </FieldArray>
+      </div>
     </Drawer>
   </div>
   <Toast />
@@ -649,5 +709,10 @@ const handleRowDropdownChange = (rowsPerPage: any) => {
   border: 1px solid gray;
   padding: 5px;
   border-radius: 4px;
+}
+
+::v-deep .p-fileupload-file-thumbnail {
+  width: 100%;
+  height: 300px;
 }
 </style>
