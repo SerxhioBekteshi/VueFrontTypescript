@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed, nextTick } from "vue";
 import * as yup from "yup";
 import DataView from "primevue/dataview";
 import DataViewLayoutOptions from "primevue/dataviewlayoutoptions"; // optional
@@ -30,12 +30,19 @@ const pageSize = ref<any>(3);
 const totalItems = ref<number>(0);
 const isLoading = ref<boolean>(false);
 const uploadPhotoForm = ref<boolean>(false);
+const blobImage = ref<string>("");
+const searchValue = ref<string>("");
 
-const fetchMeals = async (currentPage: number, pageSize: number) => {
+const fetchMeals = async (
+  currentPage: number,
+  pageSize: number,
+  ssV: string
+) => {
   isLoading.value = true;
   const res: any = await axios.post("/meal/get-all", {
     currentPage: currentPage,
     pageSize: pageSize,
+    searchValue: "",
   });
   if (res.data) {
     meals.value = res.data.meals;
@@ -45,7 +52,7 @@ const fetchMeals = async (currentPage: number, pageSize: number) => {
 };
 
 onMounted(async () => {
-  await fetchMeals(currentPage.value, pageSize.value);
+  await fetchMeals(currentPage.value, pageSize.value, searchValue.value);
 });
 
 const toast = useToast();
@@ -97,12 +104,11 @@ const openDrawerFunction = () => {
 
 const handleCloseDrawer = () => {
   openDrawer.value = false;
+  uploadPhotoForm.value = false;
 };
 
 const handleDeleteMethod = (mealId: number) => {
-  console.log(mealId, "dawdwa");
   mealIdToDelete.value = mealId;
-  // mealObject.value = mealObject;
   openModalFunction();
 };
 
@@ -132,7 +138,6 @@ const initialData = {
       portion: null,
     },
   ],
-  name: "",
 };
 
 const { handleSubmit, defineInputBinds, resetForm } = useForm({
@@ -157,7 +162,7 @@ async function onSubmit(values: any) {
     });
     handleCloseDrawer();
     resetForm();
-    fetchMeals(currentPage.value, pageSize.value);
+    fetchMeals(currentPage.value, pageSize.value, "");
   }
 }
 
@@ -165,15 +170,7 @@ const layout = ref<"grid" | "list" | undefined>("grid"); // Define the type for 
 const openDrawer = ref<boolean>(false);
 const openModal = ref<boolean>(false);
 const mealIdToDelete = ref<number>(0);
-const mealObject = ref<any>(null);
-
-const handlePhotoUpload = () => {
-  try {
-    const res: any = axios.put(`/meal/uploadImage/${mealIdToDelete.value}`);
-  } catch (err) {
-    console.log(err, "ERR");
-  }
-};
+const mealImage = ref<any>(null);
 
 const drawerActions = ref<any[]>([
   {
@@ -208,7 +205,7 @@ const deleteMeal = async (mealId: number) => {
         summary: "info",
       });
       handleModalClose();
-      fetchMeals(currentPage.value, pageSize.value);
+      fetchMeals(currentPage.value, pageSize.value, searchValue.value);
     }
   } catch (err) {
     console.log(err, "ERROR");
@@ -253,37 +250,67 @@ const getSeverity = (product: any) => {
   }
 };
 
-const onAdvancedUpload = (event: any) => {
-  console.log(event, "VALUE");
-  // const formData = new FormData();
-  // formData.append("file", event.target.files[0]);
-  // console.log(formData, "awdawdawdawdawd");
+const onAdvancedUpload = async (event: any) => {
+  const file = event.files[0];
+  const formData = new FormData();
+  formData.append("image", file);
+
+  try {
+    const res: any = await axios.put(
+      `/meal/uploadImage/${mealIdToDelete.value}`,
+      formData
+    );
+
+    if (res.data.message) {
+      toast.add({
+        life: 3000,
+        detail: res.data.message,
+        severity: "success",
+        summary: "info",
+      });
+      handleCloseDrawer();
+      fetchMeals(currentPage.value, pageSize.value, "");
+    }
+  } catch (err) {
+    console.log(err, "ERR");
+  }
 };
 
 const fetchMeal = (meal: any) => {
-  const mealObject = JSON.parse(JSON.stringify(meal));
+  const mealObjectToAdd = JSON.parse(JSON.stringify(meal));
   openDrawerFunction();
   formDrawerMode.value = "edit";
-  resetForm({ values: mealObject });
+  resetForm({ values: mealObjectToAdd });
 };
 
 const handlePageChange = (event: any) => {
   currentPage.value = event.page + 1;
-  fetchMeals(event.page + 1, pageSize.value);
+  fetchMeals(event.page + 1, pageSize.value, searchValue.value);
 };
 
 const handleRowDropdownChange = (rowsPerPage: any) => {
   pageSize.value = rowsPerPage;
-  fetchMeals(currentPage.value, rowsPerPage);
+  fetchMeals(currentPage.value, rowsPerPage, searchValue.value);
 };
 
-const uploadPhoto = (mealId: number) => {
+const uploadPhoto = (mealId: number, imageMeal: any) => {
   uploadPhotoForm.value = true;
+  mealImage.value = imageMeal;
+  console.log(mealImage.value);
   mealIdToDelete.value = mealId;
   openDrawerFunction();
 };
 
-const fileUploadRef = ref<any>(null);
+const handleFileSelection = (event: any) => {
+  blobImage.value = event.files[event.files.length - 1].objectURL;
+};
+
+const handleSearchValue = (event: any) => {
+  searchValue.value = event.target.value;
+  fetchMeals(currentPage.value, pageSize.value, event.target.value);
+};
+
+// const uploadUrl = computed(() => `../meal/uploadImage/${mealIdToDelete.value}`);
 </script>
 <template>
   <div class="card">
@@ -291,12 +318,14 @@ const fileUploadRef = ref<any>(null);
       <template #header>
         <div class="flex justify-content-between">
           <Button @click="openDrawerFunction"> Add Meal </Button>
-          <!-- <div class="p-inputgroup flex-1">
-            <span class="p-inputgroup-addon">
-              <i class="pi pi-user"></i>
-            </span>
-            <InputPV placeholder="Search..." @keyup.enter="handleKeyUp" />
-          </div> -->
+          <span class="p-input-icon-left">
+            <i class="pi pi-search" />
+            <InputPV
+              v-model="searchValue"
+              @change="handleSearchValue"
+              placeholder="Search"
+            />
+          </span>
 
           <DataViewLayoutOptions v-model="layout" />
         </div>
@@ -427,7 +456,9 @@ const fileUploadRef = ref<any>(null);
                 </div>
                 <div>
                   <Button
-                    @click="uploadPhoto(slotProps.data.id)"
+                    @click="
+                      uploadPhoto(slotProps.data.id, slotProps.data.image)
+                    "
                     severity="help"
                     text
                     rounded
@@ -450,7 +481,7 @@ const fileUploadRef = ref<any>(null);
               <div class="flex flex-column align-items-center gap-3 py-5">
                 <img
                   class="w-9 shadow-2 border-round"
-                  :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.data.image}`"
+                  :src="`http://localhost:8082/${slotProps.data.image}`"
                   :alt="slotProps.data.name"
                 />
                 <div class="text-2xl font-bold">{{ slotProps.data.name }}</div>
@@ -531,27 +562,54 @@ const fileUploadRef = ref<any>(null);
     >
       <div v-if="uploadPhotoForm">
         <FileUpload
-          url="../meal/uploadImage/test"
+          @select="handleFileSelection($event)"
           :multiple="false"
           accept="image/*"
           :maxFileSize="1000000"
-          @before-send="onAdvancedUpload($event)"
+          :custom-upload="true"
+          @uploader="onAdvancedUpload($event)"
         >
-          <template #empty>
+          <template v-if="!mealImage" #empty>
             <p>Drag and drop files to here to upload.</p>
           </template>
-        </FileUpload>
+          <template #content>
+            <div v-if="mealImage" class="relative">
+              <Button
+                icon="pi pi-times"
+                rounded
+                text
+                severity="danger"
+                class="absolute top-0 right-0"
+              />
 
-        <!-- <FileUpload
-          class="uploaded-image"
-          ref="fileUploadRef"
-          @upload="onAdvancedUpload($event)"
-          :multiple="true"
-          accept="image/*"
-          :maxFileSize="1000000"
-        >
-          <template #empty> </template>
-        </FileUpload> -->
+              <img
+                class="shadow-2 border-round"
+                style="width: 100%; height: 300px"
+                :src="
+                  blobImage && blobImage.includes('blob')
+                    ? blobImage
+                    : `http://localhost:8082/${mealImage}`
+                "
+                :alt="`Meal image`"
+              />
+            </div>
+            <!-- <div v-else>
+              <Button
+                icon="pi pi-times"
+                rounded
+                text
+                severity="danger"
+                class="absolute top-0 right-0"
+              />
+              <img
+                class="shadow-2 border-round"
+                style="width: 100%"
+                :src="`http://localhost:8082/${blobImage}`"
+                :alt="`Meal image`"
+              />
+            </div> -->
+          </template>
+        </FileUpload>
       </div>
       <div v-else>
         <div style="margin-top: 1rem">
@@ -711,8 +769,8 @@ const fileUploadRef = ref<any>(null);
   border-radius: 4px;
 }
 
-::v-deep .p-fileupload-file-thumbnail {
+/* ::v-deep .p-fileupload-file-thumbnail {
   width: 100%;
   height: 300px;
-}
+} */
 </style>
