@@ -90,12 +90,12 @@ const schema = yup.object().shape({
     .label("Intolerance"),
 });
 
-const { field: name } = useField("name");
-const { field: cousine } = useField("cousine");
-const { field: carbonFootprint } = useField("carbonFootprint");
-const { field: dietCategory } = useField("dietCategory");
-const { field: calories } = useField("calories");
-const { field: intolerance } = useField("intolerance");
+const { value: name } = useField<any>("name");
+const { value: cousine } = useField("cousine");
+const { value: carbonFootprint } = useField("carbonFootprint");
+const { value: dietCategory } = useField("dietCategory");
+const { value: calories } = useField("calories");
+const { value: intolerance } = useField("intolerance");
 
 const openDrawerFunction = () => {
   formDrawerMode.value = "create";

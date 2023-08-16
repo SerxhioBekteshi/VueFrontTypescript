@@ -46,41 +46,29 @@ class AuthManager {
     // navigate: any
     router: any
   ): Promise<void> {
-    const res = await axios.post("auth/login", credentials);
+    const res = await axios.post("user/login", credentials);
     const data = res?.data;
     let response: any = null;
-    if (data?.token || data?.refreshToken) {
-      const userInfo = AuthManager.parseJwt(data.token);
-
+    if (data?.access_token || data?.refreshToken) {
+      const userInfo = AuthManager.parseJwt(data.access_token);
       response = {
-        accessToken: data.token,
+        accessToken: data.access_token,
         // refreshToken: data.refreshToken,
-        user: {
-          email: userInfo.email,
-          id: userInfo.userId,
-          role: userInfo.roleName,
-          firstName: userInfo.name,
-          roleId: userInfo.roleId
-          // lastName: userInfo.lastName,
-        },
+        user: userInfo.user,
       };
     }
-    if (response.user && response.accessToken || response.refreshToken) {
-     
+    if ((response.user && response.accessToken) || response.refreshToken) {
       JwtManager.setAccessToken(response.accessToken);
-      console.log(response, 'RESPONSE')
       // JwtManager.setRefreshToken(response.refreshToken);
       // dispatch(setUser(response.user));
-   
+
       if (response.user.roleId === eRoleType.Admin) {
         router.push("/admin/dashboard");
-      } else if ( response.user.roleId === eRoleType.Provider){
+      } else if (response.user.roleId === eRoleType.Provider) {
         router.push("/provider/dashboard");
+      } else {
+        router.push("/");
       }
-      else 
-        {
-          router.push("/");
-        }
     }
   }
 
