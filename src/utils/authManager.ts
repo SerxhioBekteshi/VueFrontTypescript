@@ -63,9 +63,9 @@ class AuthManager {
       // dispatch(setUser(response.user));
 
       if (response.user.roleId === eRoleType.Admin) {
-        router.push("/admin/dashboard");
+        router.push("/admin");
       } else if (response.user.roleId === eRoleType.Provider) {
-        router.push("/provider/dashboard");
+        router.push("/provider");
       } else {
         router.push("/");
       }

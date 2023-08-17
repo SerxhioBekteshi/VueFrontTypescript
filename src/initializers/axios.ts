@@ -17,22 +17,19 @@ const clearSession = () => {
 };
 
 const handleResponseMessage = (
-  message: string,
-  status: number,
-  statusText: string,
+  response: any,
   notificationType: any,
   useToast: any
 ) => {
   const $toast = useToast();
-  console.log(message, "awdawd");
-  if (message === "jwt expired") {
+  if (response === "jwt expired") {
     clearSession();
     return;
   }
   switch (notificationType) {
     case eNotificationType.Success:
       $toast.open({
-        message: message,
+        message: response.message,
         type: "success",
         position: "top-right",
         duration: 3000,
@@ -41,7 +38,7 @@ const handleResponseMessage = (
       break;
     case eNotificationType.Error:
       $toast.open({
-        message: message + `\n Status: ${status}, ${statusText}`,
+        message: response?.message && response?.message,
         type: "error",
         position: "top-right",
         duration: 3000,
@@ -96,9 +93,7 @@ const axiosInit = async (useToast: any) => {
         error.response.status !== 201
       ) {
         handleResponseMessage(
-          error.response.data?.message,
-          error.response.status,
-          error.response.statusText,
+          error.response,
           eNotificationType.Error,
           useToast
         );

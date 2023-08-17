@@ -17,14 +17,18 @@ export default defineComponent({
       },
     ]);
 
-    async function getUserData() {
-      const res = await axios.get("/menu/get-all");
-      console.log(res.data, "awdawdawd");
-      model.value[0].items = res.data; // Access the items property on the first object
+    async function getMeals() {
+      try {
+        const res = await axios.get("/menu/get-all");
+        if (res.data) model.value[0].items = res.data;
+      } catch (err) {
+        console.log(err, "ERR MENU");
+      }
+      // Access the items property on the first object
     }
 
     onMounted(() => {
-      getUserData();
+      getMeals();
     });
 
     return {

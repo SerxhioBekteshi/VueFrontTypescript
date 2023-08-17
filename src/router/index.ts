@@ -3,87 +3,87 @@ import { createRouter, createWebHistory } from "vue-router";
 import Home from "../views/Home.vue";
 import RegisterView from "../views/RegisterView.vue";
 import LoginView from "../views/LoginView.vue";
-import PrivateRoute from "../PrivateRoute.vue"
-import LayoutWrapper from "../components/LayoutWrapper.vue"
+import PrivateRoute from "../PrivateRoute.vue";
+import LayoutWrapper from "../components/LayoutWrapper.vue";
 import AppLayout from "../layout/AppLayout.vue";
-import LandingPage from "../views/LandingPage.vue"
-import Quiz from "../views/Quiz.vue"
-import ProvidersRegistration from "../views/ProvidersRegistration.vue"
+import LandingPage from "../views/LandingPage.vue";
+import Quiz from "../views/Quiz.vue";
+import ProvidersRegistration from "../views/ProvidersRegistration.vue";
 import ProviderOrders from "../views/ProviderOrders.vue";
 import ProviderMeals from "../views/ProviderMeals.vue";
 
 const routes = [
   {
-    path: "/admin/dashboard",
+    path: "/admin",
     component: AppLayout,
     children: [
-        {
-            path: "",
-            name: "Dashboard",
-            component: Home
-        }
-    ]
+      {
+        path: "",
+        name: "Dashboard",
+        component: Home,
+      },
+    ],
   },
   {
     path: "/admin/quiz",
     component: AppLayout,
     children: [
-        {
-            path: "",
-            name: "Quiz",
-            component: Quiz
-        }
-    ]
+      {
+        path: "",
+        name: "Quiz",
+        component: Quiz,
+      },
+    ],
   },
   {
     path: "/admin/providers/registration",
     component: AppLayout,
     children: [
-        {
-            path: "",
-            name: "ProvidersRegistration",
-            component: ProvidersRegistration
-        }
-    ]
+      {
+        path: "",
+        name: "ProvidersRegistration",
+        component: ProvidersRegistration,
+      },
+    ],
   },
-  
+
   {
-    path: "/provider/dashboard",
+    path: "/provider",
     component: AppLayout,
     children: [
-        {
-            path: "",
-            name: "ProviderDashboard",
-            component: Home
-        }
-    ]
+      {
+        path: "",
+        name: "ProviderDashboard",
+        component: Home,
+      },
+    ],
   },
   {
     path: "/provider/orders",
     component: AppLayout,
     children: [
-        {
-            path: "",
-            name: "ProviderOrders",
-            component: ProviderOrders
-        }
-    ]
+      {
+        path: "",
+        name: "ProviderOrders",
+        component: ProviderOrders,
+      },
+    ],
   },
   {
     path: "/provider/meals",
     component: AppLayout,
     children: [
-        {
-            path: "",
-            name: "ProviderMeals",
-            component: ProviderMeals
-        }
-    ]
+      {
+        path: "",
+        name: "ProviderMeals",
+        component: ProviderMeals,
+      },
+    ],
   },
   {
     path: "/",
     component: LandingPage,
-    name: "Landing Page"
+    name: "Landing Page",
   },
   {
     path: "/register",
@@ -252,7 +252,7 @@ export default router;
 //                     name: 'empty',
 //                     component: () => import('@/views/pages/Empty.vue')
 //                 },
-             
+
 //                 {
 //                     path: '/documentation',
 //                     name: 'documentation',
