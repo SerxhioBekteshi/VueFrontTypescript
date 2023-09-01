@@ -23,6 +23,7 @@ import InlineMessage from "primevue/inlinemessage";
 import FileUpload from "primevue/fileupload";
 import Message from "primevue/message";
 import Tooltip from "primevue/tooltip";
+import ProgressSpinner from "primevue/progressspinner";
 
 let meals = ref<any>([]);
 let formDrawerMode = ref<string>("");
@@ -47,6 +48,7 @@ const fetchMeals = async (
     search: ssV,
   });
   if (res && res.data) {
+    console.log(res.data.rows, "aaaaaaaaaaaaaaaa");
     meals.value = res.data.rows;
     totalItems.value = res.data.totalCount;
   }
@@ -155,7 +157,6 @@ async function onSubmit(values: any) {
   else if (formDrawerMode.value === "edit")
     res = await axios.put(`/meal/${values.id}`, values);
 
-  console.log(res.data, "awdawd");
   if (res && res.data.doc) {
     toast.add({
       life: 3000,
@@ -287,8 +288,13 @@ const fetchMeal = (meal: any) => {
 };
 
 const handlePageChange = (event: any) => {
-  currentPage.value = event.page + 1;
-  fetchMeals(event.page + 1, pageSize.value, searchValue.value);
+  // currentPage.value = event.page + 1;
+  const newPage = event.page + 1;
+  if (newPage !== currentPage.value) {
+    currentPage.value = newPage;
+    fetchMeals(newPage, pageSize.value, searchValue.value);
+  }
+  // fetchMeals(event.page + 1, pageSize.value, searchValue.value);
 };
 
 const handleRowDropdownChange = (rowsPerPage: any) => {
@@ -316,17 +322,17 @@ const handleSearchValue = (event: any) => {
 const removeBlobPhoto = () => {
   blobImage.value = "";
 };
-
-// const uploadUrl = computed(() => `../meal/uploadImage/${mealIdToDelete.value}`);
 </script>
 <template>
   <div class="card">
     <!-- <Button @click="openDrawerFunction"> Add Meal </Button> -->
-    <div v-if="meals.length != 0">
+    <div>
       <DataView :value="meals" :layout="layout" dataKey="id">
         <template #header>
-          <div class="flex justify-content-between">
-            <Button @click="openDrawerFunction"> Add Meal </Button>
+          <div class="flex md:justify-content-between">
+            <Button style="width: fit-content" @click="openDrawerFunction">
+              Add Meal
+            </Button>
             <span class="p-input-icon-left">
               <i class="pi pi-search" />
               <InputPV
@@ -365,7 +371,7 @@ const removeBlobPhoto = () => {
           </div>
         </template>
         <template #list="slotProps">
-          <div class="col-12">
+          <div v-if="meals.length != 0" class="col-12">
             <div
               class="flex flex-column xl:flex-row xl:align-items-start p-4 gap-4"
             >
@@ -403,6 +409,7 @@ const removeBlobPhoto = () => {
                     </Tag>
                   </div>
                 </div>
+
                 <div
                   class="flex sm:flex-column align-items-center sm:align-items-end gap-3 sm:gap-2"
                 >
@@ -423,7 +430,10 @@ const removeBlobPhoto = () => {
           </div>
         </template>
         <template #grid="slotProps">
-          <div class="col-12 sm:col-6 lg:col-12 xl:col-4 p-2">
+          <div
+            v-if="meals.length != 0"
+            class="col-12 sm:col-6 lg:col-12 xl:col-4 p-2"
+          >
             <div class="p-4 border-1 surface-border surface-card border-round">
               <div v-if="isLoading">
                 <div
@@ -492,6 +502,7 @@ const removeBlobPhoto = () => {
                       :src="`http://localhost:1112/${slotProps.data.image}`"
                       :alt="slotProps.data.name"
                     />
+                    {{ slotProps.data.image }}
                   </div>
 
                   <div class="text-2xl font-bold">
@@ -566,10 +577,20 @@ const removeBlobPhoto = () => {
             </div>
           </div>
         </template>
+        <template #empty>
+          <div v-if="isLoading">
+            <div
+              class="d-flex justify-content-center align-items-center"
+              style="height: 100vh"
+            >
+              <ProgressSpinner />
+            </div>
+          </div>
+          <div v-else>
+            <Message severity="warn">There are no meals</Message>
+          </div>
+        </template>
       </DataView>
-    </div>
-    <div v-else>
-      <Message severity="warning">There are no meals</Message>
     </div>
   </div>
 
@@ -800,8 +821,8 @@ const removeBlobPhoto = () => {
   border-radius: 4px;
 }
 .image-wrapper {
-  width: 200px; /* Set your desired width */
-  height: 200px; /* Set your desired height */
+  width: 150px; /* Set your desired width */
+  height: 150px; /* Set your desired height */
   overflow: hidden;
   border-radius: 1rem;
 }
