@@ -580,8 +580,11 @@ const removeBlobPhoto = () => {
         <template #empty>
           <div v-if="isLoading">
             <div
-              class="d-flex justify-content-center align-items-center"
-              style="height: 100vh"
+              style="
+                display: flex;
+                justify-content: center;
+                align-items: center;
+              "
             >
               <ProgressSpinner />
             </div>
