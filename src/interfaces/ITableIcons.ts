@@ -1,6 +1,6 @@
 export default interface ITableActions {
   name: string;
-  label: string;
+  icon: string;
   outline?: boolean;
   color?: string;
 }

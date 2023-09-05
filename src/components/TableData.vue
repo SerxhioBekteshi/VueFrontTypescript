@@ -1,30 +1,31 @@
 <template>
+  <div>
+    <Button icon="pi pi-external-link" label="Add" />
+  </div>
   <DataTable
+    scrollable
     :stripedRows="true"
     :value="tableData"
     ref="dt"
     tableStyle="min-width: 50rem"
   >
     <template #header>
-      <!-- <div v-if="showExport || showSearch">
-
-      </div> -->
-      <!-- <GenericToolbar
+      <GenericToolbar
         :tableColumns="tableColumns"
         :controller="controller"
         :onChange="handleSearchValue"
         :value="searchValue"
         :showExport="showExport"
         :showSearch="showSearch"
-      /> -->
-
-      <div
+        :showAddBt="showAddBt"
+      />
+      <!-- <div
         class="flex gap-3 p-flex-column-xs xs:justify-content-start sm:justify-content-between"
       >
         <div>
           <Button icon="pi pi-external-link" label="Add" />
         </div>
-        <!-- <div>
+        <div>
           <span class="p-input-icon-left">
             <i class="pi pi-search" />
             <InputPV
@@ -33,8 +34,8 @@
               placeholder="Search"
             />
           </span>
-        </div> -->
-      </div>
+        </div> 
+      </div> -->
     </template>
     <template #footer>
       <Paginator
@@ -64,11 +65,35 @@
     <template #empty>
       <Message severity="warn">There are no meals</Message>
     </template>
-    <template> KETU DO JETE PAGINATORi </template>
-    <Column field="code" header="Code" exportHeader="Product Code"></Column>
-    <Column field="name" header="Name"></Column>
+
+    <TableHeader
+      v-if="tableColumns.length != 0"
+      :columns="tableColumns"
+      :rowCount="totalItems"
+      :showEdit="showEdit"
+      :showDelete="showDelete"
+    />
+
+    <Column
+      v-for="(column, index) in tableColumns"
+      :key="index"
+      :field="column.propertyName"
+      :header="column.title"
+      :frozen="column.propertyType === 5"
+      alignFrozen="right"
+    >
+      <template #body="slotProps">
+        <TableCell
+          :showEdit="showEdit"
+          :showDelete="showDelete"
+          :cellValue="slotProps.data[`${column.propertyName}`]"
+          :cellColumn="column"
+        />
+      </template>
+    </Column>
+    <!-- <Column field="name" header="Name"></Column>
     <Column field="category" header="Category"></Column>
-    <Column field="quantity" header="Quantity"></Column>
+    <Column field="quantity" header="Quantity"></Column>  -->
   </DataTable>
 
   <Modal
@@ -82,122 +107,186 @@
   </Modal>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
 import DataTable from "primevue/datatable";
 import Button from "primevue/button";
 import Column from "primevue/column";
-import { onMounted, ref, watchEffect } from "vue";
+import {
+  defineComponent,
+  onMounted,
+  ref,
+  toRef,
+  toRefs,
+  watchEffect,
+} from "vue";
 import axios from "axios";
-import InputPV from "primevue/inputtext";
+// import InputPV from "primevue/inputtext";
 import Message from "primevue/message";
 import Paginator from "primevue/paginator";
 import Modal from "../components/Modal.vue";
 import IColumn from "@/interfaces/IColumn";
+import GenericToolbar from "../components/GenericToolbar.vue";
+import TableHeader from "../components/table/TableHeader.vue";
+import TableCell from "../components/table/TableCell.vue";
 
-// const { controller, checkbox = true, actions, showExport, showAddBt, showEdit, showDelete, showExport, showSearch, } = defineProps({
-//   controller: String,
-// });
-const openModalFunction = () => {
-  openModal.value = true;
-};
-
-const handleModalClose = () => {
-  openModal.value = false;
-};
-const modalActions = ref<any[]>([
-  {
-    component: Button,
-    props: {
-      type: "Submit",
-      icon: "pi pi-times",
-      label: "Delete",
-      severity: "danger",
-      // onclick: handleDelete,
-    },
+export default defineComponent({
+  name: "TableData",
+  components: {
+    DataTable,
+    Button,
+    Column,
+    Message,
+    Paginator,
+    Modal,
+    GenericToolbar,
+    TableHeader,
+    TableCell,
   },
-  {
-    component: Button,
-    props: {
-      label: "Cancel",
-      icon: "pi pi-check",
-      severity: "info",
-      onclick: handleModalClose,
+  props: {
+    controller: String,
+    checkbox: { type: Boolean, default: false },
+    actions: {
+      type: [Array, Object, String, Number, Boolean, Function],
+      default: null,
     },
+    showExport: { type: Boolean, default: true },
+    showEdit: { type: Boolean, default: true },
+    showAddBt: { type: Boolean, default: true },
+    showDelete: { type: Boolean, default: true },
+    showSearch: { type: Boolean, default: true },
   },
-]);
+  setup(props) {
+    const {
+      controller,
+      checkbox,
+      actions,
+      showExport = false,
+      showAddBt,
+      showEdit,
+      showDelete,
+      showSearch,
+    } = toRefs(props);
 
-const currentPage = ref<number>(1);
-const pageSize = ref<any>(3);
-const totalItems = ref<number>(0);
+    const openModalFunction = () => {
+      openModal.value = true;
+    };
 
-const tableColumns = ref<any>([]);
-const searchValue = ref<string>("");
-const tableData = ref<any>();
+    const handleModalClose = () => {
+      openModal.value = false;
+    };
+    const modalActions = ref<any[]>([
+      {
+        component: Button,
+        props: {
+          type: "Submit",
+          icon: "pi pi-times",
+          label: "Delete",
+          severity: "danger",
+          // onclick: handleDelete,
+        },
+      },
+      {
+        component: Button,
+        props: {
+          label: "Cancel",
+          icon: "pi pi-check",
+          severity: "info",
+          onclick: handleModalClose,
+        },
+      },
+    ]);
 
-const dataLoading = ref<boolean>(true);
-const openModal = ref<boolean>(false);
+    const currentPage = ref<number>(1);
+    const pageSize = ref<any>(3);
+    const totalItems = ref<number>(0);
 
-const fetchData = async () => {
-  try {
-    const res = await axios.post(`/table/meals`, {
-      pageNumber: currentPage.value,
-      pageSize: pageSize.value,
-      searchValue: searchValue.value,
+    const tableColumns = ref<IColumn[]>([]);
+    const searchValue = ref<string>("");
+    const tableData = ref<any>();
+
+    const dataLoading = ref<boolean>(true);
+    const openModal = ref<boolean>(false);
+
+    const fetchData = async () => {
+      try {
+        const res = await axios.post(`/table/${controller.value}`, {
+          pageNumber: currentPage.value,
+          pageSize: pageSize.value,
+          searchValue: searchValue.value,
+        });
+        if (res !== null) {
+          tableData.value = res.data.rows;
+          dataLoading.value = false;
+          totalItems.value = res.data.totalCount;
+          tableColumns.value = res.data.columns;
+          // we will
+        }
+      } catch (err: any) {
+        console.error(err);
+      }
+    };
+
+    // const updateColumns = (cols: IColumn[]) => {
+    //   const newCols = cols.map((col: IColumn) => {
+    //     const colProp = columns?.find((c: IColumn) => c.field === col.field);
+    //     return colProp ? { ...col, ...colProp } : col;
+    //   });
+    //   tableColumns.value = newCols;
+    // };
+
+    // const handleDelete = async (ids: readonly number[] | number) => {
+    //   const res = await axios.post(
+    //     `${controller}/delete`,
+    //     Array.isArray(ids) ? ids : [ids]
+    //   );
+
+    //   if (res !== null) {
+    //     //success mesage
+    //   }
+    // };
+
+    const handleChangePage = (event: any) => {
+      currentPage.value = event.page + 1;
+      // currentPage.value = newPage;
+    };
+
+    const handleRowDropdownChange = (rowsPerPage: any) => {
+      pageSize.value = rowsPerPage;
+      currentPage.value = 1;
+    };
+
+    watchEffect(() => {
+      fetchData(); // Fetch data whenever any of the watched dependencies changes
     });
 
-    if (res !== null) {
-      tableData.value = res;
-      dataLoading.value = false;
+    onMounted(() => {
+      fetchData();
+    });
 
-      // we will
-    }
-  } catch (err: any) {
-    console.error(err);
-  }
-};
+    const handleSearchValue = (event: any) => {
+      setTimeout(() => {
+        searchValue.value = event.target.value;
+        pageSize.value = 0;
+      }, 100);
+      //   fetchData(currentPage.value, pageSize.value, event.target.value);
+    };
 
-// const updateColumns = (cols: IColumn[]) => {
-//   const newCols = cols.map((col: IColumn) => {
-//     const colProp = columns?.find((c: IColumn) => c.field === col.field);
-//     return colProp ? { ...col, ...colProp } : col;
-//   });
-//    setTableColumns(newCols);
-// };
-
-// const handleDelete = async (ids: readonly number[] | number) => {
-//   const res = await axios.post(
-//     `${controller}/delete`,
-//     Array.isArray(ids) ? ids : [ids]
-//   );
-
-//   if (res !== null) {
-//     //success mesage
-//   }
-// };
-
-const handleChangePage = (event: any) => {
-  currentPage.value = event.page + 1;
-  // currentPage.value = newPage;
-};
-
-const handleRowDropdownChange = (rowsPerPage: any) => {
-  pageSize.value = rowsPerPage;
-  currentPage.value = 1;
-};
-
-watchEffect(() => {
-  fetchData(); // Fetch data whenever any of the watched dependencies changes
+    return {
+      currentPage,
+      pageSize,
+      searchValue,
+      modalActions,
+      tableData,
+      dataLoading,
+      openModal,
+      totalItems,
+      tableColumns,
+      openModalFunction,
+      handleModalClose,
+      handleChangePage,
+      handleRowDropdownChange,
+      handleSearchValue,
+    };
+  },
 });
-
-onMounted(() => {
-  fetchData();
-});
-
-const handleSearchValue = (event: any) => {
-  setTimeout(() => {
-    searchValue.value = event.target.value;
-    pageSize.value = 0;
-  }, 1000);
-  //   fetchData(currentPage.value, pageSize.value, event.target.value);
-};
 </script>
