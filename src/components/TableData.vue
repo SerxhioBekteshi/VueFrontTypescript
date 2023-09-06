@@ -10,6 +10,7 @@
     ref="dt"
     editMode="cell"
     tableStyle="min-width: 50rem"
+    @cell-edit-complete="onCellEditComplete"
   >
     <template #header>
       <GenericToolbar
@@ -93,7 +94,7 @@
       </template>
       <template #editor="{ data, field }">
         <!-- {{ field }} -->
-        <CellEditor :data="data" :field="field" />
+        <CellEditor :data="data" :field="field" :column="column" />
         <!-- <template v-if="field !== 'price'">
           <InputText v-model="data[field]" autofocus />
         </template>
@@ -297,7 +298,6 @@ export default defineComponent({
         });
         if (res !== null) {
           tableData.value = res.data.rows;
-          dataLoading.value = false;
           totalItems.value = res.data.totalCount;
           tableColumns.value = res.data.columns;
           // we will
@@ -305,6 +305,7 @@ export default defineComponent({
       } catch (err: any) {
         console.error(err);
       }
+      dataLoading.value = false;
     };
     const handleChangePage = (event: any) => {
       currentPage.value = event.page + 1;
@@ -335,6 +336,10 @@ export default defineComponent({
       }, 100);
     };
 
+    const onCellEditComplete = (event: any) => {
+      console.log(event, "a");
+    };
+
     return {
       currentPage,
       pageSize,
@@ -352,6 +357,7 @@ export default defineComponent({
       handleChangePage,
       handleRowDropdownChange,
       handleSearchValue,
+      onCellEditComplete,
     };
   },
 });

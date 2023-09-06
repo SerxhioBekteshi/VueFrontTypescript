@@ -1,15 +1,36 @@
 <template>
-  <InputText :value="data[field]" @input="updateData" autofocus />
+  <div v-if="column.propertyType === eDataType.String">
+    <InputText :value="data[field]" @input="updateData" autofocus />
+  </div>
+  <div
+    v-if="
+      column.propertyType === eDataType.Number ||
+      column.propertyType === eDataType.Decimal
+    "
+  >
+    <InputNumber :value="data[field]" @input="updateData" autofocus />
+  </div>
+  <div
+    v-if="
+      column.propertyType === eDataType.DateTime ||
+      column.propertyType === eDataType.DateOnly
+    "
+  >
+    DateInput but it will be created later
+  </div>
+  <div v-if="column.propertyType === eDataType.Tags">
+    Tags meaning is the array type
+  </div>
 </template>
 
 <script lang="ts">
-// import eDataType from "@/assets/enums/eDataType";
 import { PropType, defineComponent, h, ref } from "vue";
 import InputText from "primevue/inputtext";
+import InputNumber from "primevue/inputnumber";
 
 export default defineComponent({
   name: "CellEditor",
-  components: { InputText },
+  components: { InputText, InputNumber },
   props: {
     data: {
       type: null as unknown as PropType<any>,
@@ -17,11 +38,15 @@ export default defineComponent({
     field: {
       type: null as unknown as PropType<any>,
     },
+    column: {
+      type: null,
+    },
   },
   setup(props, { emit }) {
-    console.log(props.data.value, "aaaaa");
     const updateData = (value: any) => {
-      emit("update:data", { field: props.field, value });
+      console.log(value, "aaaa");
+      //   console.log(props.field, props.data, value, "CHECKS HERe");
+      emit("update:data", { field: props.field, value, data: props.data });
     };
     const eDataType = {
       Number: 0,
@@ -38,7 +63,7 @@ export default defineComponent({
       Image: 11,
     };
 
-    return { updateData };
+    return { updateData, eDataType };
   },
 });
 </script>
