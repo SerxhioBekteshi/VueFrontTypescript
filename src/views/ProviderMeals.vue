@@ -153,9 +153,9 @@ async function onSubmit(values: any) {
   let res: any = null;
 
   if (formDrawerMode.value === "create")
-    res = await axios.post("/meal", values);
+    res = await axios.post("/meals", values);
   else if (formDrawerMode.value === "edit")
-    res = await axios.put(`/meal/${values.id}`, values);
+    res = await axios.put(`/meals/${values.id}`, values);
 
   if (res && res.data.doc) {
     toast.add({
@@ -200,7 +200,7 @@ const drawerActions = ref<any[]>([
 
 const deleteMeal = async (mealId: number) => {
   try {
-    const res: any = await axios.delete(`/meal/delete/${mealIdToDelete.value}`);
+    const res: any = await axios.delete(`/meals/${mealIdToDelete.value}`);
     if (res && res.data.message) {
       toast.add({
         life: 3000,
@@ -261,7 +261,7 @@ const onAdvancedUpload = async (event: any) => {
 
   try {
     const res: any = await axios.put(
-      `/meal/image/${mealIdToDelete.value}`,
+      `/meals/image/${mealIdToDelete.value}`,
       formData
     );
 

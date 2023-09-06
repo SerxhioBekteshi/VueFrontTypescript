@@ -3,10 +3,12 @@
     <Button icon="pi pi-external-link" label="Add" />
   </div>
   <DataTable
+    tableClass="editable-cells-table"
     scrollable
     :stripedRows="true"
     :value="tableData"
     ref="dt"
+    editMode="cell"
     tableStyle="min-width: 50rem"
   >
     <template #header>
@@ -19,23 +21,6 @@
         :showSearch="showSearch"
         :showAddBt="showAddBt"
       />
-      <!-- <div
-        class="flex gap-3 p-flex-column-xs xs:justify-content-start sm:justify-content-between"
-      >
-        <div>
-          <Button icon="pi pi-external-link" label="Add" />
-        </div>
-        <div>
-          <span class="p-input-icon-left">
-            <i class="pi pi-search" />
-            <InputPV
-              v-model="searchValue"
-              @change="handleSearchValue"
-              placeholder="Search"
-            />
-          </span>
-        </div> 
-      </div> -->
     </template>
     <template #footer>
       <Paginator
@@ -61,9 +46,21 @@
         }"
       >
       </Paginator>
+      <div style="display: flex; justify-content: center; gap: 1">
+        In total there are {{ totalItems ? totalItems : 0 }} rows.
+      </div>
     </template>
     <template #empty>
-      <Message severity="warn">There are no meals</Message>
+      <div v-if="dataLoading">
+        <div
+          style="display: flex; justify-content: center; align-items: center"
+        >
+          <ProgressSpinner />
+        </div>
+      </div>
+      <div v-else>
+        <Message severity="warn">There are no data</Message>
+      </div>
     </template>
 
     <TableHeader
@@ -75,25 +72,60 @@
     />
 
     <Column
-      v-for="(column, index) in tableColumns"
+      v-for="(column, index) in filteredNotIncludedColumns"
       :key="index"
       :field="column.propertyName"
       :header="column.title"
-      :frozen="column.propertyType === 5"
-      alignFrozen="right"
+      style="width: 25%"
     >
       <template #body="slotProps">
-        <TableCell
-          :showEdit="showEdit"
-          :showDelete="showDelete"
-          :cellValue="slotProps.data[`${column.propertyName}`]"
-          :cellColumn="column"
-        />
+        <div v-if="dataLoading">
+          <Skeleton width="80%" height="1.5rem" />
+        </div>
+        <div v-else>
+          <TableCell
+            :showEdit="showEdit"
+            :showDelete="showDelete"
+            :cellValue="slotProps.data[`${column.propertyName}`]"
+            :cellColumn="column"
+          />
+        </div>
+      </template>
+      <template #editor="{ data, field }">
+        <!-- {{ field }} -->
+        <CellEditor :data="data" :field="field" />
+        <!-- <template v-if="field !== 'price'">
+          <InputText v-model="data[field]" autofocus />
+        </template>
+        <template v-else>
+          <InputNumber
+            v-model="data[field]"
+            mode="currency"
+            currency="USD"
+            locale="en-US"
+            autofocus
+          />
+        </template> -->
       </template>
     </Column>
-    <!-- <Column field="name" header="Name"></Column>
-    <Column field="category" header="Category"></Column>
-    <Column field="quantity" header="Quantity"></Column>  -->
+
+    <Column field="" header="" frozen alignFrozen="right">
+      <template #body="slotProps">
+        <div v-if="dataLoading">
+          <Skeleton width="80%" height="1rem" />
+        </div>
+        <div v-else>
+          <TableCellActions
+            :fieldToShowOnModalDelete="'name'"
+            @delete-clicked="openModalFunction"
+            :showEdit="showEdit"
+            :showDelete="showDelete"
+            :columnIcons="tableColumns[tableColumns.length - 1]"
+            :additionalData="slotProps"
+          />
+        </div>
+      </template>
+    </Column>
   </DataTable>
 
   <Modal
@@ -102,25 +134,32 @@
     :title="'Delete meal'"
     :actions="modalActions"
   >
-    Are you sure you want to delete this meal
-    <!-- {{ getNameById(mealObject, mealIdToDelete) }} -->
+    Are you sure you want to delete
+    <span style="font-weight: bold">
+      {{ fieldModalToShow.name }}
+    </span>
   </Modal>
+  <Toast />
 </template>
 
 <script lang="ts">
 import DataTable from "primevue/datatable";
 import Button from "primevue/button";
 import Column from "primevue/column";
+import Toast from "primevue/toast";
+import Skeleton from "primevue/skeleton";
+// import InputNumber from "primevue/inputnumber";
 import {
+  computed,
   defineComponent,
   onMounted,
   ref,
   toRef,
   toRefs,
+  watch,
   watchEffect,
 } from "vue";
 import axios from "axios";
-// import InputPV from "primevue/inputtext";
 import Message from "primevue/message";
 import Paginator from "primevue/paginator";
 import Modal from "../components/Modal.vue";
@@ -128,7 +167,11 @@ import IColumn from "@/interfaces/IColumn";
 import GenericToolbar from "../components/GenericToolbar.vue";
 import TableHeader from "../components/table/TableHeader.vue";
 import TableCell from "../components/table/TableCell.vue";
-
+import TableCellActions from "../components/table/TableCellActions.vue";
+import { useToast } from "primevue/usetoast";
+import ProgressSpinner from "primevue/progressspinner";
+// import InputText from "primevue/inputtext";
+import CellEditor from "../components/table/CellEditor.vue";
 export default defineComponent({
   name: "TableData",
   components: {
@@ -141,6 +184,13 @@ export default defineComponent({
     GenericToolbar,
     TableHeader,
     TableCell,
+    TableCellActions,
+    Toast,
+    Skeleton,
+    ProgressSpinner,
+    // InputNumber,
+    // InputText,
+    CellEditor,
   },
   props: {
     controller: String,
@@ -156,6 +206,8 @@ export default defineComponent({
     showSearch: { type: Boolean, default: true },
   },
   setup(props) {
+    const toast = useToast();
+
     const {
       controller,
       checkbox,
@@ -167,13 +219,40 @@ export default defineComponent({
       showSearch,
     } = toRefs(props);
 
-    const openModalFunction = () => {
+    const openModalFunction = (field: any, rowId: number) => {
+      fieldModalToShow.value = { name: field, id: rowId };
       openModal.value = true;
     };
 
     const handleModalClose = () => {
       openModal.value = false;
     };
+
+    const filteredNotIncludedColumns = computed(() =>
+      tableColumns.value.slice(0, -1)
+    );
+
+    const handleDeleteButtonModal = async () => {
+      try {
+        const res: any = await axios.delete(
+          `${controller.value}/${fieldModalToShow.value.id}`
+        );
+
+        if (res !== null) {
+          openModal.value = false;
+          fetchData();
+          toast.add({
+            life: 3000,
+            detail: res.data.message,
+            severity: "success",
+            summary: "info",
+          });
+        }
+      } catch (err) {
+        console.log(err, "err modal delete");
+      }
+    };
+
     const modalActions = ref<any[]>([
       {
         component: Button,
@@ -182,7 +261,7 @@ export default defineComponent({
           icon: "pi pi-times",
           label: "Delete",
           severity: "danger",
-          // onclick: handleDelete,
+          onclick: handleDeleteButtonModal,
         },
       },
       {
@@ -206,11 +285,13 @@ export default defineComponent({
 
     const dataLoading = ref<boolean>(true);
     const openModal = ref<boolean>(false);
+    const fieldModalToShow = ref<any>(null);
 
     const fetchData = async () => {
+      dataLoading.value = true;
       try {
         const res = await axios.post(`/table/${controller.value}`, {
-          pageNumber: currentPage.value,
+          page: currentPage.value,
           pageSize: pageSize.value,
           searchValue: searchValue.value,
         });
@@ -225,26 +306,6 @@ export default defineComponent({
         console.error(err);
       }
     };
-
-    // const updateColumns = (cols: IColumn[]) => {
-    //   const newCols = cols.map((col: IColumn) => {
-    //     const colProp = columns?.find((c: IColumn) => c.field === col.field);
-    //     return colProp ? { ...col, ...colProp } : col;
-    //   });
-    //   tableColumns.value = newCols;
-    // };
-
-    // const handleDelete = async (ids: readonly number[] | number) => {
-    //   const res = await axios.post(
-    //     `${controller}/delete`,
-    //     Array.isArray(ids) ? ids : [ids]
-    //   );
-
-    //   if (res !== null) {
-    //     //success mesage
-    //   }
-    // };
-
     const handleChangePage = (event: any) => {
       currentPage.value = event.page + 1;
       // currentPage.value = newPage;
@@ -255,9 +316,13 @@ export default defineComponent({
       currentPage.value = 1;
     };
 
-    watchEffect(() => {
-      fetchData(); // Fetch data whenever any of the watched dependencies changes
+    watch([pageSize, currentPage, searchValue], () => {
+      fetchData();
     });
+
+    // watchEffect(() => {
+    //   fetchData(); // Fetch data whenever any of the watched dependencies changes
+    // });
 
     onMounted(() => {
       fetchData();
@@ -266,9 +331,8 @@ export default defineComponent({
     const handleSearchValue = (event: any) => {
       setTimeout(() => {
         searchValue.value = event.target.value;
-        pageSize.value = 0;
+        currentPage.value = 0;
       }, 100);
-      //   fetchData(currentPage.value, pageSize.value, event.target.value);
     };
 
     return {
@@ -281,6 +345,8 @@ export default defineComponent({
       openModal,
       totalItems,
       tableColumns,
+      fieldModalToShow,
+      filteredNotIncludedColumns,
       openModalFunction,
       handleModalClose,
       handleChangePage,
@@ -290,3 +356,9 @@ export default defineComponent({
   },
 });
 </script>
+<style>
+::v-deep(.editable-cells-table td.p-cell-editing) {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+</style>
