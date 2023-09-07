@@ -371,7 +371,7 @@ const removeBlobPhoto = () => {
           </div>
         </template>
         <template #list="slotProps">
-          <div v-if="meals.length != 0" class="col-12">
+          <div v-if="meals && meals.length != 0" class="col-12">
             <div
               class="flex flex-column xl:flex-row xl:align-items-start p-4 gap-4"
             >
@@ -431,7 +431,7 @@ const removeBlobPhoto = () => {
         </template>
         <template #grid="slotProps">
           <div
-            v-if="meals.length != 0"
+            v-if="meals && meals.length != 0"
             class="col-12 sm:col-6 lg:col-12 xl:col-4 p-2"
           >
             <div class="p-4 border-1 surface-border surface-card border-round">
@@ -553,7 +553,12 @@ const removeBlobPhoto = () => {
                         :key="'Ingredients'"
                         :header="'Ingredients '"
                       >
-                        <div v-if="slotProps.data.ingredients.length !== 0">
+                        <div
+                          v-if="
+                            slotProps.data.ingredients &&
+                            slotProps.data.ingredients.length !== 0
+                          "
+                        >
                           <div
                             v-for="ingredient in slotProps.data.ingredients"
                             v-bind:key="ingredient.id"

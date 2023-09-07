@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="!showAddBt">
     <Button icon="pi pi-external-link" label="Add" />
   </div>
   <DataTable
@@ -14,9 +14,10 @@
   >
     <template #header>
       <GenericToolbar
+        :actionButton="actionButton"
         :tableColumns="tableColumns"
         :controller="controller"
-        :onChange="handleSearchValue"
+        @change="handleSearchValue"
         :value="searchValue"
         :showExport="showExport"
         :showSearch="showSearch"
@@ -60,7 +61,7 @@
         </div>
       </div>
       <div v-else>
-        <Message severity="warn">There are no data</Message>
+        <Message severity="error">There are no data</Message>
       </div>
     </template>
 
@@ -94,7 +95,13 @@
       </template>
       <template #editor="{ data, field }">
         <!-- {{ field }} -->
-        <CellEditor :data="data" :field="field" :column="column" />
+        <CellEditor
+          v-model="data[field]"
+          :data="data"
+          :field="field"
+          :column="column"
+          @input="handleCellEditorInput"
+        />
         <!-- <template v-if="field !== 'price'">
           <InputText v-model="data[field]" autofocus />
         </template>
@@ -149,7 +156,6 @@ import Button from "primevue/button";
 import Column from "primevue/column";
 import Toast from "primevue/toast";
 import Skeleton from "primevue/skeleton";
-// import InputNumber from "primevue/inputnumber";
 import {
   computed,
   defineComponent,
@@ -171,8 +177,13 @@ import TableCell from "../components/table/TableCell.vue";
 import TableCellActions from "../components/table/TableCellActions.vue";
 import { useToast } from "primevue/usetoast";
 import ProgressSpinner from "primevue/progressspinner";
-// import InputText from "primevue/inputtext";
 import CellEditor from "../components/table/CellEditor.vue";
+
+interface Action {
+  component: any;
+  props: Record<string, unknown>;
+}
+
 export default defineComponent({
   name: "TableData",
   components: {
@@ -189,8 +200,6 @@ export default defineComponent({
     Toast,
     Skeleton,
     ProgressSpinner,
-    // InputNumber,
-    // InputText,
     CellEditor,
   },
   props: {
@@ -205,6 +214,8 @@ export default defineComponent({
     showAddBt: { type: Boolean, default: true },
     showDelete: { type: Boolean, default: true },
     showSearch: { type: Boolean, default: true },
+    actionButton: { type: Object as () => Action },
+    // onEditClick: { type: Function },
   },
   setup(props) {
     const toast = useToast();
@@ -227,6 +238,10 @@ export default defineComponent({
 
     const handleModalClose = () => {
       openModal.value = false;
+    };
+
+    const handleCellEditorInput = (newCellValue: any) => {
+      cellValue.value = newCellValue;
     };
 
     const filteredNotIncludedColumns = computed(() =>
@@ -288,13 +303,15 @@ export default defineComponent({
     const openModal = ref<boolean>(false);
     const fieldModalToShow = ref<any>(null);
 
+    const cellValue = ref<any>(null);
+
     const fetchData = async () => {
       dataLoading.value = true;
       try {
         const res = await axios.post(`/table/${controller.value}`, {
           page: currentPage.value,
           pageSize: pageSize.value,
-          searchValue: searchValue.value,
+          search: searchValue.value,
         });
         if (res !== null) {
           tableData.value = res.data.rows;
@@ -332,12 +349,33 @@ export default defineComponent({
     const handleSearchValue = (event: any) => {
       setTimeout(() => {
         searchValue.value = event.target.value;
-        currentPage.value = 0;
+        currentPage.value = 1;
       }, 100);
     };
 
-    const onCellEditComplete = (event: any) => {
-      console.log(event, "a");
+    const onCellEditComplete = async (event: any) => {
+      let { data, field } = event;
+      if (data[field] !== cellValue.value) {
+        data[field] = cellValue;
+
+        try {
+          const res: any = await axios.put(
+            `${controller.value}/${data.id}`,
+            data
+          );
+
+          if (res != null) {
+            toast.add({
+              life: 3000,
+              detail: `Field ${field} was edited successfully`,
+              severity: "success",
+              summary: "info",
+            });
+          }
+        } catch (err) {
+          console.log(err, "ERR");
+        }
+      }
     };
 
     return {
@@ -358,6 +396,7 @@ export default defineComponent({
       handleRowDropdownChange,
       handleSearchValue,
       onCellEditComplete,
+      handleCellEditorInput,
     };
   },
 });

@@ -1,6 +1,6 @@
 <template>
   <div v-if="column.propertyType === eDataType.String">
-    <InputText :value="data[field]" @input="updateData" autofocus />
+    <InputText v-model="localValue" @input="updateValue" autofocus />
   </div>
   <div
     v-if="
@@ -8,7 +8,12 @@
       column.propertyType === eDataType.Decimal
     "
   >
-    <InputNumber :value="data[field]" @input="updateData" autofocus />
+    <InputNumber
+      v-model="localValue"
+      @input="updateValue"
+      :useGrouping="column.propertyType !== eDataType.Number"
+      autofocus
+    />
   </div>
   <div
     v-if="
@@ -24,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import { PropType, defineComponent, h, ref } from "vue";
+import { PropType, defineComponent, ref } from "vue";
 import InputText from "primevue/inputtext";
 import InputNumber from "primevue/inputnumber";
 
@@ -41,12 +46,17 @@ export default defineComponent({
     column: {
       type: null,
     },
+    // onCellEditComplete: {
+    //   type: Function as PropType<
+    //     (event: { data: any; field: any; newValue: any }) => void
+    //   >,
+    // },
   },
   setup(props, { emit }) {
-    const updateData = (value: any) => {
-      console.log(value, "aaaa");
-      //   console.log(props.field, props.data, value, "CHECKS HERe");
-      emit("update:data", { field: props.field, value, data: props.data });
+    const localValue = ref(props.data[props.field]);
+
+    const updateValue = () => {
+      emit("input", localValue.value);
     };
     const eDataType = {
       Number: 0,
@@ -63,7 +73,7 @@ export default defineComponent({
       Image: 11,
     };
 
-    return { updateData, eDataType };
+    return { eDataType, localValue, updateValue };
   },
 });
 </script>

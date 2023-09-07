@@ -51,10 +51,7 @@
           </div>
         </template>
       </Listbox>
-      <InlineMessage
-        v-if="cellValue.length == 0 || cellValue == null"
-        severity="warn"
-      >
+      <InlineMessage v-if="!cellValue" severity="error">
         No data
       </InlineMessage>
     </div>
@@ -87,12 +84,6 @@ export default defineComponent({
     },
   },
   setup() {
-    const renderBooleanValue = (value: boolean) => {
-      return value
-        ? '<span><i class="pi pi-check-circle text-green-500"></i></span>'
-        : '<span><i class="pi pi-times-circle text-red-400"></i></span>';
-    };
-
     const eDataType = {
       Number: 0,
       String: 1,
@@ -108,37 +99,7 @@ export default defineComponent({
       Image: 11,
     };
 
-    // const renderCellValue = (value: any, column: any) => {
-    //   if (column) {
-    //     //   if (value == null || value === "") {
-    //     //     return "-ad";
-    //     //   } else {
-    //     switch (column.propertyType) {
-    //       case eDataType.DateTime:
-    //         return moment(value).locale("sq").format("DD/MM/YYYY");
-    //       case eDataType.Decimal:
-    //         return `${groupDigital(value)}`;
-    //       case eDataType.Number:
-    //         return value;
-    //       case eDataType.Boolean:
-    //         return renderBooleanValue(value);
-    //       // case eDataType.Tags:
-    //       //   return renderTagArrayElements(value);
-    //       // case eDataType.Icons:
-    //       //   return renderIcons(column.icons);
-    //       // case eDataType.Custom:
-    //       //   let amountValue: any = value.split(' ')[0];
-    //       //   let currency: any = value.split(' ')[1];
-    //       //   return `${groupDigital(amountValue)} ${currency}`;
-
-    //       default:
-    //         return value;
-    //     }
-    //   }
-    // };
-
     return {
-      // renderCellValue,
       groupDigital,
       moment,
       eDataType,
@@ -147,14 +108,13 @@ export default defineComponent({
 });
 </script>
 <style>
-::v-deep .p-listbox,
-.p-listbox-list {
-  padding: 0 !important;
+::v-deep(.p-listbox) {
+  padding: 0;
 }
 
 .image-wrapper {
-  width: 75px; /* Set your desired width */
-  height: 75px; /* Set your desired height */
+  width: 50px;
+  height: 50px;
   overflow: hidden;
   border-radius: 1rem;
 }

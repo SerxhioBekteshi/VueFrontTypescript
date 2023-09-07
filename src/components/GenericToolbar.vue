@@ -6,7 +6,13 @@
     class="flex gap-3 p-flex-column-xs xs:justify-content-start sm:justify-content-between"
   >
     <div v-if="showAddBt">
-      <Button icon="pi pi-external-link" label="Add" />
+      <div>
+        <component
+          v-if="actionButton"
+          :is="actionButton.component"
+          v-bind="actionButton.props"
+        ></component>
+      </div>
     </div>
     <div v-if="showSearch">
       <div class="p-inputgroup flex-1">
@@ -25,8 +31,13 @@
 <script lang="ts">
 import Button from "primevue/button";
 import InputPV from "primevue/inputtext";
-
 import { defineComponent, ref } from "vue";
+
+interface Action {
+  component: any;
+  props: Record<string, unknown>;
+}
+
 export default defineComponent({
   name: "GenericToolbar",
   components: { Button, InputPV },
@@ -38,6 +49,7 @@ export default defineComponent({
     value: String,
     showSearch: Boolean,
     showAddBt: Boolean,
+    actionButton: { type: Object as () => Action },
   },
   // setup() {
   //   console.log("sd");

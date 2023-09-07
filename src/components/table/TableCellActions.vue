@@ -2,7 +2,6 @@
   <div style="display: flex; justify-content: end">
     <div v-for="(icon, index) in columnIcons.icons" :key="index">
       <Button
-        v-if="icon.icon === 'delete'"
         @click="handleIconClick(icon)"
         :severity="icon.color"
         :icon="icon.name"
@@ -33,12 +32,16 @@ export default defineComponent({
     fieldToShowOnModalDelete: {
       type: null,
     },
+    // onEditClick: {
+    //   type: Function,
+    // },
   },
   setup(props, { emit }) {
     const handleIconClick = (icon: any) => {
       switch (icon.icon) {
         case "edit":
           emit("edit-clicked");
+
           break;
         case "delete":
           emit(
