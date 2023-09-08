@@ -1,48 +1,100 @@
 <template>
   <Drawer
-    :title="'title'"
+    :title="
+      modeDrawer === eFormMode.Add.toString()
+        ? `Add ${controller}`
+        : `Edit ${controller}`
+    "
     v-model:openDrawer="openDrawer"
     @handleClose="handleCloseDrawer"
     :actions="drawerActions"
   >
-    <!-- <div>
-    <FormProvider v-if="formData !== undefined && open" :methods="methods">
-      <slot></slot>
-    </FormProvider>
-  </div> -->
-    <div>SOME DRAWER DIV</div>
+    <slot></slot>
   </Drawer>
+  <Toast />
 </template>
 
 <script lang="ts">
 import { eFormMode } from "@/assets/enums/EFormMode";
 import Button from "primevue/button";
-import InputPV from "primevue/inputtext";
-import { defineComponent, ref } from "vue";
-import { string } from "yup";
-
-interface Action {
-  component: any;
-  props: Record<string, unknown>;
-}
+import { defineComponent, onMounted, ref, watch } from "vue";
+import Drawer from "../components/Drawer.vue";
+import axios from "axios";
+import { useToast } from "primevue/usetoast";
+import Toast from "primevue/toast";
+import { useForm, useField, FieldArray } from "vee-validate"; // Import useForm
+import { provide } from "vue";
 
 export default defineComponent({
-  name: "GenericToolbar",
-  components: { Button, InputPV },
+  name: "DetailDrawer",
+  components: { Drawer, Toast },
   props: {
     modeDrawer: {
-      type: String,
-      validator: (value: eFormMode) => {
-        return Object.values(eFormMode).includes(value);
-      },
+      type: String as () => keyof typeof eFormMode,
     },
     onClose: { type: Function },
-    formData: { type: null },
-    controller: { type: string, required: true },
-    onSave: { type: Function },
+    formData: { type: Object },
+    controller: { type: String },
+    validationSchema: { type: Object },
+    fetchDataAfterSubmit: { type: Function },
   },
-  setup() {
+  setup(props) {
     const openDrawer = ref<boolean>(false);
+    const toast = useToast();
+    const { handleSubmit, resetForm, setFieldError, setErrors } = useForm({
+      initialValues: props.formData,
+      validationSchema: props.validationSchema,
+    });
+
+    // if (
+    //   (props.formData !== null || props.formData !== undefined) &&
+    //   openDrawer
+    // ) {
+    provide("veeValidateForm", {
+      handleSubmit,
+      resetForm,
+      setFieldError,
+      setErrors,
+      useField,
+      FieldArray,
+    });
+    // }
+
+    const handleFormSubmit = async (data: any) => {
+      let res: any = null;
+      console.log(data, "aaaa");
+      try {
+        if (props.modeDrawer === eFormMode.Add.toString()) {
+          res = await axios.post(`${props.controller}`, data);
+        } else {
+          res = await axios.put(
+            `${props.controller}/${props.formData && props.formData.id}`,
+            data
+          );
+        }
+
+        toast.add({
+          life: 3000,
+          detail: res.data.message,
+          severity: "success",
+          summary: "info",
+        });
+        if (props.fetchDataAfterSubmit) {
+          props.fetchDataAfterSubmit();
+        }
+        handleCloseDrawer();
+      } catch (err) {
+        console.log(err, "ERR");
+      }
+    };
+
+    const handleCloseDrawer = () => {
+      openDrawer.value = false;
+      resetForm();
+      if (props.onClose) {
+        props.onClose();
+      }
+    };
 
     const drawerActions = ref<any[]>([
       {
@@ -52,6 +104,7 @@ export default defineComponent({
           icon: "pi pi-times",
           label: "Submit",
           severity: "primary",
+          onClick: handleSubmit(handleFormSubmit),
         },
       },
       {
@@ -60,20 +113,29 @@ export default defineComponent({
           label: "Cancel",
           icon: "pi pi-check",
           severity: "info",
+          onClick: handleCloseDrawer,
         },
       },
     ]);
 
-    const handleCloseDrawer = () => {
-      //onClose();
-      openDrawer.value = false;
-    };
-    // const eFormMode = {
-    //   Add: "Insert",
-    //   Edit: "Edit",
-    // };
+    onMounted(() => {
+      openDrawer.value = true;
+    });
 
-    return { eFormMode, drawerActions, openDrawer, handleCloseDrawer };
+    // watch([props.formData], ([newFormData]) => {
+    //   if (newFormData) {
+    //         for (const [key, value] of Object.entries(newFormData)) {
+    //           newSetValue(key, value);
+    //         }
+    //   }
+    // });
+
+    return {
+      eFormMode,
+      drawerActions,
+      openDrawer,
+      handleCloseDrawer,
+    };
   },
 });
 </script>

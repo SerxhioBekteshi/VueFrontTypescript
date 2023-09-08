@@ -40,7 +40,11 @@ export default defineComponent({
     const handleIconClick = (icon: any) => {
       switch (icon.icon) {
         case "edit":
-          emit("edit-clicked");
+          emit(
+            "edit-clicked",
+            props.additionalData.data,
+            props.additionalData.data.id
+          );
 
           break;
         case "delete":

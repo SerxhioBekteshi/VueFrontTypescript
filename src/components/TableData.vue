@@ -124,6 +124,7 @@
         </div>
         <div v-else>
           <TableCellActions
+            @edit-clicked="handleEditClick"
             :fieldToShowOnModalDelete="'name'"
             @delete-clicked="openModalFunction"
             :showEdit="showEdit"
@@ -217,7 +218,7 @@ export default defineComponent({
     actionButton: { type: Object as () => Action },
     // onEditClick: { type: Function },
   },
-  setup(props) {
+  setup(props, { emit }) {
     const toast = useToast();
 
     const {
@@ -234,6 +235,10 @@ export default defineComponent({
     const openModalFunction = (field: any, rowId: number) => {
       fieldModalToShow.value = { name: field, id: rowId };
       openModal.value = true;
+    };
+
+    const handleEditClick = (data: any, rowId: number) => {
+      emit("edit-clicked", data, rowId);
     };
 
     const handleModalClose = () => {
@@ -391,12 +396,14 @@ export default defineComponent({
       fieldModalToShow,
       filteredNotIncludedColumns,
       openModalFunction,
+      handleEditClick,
       handleModalClose,
       handleChangePage,
       handleRowDropdownChange,
       handleSearchValue,
       onCellEditComplete,
       handleCellEditorInput,
+      fetchData,
     };
   },
 });
