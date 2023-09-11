@@ -1,9 +1,9 @@
 import axios, { AxiosRequestConfig } from "axios";
 import JwtManager from "../utils/jwtManager";
-import eNotificationType from "../assets/eNotificationType";
+import eNotificationType from "../assets/enums/eNotificationType";
 // import { navigateTo } from "../store/stores/navigation/navigation.store";
 import AuthManager from "../utils/authManager";
-import eHttpResponse from "@/assets/eHttpResponse";
+import eHttpResponse from "@/assets/enums/eHttpResponse";
 
 interface IAxiosRequestConfigRetry extends AxiosRequestConfig {
   _retry: boolean;

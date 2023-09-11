@@ -7,11 +7,14 @@ import PrivateRoute from "../PrivateRoute.vue";
 import LayoutWrapper from "../components/LayoutWrapper.vue";
 import AppLayout from "../layout/AppLayout.vue";
 import LandingPage from "../views/LandingPage.vue";
-import Quiz from "../views/Quiz.vue";
-import ProvidersRegistration from "../views/ProvidersRegistration.vue";
-import ProviderOrders from "../views/ProviderOrders.vue";
-import ProviderMeals from "../views/ProviderMeals.vue";
+import Quiz from "../views/admin/Quiz.vue";
+import ProvidersRegistration from "../views/admin/ProvidersRegistration.vue";
+import ProviderOrders from "../views/provider/ProviderOrders.vue";
+import ProviderMeals from "../views/provider/ProviderMeals.vue";
+import Profile from "../views/Profile.vue";
+import ProfileDetails from "../views/ProfileDetails.vue";
 
+length;
 const routes = [
   {
     path: "/admin",
@@ -77,6 +80,28 @@ const routes = [
         path: "",
         name: "ProviderMeals",
         component: ProviderMeals,
+      },
+    ],
+  },
+  {
+    path: "/profile/personal",
+    component: AppLayout,
+    children: [
+      {
+        path: "",
+        name: "Profile",
+        component: Profile,
+      },
+    ],
+  },
+  {
+    path: "/profile/details",
+    component: AppLayout,
+    children: [
+      {
+        path: "",
+        name: "ProfileDetails",
+        component: ProfileDetails,
       },
     ],
   },

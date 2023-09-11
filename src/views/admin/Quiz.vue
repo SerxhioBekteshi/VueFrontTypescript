@@ -146,9 +146,9 @@ import Checkbox from "primevue/checkbox";
 import Listbox from "primevue/listbox";
 
 import InputText from "primevue/inputtext";
-import Drawer from "../components/Drawer.vue";
+import Drawer from "../../components/Drawer.vue";
 import { compile, defineComponent } from "vue";
-import ValidationError from "../components/ValidationError.vue";
+import ValidationError from "../../components/ValidationError.vue";
 import useVuelidate from "@vuelidate/core";
 import { required, email, helpers } from "@vuelidate/validators";
 import axios from "axios";

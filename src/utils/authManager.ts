@@ -4,7 +4,7 @@ import { IUserState, setUser } from "../store/stores/user.store";
 // import eRoleType from "../assets/enums/eRoleType";
 import { navigateTo } from "../store/stores/navigation.store";
 import { useRouter } from "vue-router";
-import eRoleType from "@/assets/eRoleType";
+import eRoleType from "@/assets/enums/eRoleType";
 
 export interface IUserInfo {
   user: any;
