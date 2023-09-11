@@ -13,17 +13,22 @@ import "@/assets/styles.scss";
 import axiosInit from "./initializers/axios";
 import Tooltip from "primevue/tooltip";
 import ToastService from "primevue/toastservice";
-// import rootReducer from './reducers';
+import { createRedux } from "./store/redux/storePlugin";
+import { store } from "./store/redux/configurations";
+import initApp from "./utils/functions";
 
-// const store = configureStore({
-//     reducer: rootReducer
-//   });
+(async () => {
+  const appStore = await initApp();
+  const reduxStore = createRedux(appStore);
 
-createApp(App)
-  .use(router)
-  .use(ToastPlugin, { position: "top" })
-  .use(PrimeVue, { ripple: true })
-  .use(ToastService)
-  .directive("tooltip", Tooltip)
-  .mount("#app");
-await axiosInit(useToast);
+  createApp(App)
+    .use(reduxStore)
+    .use(router)
+    .use(ToastPlugin, { position: "top" })
+    .use(PrimeVue, { ripple: true })
+    .use(ToastService)
+    .directive("tooltip", Tooltip)
+    .mount("#app");
+
+  await axiosInit(useToast);
+})();

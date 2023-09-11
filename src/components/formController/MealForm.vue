@@ -140,20 +140,21 @@ export default defineComponent({
   name: "MealForm",
   components: { InputText },
   setup() {
-    const { useField, FieldArray } = inject("veeValidateForm");
+    const veeValidateForm: any = inject("veeValidateForm");
 
-    const { value: name } = useField<any>("name");
-    const { value: cousine } = useField("cousine");
-    const { value: carbonFootprint } = useField("carbonFootprint");
-    const { value: dietCategory } = useField("dietCategory");
-    const { value: calories } = useField("calories");
-    const { value: intolerance } = useField("intolerance");
+    const { value: name } = veeValidateForm.useField("name");
+    const { value: cousine } = veeValidateForm.useField("cousine");
+    const { value: carbonFootprint } =
+      veeValidateForm.useField("carbonFootprint");
+    const { value: dietCategory } = veeValidateForm.useField("dietCategory");
+    const { value: calories } = veeValidateForm.useField("calories");
+    const { value: intolerance } = veeValidateForm.useField("intolerance");
 
     const handleSubmitClicked = (event: any) => {
       event.preventDefault();
     };
 
-    return { FieldArray };
+    return {};
   },
 });
 </script>

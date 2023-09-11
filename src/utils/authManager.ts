@@ -1,10 +1,11 @@
 import JwtManager from "./jwtManager";
 import axios from "axios";
-import { IUserState, setUser } from "../store/stores/user.store";
+import { setUser } from "../store/stores/user.store";
 // import eRoleType from "../assets/enums/eRoleType";
 import { navigateTo } from "../store/stores/navigation.store";
 import { useRouter } from "vue-router";
 import eRoleType from "@/assets/enums/eRoleType";
+import { eRoles } from "@/assets/enums/eRoles";
 
 export interface IUserInfo {
   user: any;
@@ -28,14 +29,41 @@ class AuthManager {
   static async getUserFromToken(): Promise<any> {
     if (JwtManager.accessToken) {
       const userInfo = AuthManager.parseJwt(JwtManager.accessToken);
+      const user = userInfo.user;
 
-      return {
-        email: userInfo.email,
-        id: userInfo.Id,
-        role: userInfo.role,
-        firstName: userInfo.firstName,
-        lastName: userInfo.lastName,
-      };
+      if (user.role === eRoles.Provider) {
+        return {
+          email: user.email,
+          id: user.id,
+          role: user.role,
+          name: user.name,
+          lastName: user.lastName,
+          termsAgreed: user.termsAgreed,
+          nipt: user.nipt,
+          photo: user.photo,
+          gender: user.gender,
+        };
+      } else if (user.role === eRoles.User)
+        return {
+          email: user.email,
+          id: user.id,
+          role: user.role,
+          name: user.name,
+          lastName: user.lastName,
+          nipt: user.nipt,
+          accountSubmitted: user.accountSubmitted,
+          photo: user.photo,
+          quizFulfilled: user.quizFulfilled,
+        };
+      else
+        return {
+          email: user.email,
+          id: user.id,
+          role: user.role,
+          name: user.name,
+          lastName: user.lastName,
+          photo: user.photo,
+        };
     }
     return null;
   }

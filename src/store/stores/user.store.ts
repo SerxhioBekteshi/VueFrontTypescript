@@ -1,16 +1,8 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-// import IUser from '../../../interfaces/IUser';
-
-export interface IUserState {
-  email: string;
-  id: number;
-  role: string;
-  firstName: string;
-  lastName: string;
-}
+import { IUserState } from "@/interfaces/IUserState";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const userStore = createSlice({
-  name: 'user',
+  name: "user",
   initialState: null as unknown as IUserState,
   reducers: {
     setUser(_state, action: PayloadAction<any>) {
