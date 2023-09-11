@@ -8,8 +8,8 @@
     :id="id"
     :class="{
       dirty: meta.dirty,
-      valid: meta.touched && meta.valid,
-      invalid: meta.touched && !meta.valid,
+      // valid: meta.touched && meta.valid,
+      // invalid: meta.touched && !meta.valid,
     }"
     @change="handleChange"
     @blur="handleBlur"
@@ -34,6 +34,8 @@ const { handleChange, value, handleBlur, errorMessage, meta } = useField(
   () => props.name,
   undefined
 );
+
+// const state = value;
 
 // const validationListeners = {
 //   blur: (evt) => handleBlur(evt, true),
