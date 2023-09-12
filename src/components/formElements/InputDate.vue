@@ -14,7 +14,7 @@
       // valid: meta.touched && meta.valid,
       // invalid: meta.touched && !meta.valid,
     }"
-    v-model="formattedDate"
+    v-model="value"
   />
   <ValidationError v-if="errorMessage">{{ errorMessage }}</ValidationError>
 </template>
@@ -40,5 +40,15 @@ const props = defineProps({
 const { value, errorMessage, meta } = useField(() => props.name, undefined);
 
 // Store the formatted date as a string
-const formattedDate = ref(moment(value).format("YYYY/MM/DD"));
+const formattedDate = ref(moment(value).format("YYYY-MM-DD"));
+
+const derivedFormattedDate = computed({
+  get: () => formattedDate.value,
+  set: (newValue) => {
+    formattedDate.value = newValue;
+    // Emit an event to update the parent's birthDate prop when the value changes
+    console.log(newValue);
+    // emit("update:birthDate", newValue);
+  },
+});
 </script>

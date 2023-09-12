@@ -163,6 +163,8 @@ export default defineComponent({
       const formData = new FormData();
       formData.append("image", file);
 
+      console.log(file, formData);
+
       try {
         const res: any = await axios.post(`/user/image`, formData);
 
