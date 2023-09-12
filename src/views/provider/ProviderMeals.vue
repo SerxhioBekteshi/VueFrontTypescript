@@ -652,21 +652,6 @@ const removeBlobPhoto = () => {
                 />
               </div>
             </div>
-            <!-- <div v-else>
-              <Button
-                icon="pi pi-times"
-                rounded
-                text
-                severity="danger"
-                class="absolute top-0 right-0"
-              />
-              <img
-                class="shadow-2 border-round"
-                style="width: 100%"
-                :src="`http://localhost:8082/${blobImage}`"
-                :alt="`Meal image`"
-              />
-            </div> -->
           </template>
         </FileUpload>
       </div>

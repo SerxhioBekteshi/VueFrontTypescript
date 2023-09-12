@@ -42,6 +42,9 @@ class AuthManager {
           nipt: user.nipt,
           photo: user.photo,
           gender: user.gender,
+          birthDate: user.birthDate,
+          state: user.state,
+          address: user.address,
         };
       } else if (user.role === eRoles.User)
         return {
@@ -54,6 +57,9 @@ class AuthManager {
           accountSubmitted: user.accountSubmitted,
           photo: user.photo,
           quizFulfilled: user.quizFulfilled,
+          birthDate: user.birthDate,
+          state: user.state,
+          address: user.address,
         };
       else
         return {
@@ -63,6 +69,9 @@ class AuthManager {
           name: user.name,
           lastName: user.lastName,
           photo: user.photo,
+          birthDate: user.birthDate,
+          state: user.state,
+          address: user.address,
         };
     }
     return null;

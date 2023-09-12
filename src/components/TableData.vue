@@ -79,6 +79,7 @@
       :field="column.propertyName"
       :header="column.title"
       style="width: 25%"
+      sortable
     >
       <template #body="slotProps">
         <div v-if="dataLoading">

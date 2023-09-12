@@ -1,14 +1,25 @@
 <template>
   <div class="grid">
-    <div class="md:col-5 sm:col-12 card">
-      <div class="flex align-items-center justify-content-center">
+    <div
+      class="md:col-5 sm:col-12 card flex align-items-center justify-content-center"
+    >
+      <div class="flex flex-column gap-3">
         <div class="image-wrapper">
           <img
             class="image-content"
-            :src="`http://localhost:1112/${profile.photo}`"
+            :src="`http://localhost:1112/public/images/users/${profile.photo}`"
             :alt="profile.name"
           />
-          {{ profile.photo }}
+        </div>
+        <div class="text-center">
+          <FileUpload
+            :multiple="false"
+            mode="basic"
+            @uploader="handleFileUpload($event)"
+            :maxFileSize="1000000"
+            accept="image/*"
+            :customUpload="true"
+          />
         </div>
       </div>
     </div>
@@ -16,6 +27,7 @@
       <div>
         <h2>Profile Settings</h2>
       </div>
+      <form @submit="handlePrevent"></form>
       <div class="grid">
         <div style="margin-top: 1rem" class="col-6">
           <InputText
@@ -30,7 +42,7 @@
         <div style="margin-top: 1rem" class="col-6">
           <InputText
             name="lastName"
-            :label="'lastName'"
+            :label="'LastName'"
             id="lastName"
             placeholder="lastName"
             v-bind="lastName"
@@ -39,7 +51,7 @@
         <div class="col-12">
           <InputText
             name="address"
-            :label="'address'"
+            :label="'Address'"
             id="address"
             placeholder="address"
             v-bind="address"
@@ -49,7 +61,7 @@
         <div class="col-12">
           <InputText
             name="state"
-            :label="'state'"
+            :label="'State'"
             id="state"
             placeholder="state"
             v-bind="state"
@@ -57,76 +69,46 @@
         </div>
 
         <div class="col-12">
-          <Dropdown
-            v-model="gender"
+          <InputSelect
             :options="[
-              { gender: 'male', value: 'gender' },
-              { gender: 'female', value: 'male' },
+              { gender: 'male', value: 'male' },
+              { gender: 'female', value: 'female' },
             ]"
-            optionLabel="gender"
-            placeholder="Select gender"
-            class="w-full"
-          />
-        </div>
-
-        <div class="col-12">
-          <span class="p-float-label">
-            <Calendar v-model="birthDate" inputId="birth_date" class="w-full" />
-            <label for="birth_date">Birth Date</label>
-          </span>
-        </div>
-
-        <!-- <div class="col-12">
-          <InputText
+            :optionLabel="'gender'"
+            :optionValue="'value'"
             name="lastName"
-            :label="'lastName'"
-            id="lastName"
-            placeholder="lastName"
+            :label="'Gender'"
+            id="state"
+            placeholder="LastName"
             v-bind="lastName"
           />
         </div>
 
         <div class="col-12">
-          <InputText
-            name="lastName"
-            :label="'lastName'"
-            id="lastName"
-            placeholder="lastName"
-            v-bind="lastName"
+          <InputDate
+            name="birthDate"
+            :label="'BirthDate'"
+            id="birthDate"
+            placeholder="birthDate"
+            v-bind="birthDate"
+            :dateFormat="'yy-mm-dd'"
           />
         </div>
-
-        <div class="col-12">
-          <InputText
-            name="lastName"
-            :label="'lastName'"
-            id="lastName"
-            placeholder="lastName"
-            v-bind="lastName"
-          />
-        </div>
-
-        <div class="col-12">
-          <InputText
-            name="lastName"
-            :label="'lastName'"
-            id="lastName"
-            placeholder="lastName"
-            v-bind="lastName"
-          />
-        </div> -->
       </div>
 
       <div class="flex justify-content-start mt-3 gap-3">
         <div>
-          <Button severity="primary" label="Edit" />
+          <Button
+            severity="primary"
+            label="Edit"
+            @click="handleSubmit(handleEditProfileData)()"
+          />
         </div>
-        <div>
-          <Button severity="info" label="Reset" />
-        </div>
+        <div><Button severity="info" label="Reset" @click="resetForm()" /></div>
       </div>
     </div>
     <!-- <div class="md:col-3 sm:col-12 card">SOME OTHER DATA</div> -->
+    <Toast />
   </div>
 </template>
 
@@ -136,17 +118,22 @@ import { defineComponent } from "vue";
 import InputText from "../components/formElements/InputText.vue";
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import Dropdown from "primevue/dropdown";
-import Calendar from "primevue/calendar";
+import InputSelect from "../components/formElements/InputText.vue";
+import InputDate from "../components/formElements/InputDate.vue";
 import Button from "primevue/button";
+import axios from "axios";
+import { useToast } from "primevue/usetoast";
+import Toast from "primevue/toast";
+import FileUpload from "primevue/fileupload";
 
 export default defineComponent({
   name: "TableCell",
-  components: { InputText, Dropdown, Calendar, Button },
+  components: { InputText, InputSelect, InputDate, Button, FileUpload },
   props: {},
   setup() {
     const profile = useReduxSelector((state) => state.user);
-
+    const toast = useToast();
+    console.log(profile, "PROFILE");
     const schema = yup.object().shape({
       name: yup.string().required("Name is required").label("Name"),
       lastName: yup
@@ -154,8 +141,12 @@ export default defineComponent({
         .required("Last name is required")
         .label("Last Name"),
       gender: yup.string().required("Gender is required").label("Gender"),
-      address: yup.string().required("Address is required").label("Gender"),
-      state: yup.string().required("State is required").label("Gender"),
+      address: yup.string().required("Address is required").label("Address"),
+      state: yup.string().required("State is required").label("State"),
+      birthDate: yup
+        .string()
+        .required("Birthdate is required")
+        .label("Birthdate"),
     });
 
     const { handleSubmit, defineInputBinds, resetForm } = useForm({
@@ -163,9 +154,57 @@ export default defineComponent({
       validationSchema: schema,
     });
 
-    const { value: name } = useField("name");
+    const handlePrevent = (event: any) => {
+      event.preventDefault();
+    };
 
-    return { profile };
+    const handleFileUpload = async (event: any) => {
+      const file = event.files[0];
+      const formData = new FormData();
+      formData.append("image", file);
+
+      try {
+        const res: any = await axios.post(`/user/image`, formData);
+
+        if (res && res !== null) {
+          toast.add({
+            life: 3000,
+            detail: res.data.message,
+            severity: "success",
+            summary: "info",
+          });
+          //update user state after this from dispatch
+        }
+      } catch (err) {
+        console.log(err, "ERR");
+      }
+    };
+
+    const handleEditProfileData = async (values: any) => {
+      console.log(values, "DATA");
+    };
+
+    const { value: name } = useField("name");
+    const { value: lastName } = useField("lastName");
+    const { value: gender } = useField("gender");
+    const { value: address } = useField("address");
+    const { value: state } = useField("state");
+    const { value: birthDate } = useField("birthDate");
+
+    return {
+      name,
+      profile,
+      lastName,
+      gender,
+      address,
+      state,
+      birthDate,
+      handlePrevent,
+      handleFileUpload,
+      handleEditProfileData,
+      handleSubmit,
+      resetForm,
+    };
   },
 });
 </script>
