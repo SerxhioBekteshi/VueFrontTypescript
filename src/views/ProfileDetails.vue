@@ -6,6 +6,7 @@
       <div class="flex flex-column gap-3">
         <div class="image-wrapper">
           <img
+            v-if="profile.photo"
             class="image-content"
             :src="`http://localhost:1112/public/images/users/${profile.photo}`"
             :alt="profile.name"
@@ -127,7 +128,7 @@ import Toast from "primevue/toast";
 import FileUpload from "primevue/fileupload";
 
 export default defineComponent({
-  name: "TableCell",
+  name: "ProfileDetails",
   components: { InputText, InputSelect, InputDate, Button, FileUpload },
   props: {},
   setup() {
@@ -222,5 +223,6 @@ export default defineComponent({
   width: 100%;
   height: 100%;
   object-fit: cover; /* Preserve aspect ratio while filling the container */
+  border-radius: 50%;
 }
 </style>

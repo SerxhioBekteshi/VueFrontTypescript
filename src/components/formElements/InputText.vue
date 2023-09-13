@@ -28,6 +28,7 @@ const props = defineProps({
   type: { type: String, required: true },
   placeholder: { type: String },
   label: { type: String },
+  feedback: { type: Boolean },
 });
 
 const { handleChange, value, handleBlur, errorMessage, meta } = useField(
