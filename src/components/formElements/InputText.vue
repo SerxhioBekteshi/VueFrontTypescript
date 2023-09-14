@@ -1,5 +1,10 @@
 <template>
-  <label :for="name" :style="{ marginBottom: '1rem' }"> {{ label }}</label>
+  <label
+    :for="name"
+    :style="{ marginBottom: '1rem', color: errorMessage ? 'red' : '' }"
+  >
+    {{ label }}
+  </label>
   <InputText
     :value="value"
     :type="type || 'text'"

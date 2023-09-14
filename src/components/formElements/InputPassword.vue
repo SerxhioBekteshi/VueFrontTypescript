@@ -1,59 +1,80 @@
 <template>
   <div>
     <label :for="name" :style="{ color: errorMessage ? 'red' : '' }">
-      {{ label }}</label
-    >
+      {{ label }}
+    </label>
     <span :class="`p-input-icon-${iconPosition} w-full`">
-      <i :class="`pi ${icon} hoverOnIcon`" @click="$emit('iconAction')" />
+      <i
+        :class="`pi pi ${
+          inputType === 'password' ? 'pi-eye' : 'pi-eye-slash'
+        } hoverOnIcon`"
+        @click="toggleShowPassword"
+      />
       <InputText
         :value="value"
-        :type="'text'"
+        :type="inputType"
         :style="{ borderColor: errorMessage ? 'red' : '', width: '100%' }"
         :placeholder="placeholder"
         :id="id"
         :class="{
           dirty: meta.dirty,
-          valid: !errorMessage,
-          invalid: errorMessage,
+          // valid: !errorMessage,
+          // invalid: errorMessage,
         }"
         @change="handleChange"
-        :feedback="feedback"
+        @keyup="handleOnKeyUp"
+        @blur="handleOnBlur"
+        @focus="handleOnFocus"
       />
     </span>
     <ValidationError v-if="errorMessage">{{ errorMessage }}</ValidationError>
   </div>
 </template>
 
-<script setup>
+<script lang="ts">
 import { useField } from "vee-validate";
 import ValidationError from "../ValidationError.vue";
-import { defineProps, ref, getCurrentInstance, defineEmits } from "vue";
+import { PropType, defineComponent, ref } from "vue";
 import InputText from "primevue/inputtext";
 
-const props = defineProps({
-  name: { type: String, required: true },
-  type: { type: String, required: true },
-  placeholder: { type: String },
-  label: { type: String },
-  style: { type: Object },
-  feedback: { type: Boolean, default: false },
-  handleOnBlur: { type: Function },
-  handleOnKeyUp: { type: Function },
-  handleOnFocus: { type: Function },
-  icon: { type: String },
-  iconPosition: { type: String },
+export default defineComponent({
+  name: "InputPassword",
+  components: { InputText, ValidationError },
+  props: {
+    id: { type: String },
+    name: { type: String, required: true },
+    placeholder: { type: String },
+    label: { type: String },
+    style: { type: Object },
+    handleOnBlur: { type: Function as PropType<(event: FocusEvent) => void> },
+    handleOnKeyUp: {
+      type: Function as PropType<(event: KeyboardEvent) => void>,
+    },
+    handleOnFocus: { type: Function as PropType<(event: FocusEvent) => void> },
+    iconPosition: { type: String },
+  },
+  setup(props) {
+    const inputType = ref<string>("password");
+
+    const toggleShowPassword = () => {
+      inputType.value = inputType.value === "password" ? "text" : "password";
+    };
+
+    const { value, handleChange, errorMessage, meta } = useField(
+      () => props.name,
+      undefined
+    );
+
+    return {
+      inputType,
+      errorMessage,
+      value,
+      meta,
+      handleChange,
+      toggleShowPassword,
+    };
+  },
 });
-// const { emit } = getCurrentInstance();
-// const emit = defineEmits(["iconAction"]); // Define the emits option with your event name
-
-// const handleIconActionClick = () => {
-//   emit("iconAction");
-// };
-
-const { handleChange, value, errorMessage, meta } = useField(
-  () => props.name,
-  undefined
-);
 </script>
 <style>
 .hoverOnIcon:hover {

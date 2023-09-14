@@ -6,64 +6,31 @@
         <div class="grid">
           <div class="xs:col-12 sm:col-12 md:col-4 flex mb-3">
             <InputPassword
-              name="currentPassword"
+              :name="'oldPassword'"
               :label="'Current password'"
-              id="currentPassword"
+              :id="'oldPassword'"
               :placeholder="'Current Password'"
-              v-bind="currentPassword"
-              @iconAction="handleClickShowCurrentPassword"
-              :icon="'pi pi-eye'"
               :iconPosition="'right'"
-              :type="passwordValues.showCurrentPassword ? 'text' : 'password'"
             />
           </div>
           <div class="xs:col-12 sm:col-12 md:col-4 flex mb-3">
             <InputPassword
-              name="newPassword"
+              :name="'password'"
               :label="'New password'"
-              id="newPassword"
+              :id="'password'"
               :placeholder="'New Password'"
-              v-bind="newPassword"
-              @iconAction="handleClickShowNewPassword"
-              :icon="'pi pi-eye'"
               :iconPosition="'right'"
-              :type="passwordValues.showNewPassword ? 'text' : 'password'"
-              :handleOnFocus="handleOnFocus"
               :handleOnBlur="handleOnBlur"
               :handleOnKeyUp="handleOnKeyUp"
             />
           </div>
-          <!-- <div class="xs:col-12 sm:col-12 md:col-4 flex mb-3">
-            <span class="p-input-icon-right w-full">
-              <i
-                class="pi pi-eye hoverOnIcon"
-                @click="handleClickShowNewPassword"
-              />
-              <InputText
-                class="w-full"
-                v-model="newPassword"
-                :type="passwordValues.showNewPassword ? 'text' : 'password'"
-                :feedback="false"
-                @keyup="handleOnKeyUp"
-                @blur="handleOnBlur"
-                @focus="handleOnFocus"
-                ref="currentPasswordInput"
-              />
-            </span>
-          </div> -->
           <div class="xs:col-12 sm:col-12 md:col-4 flex mb-3">
             <InputPassword
-              name="confirmNewPassword"
+              :name="'passwordConfirm'"
               :label="'Confirm new password'"
-              id="confirmNewPassword"
-              placeholder="Confirm new password"
-              v-bind="confirmNewPassword"
-              @iconAction="handleClickShowConfirmNewPassword"
-              :icon="'pi pi-eye'"
+              :id="'passwordConfirm'"
+              :placeholder="'Confirm new password'"
               :iconPosition="'right'"
-              :type="
-                passwordValues.showConfirmNewPassword ? 'text' : 'password'
-              "
             />
           </div>
         </div>
@@ -191,18 +158,23 @@
           />
         </div>
         <div>
-          <Button severity="info" label="Reset" />
+          <Button
+            severity="info"
+            label="Reset"
+            @click="
+              resetForm({
+                oldPassword: '',
+                password: '',
+                passwordConfirm: '',
+              })
+            "
+          />
         </div>
       </div>
     </div>
   </div>
 
-  <!--   @click="
-              resetForm({
-                currentPassword: '',
-                newPassword: '',
-                confirmNewPassword: '',
-              })
+  <!--   
             "-->
   <Toast />
 </template>
@@ -219,17 +191,15 @@ import * as yup from "yup";
 import OverlayPanel from "primevue/overlaypanel";
 import { ICheckPassword } from "@/interfaces/ICheckPassword";
 import InputPassword from "../components/formElements/InputPassword.vue";
+import { provide } from "vue";
+import axios from "axios";
 
 export default defineComponent({
   name: "ProfilePassword",
   components: { Toast, Button, OverlayPanel, InputPassword },
   props: {},
   setup() {
-    const passwordValues = ref<IShowChangePasswordInput>({
-      showNewPassword: false,
-      showCurrentPassword: false,
-      showConfirmNewPassword: false,
-    });
+    const toast = useToast();
 
     const newPasswordChecks = ref<ICheckPassword>({
       capsLetterCheck: false,
@@ -239,36 +209,12 @@ export default defineComponent({
       specialCharCheck: false,
     });
 
-    const handleClickShowCurrentPassword = () => {
-      passwordValues.value = {
-        showConfirmNewPassword: passwordValues.value.showConfirmNewPassword,
-        showCurrentPassword: !passwordValues.value.showCurrentPassword,
-        showNewPassword: passwordValues.value.showNewPassword,
-      };
-    };
-
-    const handleClickShowNewPassword = () => {
-      passwordValues.value = {
-        showConfirmNewPassword: passwordValues.value.showConfirmNewPassword,
-        showCurrentPassword: passwordValues.value.showCurrentPassword,
-        showNewPassword: !passwordValues.value.showNewPassword,
-      };
-    };
-
-    const handleClickShowConfirmNewPassword = () => {
-      passwordValues.value = {
-        showConfirmNewPassword: !passwordValues.value.showConfirmNewPassword,
-        showCurrentPassword: passwordValues.value.showCurrentPassword,
-        showNewPassword: passwordValues.value.showNewPassword,
-      };
-    };
-
     const schemaToValidate = yup.object().shape({
-      currentPassword: yup
+      oldPassword: yup
         .string()
         .required("Current Password is required")
         .min(8, "Current Password must be at least 8 characters long"),
-      newPassword: yup
+      password: yup
         .string()
         .required("New Password is required")
         .min(8, "New Password must be at least 8 characters long")
@@ -285,26 +231,31 @@ export default defineComponent({
           "Password must contain at least one special character."
         )
         .matches(/[0-9]/, "Password must contain at least one number"),
-      confirmNewPassword: yup
+      passwordConfirm: yup
         .string()
         .required("Confirm New Password is required")
-        .test("passwords-match", "Passwords must match", function (value) {
-          return value === this.parent.newPassword;
-        }),
+        .min(8, "Confirm New Password must be at least 8 characters long")
+        .test(
+          "passwords-match",
+          "Confirm new password must match with new password",
+          function (value) {
+            return value === this.parent.password;
+          }
+        ),
     });
 
-    const { handleSubmit, resetForm } = useForm({
+    const { handleSubmit, resetForm, setValues } = useForm({
       validationSchema: schemaToValidate,
       initialValues: {
-        currentPassword: "",
-        newPassword: "",
-        confirmNewPassword: "",
+        oldPassword: "",
+        password: "",
+        passwordConfirm: "",
       },
     });
 
-    const { value: currentPassword } = useField("currentPassword");
-    const { value: newPassword } = useField("newPassword");
-    const { value: confirmNewPassword } = useField("confirmNewPassword");
+    const { value: oldPassword } = useField<string>("oldPassword");
+    const { value: password } = useField<string>("password");
+    const { value: passwordConfirm } = useField<string>("passwordConfirm");
 
     const op = ref();
     const handleOnBlur = (event: any) => {
@@ -340,22 +291,31 @@ export default defineComponent({
       event.preventDefault();
     };
 
-    const handlePasswordChange = (values: any) => {
-      console.log(values, "a");
+    const handlePasswordChange = async (values: any) => {
+      try {
+        const res: any = await axios.put("/user/updatePassword", values);
+
+        if (res != null && res.data) {
+          toast.add({
+            life: 3000,
+            detail: "Password updated successfully",
+            severity: "success",
+            summary: "info",
+          });
+        }
+      } catch (err) {
+        console.log(err, "ERR");
+      }
     };
 
     return {
-      passwordValues,
-      currentPassword,
-      newPassword,
-      confirmNewPassword,
+      oldPassword,
+      password,
+      passwordConfirm,
       newPasswordChecks,
       op,
-      handleClickShowCurrentPassword,
-      handleClickShowNewPassword,
-      handleClickShowConfirmNewPassword,
-      resetForm,
       handleSubmit,
+      resetForm,
       handlePasswordChange,
       handleOnKeyUp,
       handleOnBlur,

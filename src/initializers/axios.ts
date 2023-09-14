@@ -38,7 +38,7 @@ const handleResponseMessage = (
       break;
     case eNotificationType.Error:
       $toast.open({
-        message: response?.message && response?.message,
+        message: response?.data?.message,
         type: "error",
         position: "top-right",
         duration: 3000,
