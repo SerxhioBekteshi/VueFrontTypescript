@@ -37,7 +37,7 @@
         }"
         :rows="pageSize"
         :totalRecords="totalItems"
-        :rowsPerPageOptions="[3, 5, 10]"
+        :rowsPerPageOptions="rowsPerPageOptions"
         :rowPerPageDropdown="{ class: 'custom-dropdown-style' }"
         @page="handleChangePage"
         @update:rows="handleRowDropdownChange"
@@ -56,6 +56,7 @@
       <div v-if="dataLoading">
         <div
           style="display: flex; justify-content: center; align-items: center"
+          ProgressSpinner
         >
           <ProgressSpinner />
         </div>
@@ -300,7 +301,7 @@ export default defineComponent({
     const currentPage = ref<number>(1);
     const pageSize = ref<any>(3);
     const totalItems = ref<number>(0);
-
+    const rowsPerPageOptions = ref<any>([3, 5, 10]);
     const tableColumns = ref<IColumn[]>([]);
     const searchValue = ref<string>("");
     const tableData = ref<any>();
@@ -359,27 +360,49 @@ export default defineComponent({
       }, 100);
     };
 
+    // const isEditing = ref(false);
+    // const fieldToEdit = ref("");
+    // const handleCellClick = () => {
+    //   console.log("click", "AA");
+    // };
+
     const onCellEditComplete = async (event: any) => {
-      let { data, field } = event;
-      if (data[field] !== cellValue.value) {
-        data[field] = cellValue;
+      let { data, field, newValue } = event;
 
-        try {
-          const res: any = await axios.put(
-            `${controller.value}/${data.id}`,
-            data
-          );
+      if (!cellValue.value)
+        toast.add({
+          life: 3000,
+          detail: `Can't leave empty cell`,
+          severity: "error",
+          summary: "This field is a required one",
+        });
+      else {
+        if (data[field] === cellValue.value) {
+          toast.add({
+            life: 3000,
+            detail: `Can't edit with the same value`,
+            severity: "error",
+            // summary: "This field is a required one",
+          });
+        } else {
+          data[field] = cellValue;
+          try {
+            const res: any = await axios.put(
+              `${controller.value}/${data.id}`,
+              data
+            );
 
-          if (res != null) {
-            toast.add({
-              life: 3000,
-              detail: `Field ${field} was edited successfully`,
-              severity: "success",
-              summary: "info",
-            });
+            if (res != null) {
+              toast.add({
+                life: 3000,
+                detail: `Field ${field} was edited successfully`,
+                severity: "success",
+                summary: "info",
+              });
+            }
+          } catch (err) {
+            console.log(err, "ERR");
           }
-        } catch (err) {
-          console.log(err, "ERR");
         }
       }
     };
@@ -388,6 +411,7 @@ export default defineComponent({
       currentPage,
       pageSize,
       searchValue,
+      rowsPerPageOptions,
       modalActions,
       tableData,
       dataLoading,

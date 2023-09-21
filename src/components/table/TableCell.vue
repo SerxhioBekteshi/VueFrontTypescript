@@ -107,7 +107,7 @@ export default defineComponent({
   },
 });
 </script>
-<style>
+<style scoped>
 ::v-deep(.p-listbox) {
   padding: 0;
 }

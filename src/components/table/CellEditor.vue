@@ -9,7 +9,7 @@
     "
   >
     <InputNumber
-      v-model="localValue"
+      v-model="numberValue"
       @input="updateValue"
       :useGrouping="column.propertyType !== eDataType.Number"
       autofocus
@@ -21,21 +21,25 @@
       column.propertyType === eDataType.DateOnly
     "
   >
-    DateInput but it will be created later
+    <Calendar v-model="localValue" @input="updateValue" autofocus />
   </div>
   <div v-if="column.propertyType === eDataType.Tags">
     Tags meaning is the array type
   </div>
+  <div v-if="column.propertyType === eDataType.Image"></div>
+  <Toast />
 </template>
 
 <script lang="ts">
-import { PropType, defineComponent, ref } from "vue";
+import { PropType, computed, defineComponent, ref } from "vue";
 import InputText from "primevue/inputtext";
 import InputNumber from "primevue/inputnumber";
+import Calendar from "primevue/calendar";
+import { useToast } from "primevue/usetoast";
 
 export default defineComponent({
   name: "CellEditor",
-  components: { InputText, InputNumber },
+  components: { InputText, InputNumber, Calendar },
   props: {
     data: {
       type: null as unknown as PropType<any>,
@@ -54,6 +58,7 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const localValue = ref(props.data[props.field]);
+    const toast = useToast();
 
     const updateValue = () => {
       emit("input", localValue.value);
@@ -73,7 +78,29 @@ export default defineComponent({
       Image: 11,
     };
 
-    return { eDataType, localValue, updateValue };
+    const showImageToast = () => {
+      toast.add({
+        severity: "error",
+        summary: "Can't edit cell of images",
+        life: 3000, // Adjust the duration as needed
+      });
+    };
+
+    const numberValue = computed({
+      get: () => parseFloat(localValue.value),
+      set: (newValue) => {
+        localValue.value = newValue;
+        updateValue();
+      },
+    });
+
+    return {
+      eDataType,
+      localValue,
+      updateValue,
+      showImageToast,
+      numberValue,
+    };
   },
 });
 </script>
