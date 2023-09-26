@@ -1,24 +1,27 @@
 <template>
-  <label
-    :for="name"
-    :style="{ marginBottom: '1rem', color: errorMessage ? 'red' : '' }"
-  >
-    {{ label }}
-  </label>
-  <InputText
-    :value="value"
-    :type="type || 'text'"
-    :style="{ borderColor: errorMessage ? 'red' : '', width: '100%' }"
-    :placeholder="placeholder"
-    :id="id"
-    :class="{
-      dirty: meta.dirty,
-      // valid: meta.touched && meta.valid,
-      // invalid: meta.touched && !meta.valid,
-    }"
-    @change="handleChange"
-    @blur="handleBlur"
-  />
+  <span class="p-float-label">
+    <InputText
+      v-model="value"
+      :type="'text'"
+      :id="id"
+      :style="{ borderColor: errorMessage ? 'red' : '', width: '100%' }"
+      :placeholder="placeholder"
+      :class="{
+        dirty: meta.dirty,
+        // valid: meta.touched && meta.valid,
+        // invalid: meta.touched && !meta.valid,
+      }"
+      :inputId="name"
+      @blur="handleBlur"
+    />
+    <label
+      :for="name"
+      :style="{ marginBottom: '1rem', color: errorMessage ? 'red' : '' }"
+    >
+      {{ label }}
+    </label>
+  </span>
+
   <ValidationError v-if="errorMessage">{{ errorMessage }}</ValidationError>
 </template>
 

@@ -368,22 +368,23 @@ export default defineComponent({
 
     const onCellEditComplete = async (event: any) => {
       let { data, field, newValue } = event;
-
-      if (!cellValue.value)
+      if (data[field] === cellValue.value) {
         toast.add({
           life: 3000,
-          detail: `Can't leave empty cell`,
+          detail: `Can't edit with the same value`,
           severity: "error",
-          summary: "This field is a required one",
+          // summary: "This field is a required one",
         });
-      else {
-        if (data[field] === cellValue.value) {
+        cellValue.value = null;
+      } else {
+        if (!cellValue.value) {
           toast.add({
             life: 3000,
-            detail: `Can't edit with the same value`,
+            detail: `Can't leave empty cell`,
             severity: "error",
-            // summary: "This field is a required one",
+            summary: "This field is a required one",
           });
+          cellValue.value = null;
         } else {
           data[field] = cellValue;
           try {
@@ -400,6 +401,7 @@ export default defineComponent({
                 summary: "info",
               });
             }
+            cellValue.value = null;
           } catch (err) {
             console.log(err, "ERR");
           }

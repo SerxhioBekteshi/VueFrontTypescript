@@ -1,21 +1,25 @@
 <template>
-  <label :for="name" :style="{ color: errorMessage ? 'red' : '' }">
-    {{ label }}</label
-  >
-  <Dropdown
-    :optionLabel="optionLabel"
-    :options="options"
-    :style="{ borderColor: errorMessage ? 'red' : '', width: '100%' }"
-    :placeholder="placeholder"
-    :id="id"
-    :class="{
-      dirty: meta.dirty,
-      // valid: meta.touched && meta.valid,
-      // invalid: meta.touched && !meta.valid,
-    }"
-    :optionValue="optionValue"
-    v-model="value"
-  />
+  <span class="p-float-label">
+    <Dropdown
+      :optionLabel="optionLabel"
+      :options="options"
+      :style="{ borderColor: errorMessage ? 'red' : '', width: '100%' }"
+      :placeholder="placeholder"
+      :id="id"
+      :class="{
+        dirty: meta.dirty,
+        // valid: meta.touched && meta.valid,
+        // invalid: meta.touched && !meta.valid,
+      }"
+      :inputId="name"
+      :optionValue="optionValue"
+      v-model="value"
+    />
+    <label :for="name" :style="{ color: errorMessage ? 'red' : '' }">
+      {{ label }}</label
+    >
+  </span>
+
   <ValidationError v-if="errorMessage">{{ errorMessage }}</ValidationError>
 </template>
 
@@ -34,19 +38,4 @@ const props = defineProps({
   optionValue: { type: String },
 });
 const { value, errorMessage, meta } = useField(() => props.name, undefined);
-// const selectedValue = ref(null);
-// watch(
-//   () => value,
-//   (newValue) => {
-//     selectedValue.value = newValue;
-//   }
-// );
-
-// // Watch for changes in the selectedValue and update the value of the field
-// watch(
-//   () => selectedValue.value,
-//   (newValue) => {
-//     value.value = newValue;
-//   }
-// );
 </script>

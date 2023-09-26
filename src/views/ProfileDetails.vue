@@ -33,9 +33,9 @@
         <div style="margin-top: 1rem" class="col-6">
           <InputText
             name="name"
-            :label="'name'"
+            :label="'Name'"
             id="name"
-            placeholder="name"
+            placeholder="Name"
             v-bind="name"
           />
         </div>
@@ -43,9 +43,9 @@
         <div style="margin-top: 1rem" class="col-6">
           <InputText
             name="lastName"
-            :label="'LastName'"
+            :label="'Last Name'"
             id="lastName"
-            placeholder="lastName"
+            placeholder="Last Name"
             v-bind="lastName"
           />
         </div>
@@ -54,7 +54,7 @@
             name="address"
             :label="'Address'"
             id="address"
-            placeholder="address"
+            placeholder="Address"
             v-bind="address"
           />
         </div>
@@ -64,7 +64,7 @@
             name="state"
             :label="'State'"
             id="state"
-            placeholder="state"
+            placeholder="State"
             v-bind="state"
           />
         </div>
@@ -77,11 +77,11 @@
             ]"
             :optionLabel="'gender'"
             :optionValue="'value'"
-            name="lastName"
+            name="gender"
             :label="'Gender'"
             id="state"
-            placeholder="LastName"
-            v-bind="lastName"
+            placeholder="Gender"
+            v-bind="gender"
           />
         </div>
 
@@ -108,18 +108,18 @@
         <div><Button severity="info" label="Reset" @click="resetForm()" /></div>
       </div>
     </div>
-    <!-- <div class="md:col-3 sm:col-12 card">SOME OTHER DATA</div> -->
+
     <Toast />
   </div>
 </template>
 
 <script lang="ts">
 import { useReduxSelector } from "@/store/redux/helpers";
-import { defineComponent } from "vue";
+import { defineComponent, provide } from "vue";
 import InputText from "../components/formElements/InputText.vue";
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import InputSelect from "../components/formElements/InputText.vue";
+import InputSelect from "../components/formElements/InputSelect.vue";
 import InputDate from "../components/formElements/InputDate.vue";
 import Button from "primevue/button";
 import axios from "axios";
@@ -134,7 +134,6 @@ export default defineComponent({
   setup() {
     const profile = useReduxSelector((state) => state.user);
     const toast = useToast();
-    console.log(profile, "PROFILE");
     const schema = yup.object().shape({
       name: yup.string().required("Name is required").label("Name"),
       lastName: yup
@@ -150,10 +149,11 @@ export default defineComponent({
         .label("Birthdate"),
     });
 
-    const { handleSubmit, defineInputBinds, resetForm } = useForm({
+    const { handleSubmit, resetForm, setFieldValue } = useForm({
       initialValues: profile,
       validationSchema: schema,
     });
+    provide("profileDetailsForm", { setFieldValue });
 
     const handlePrevent = (event: any) => {
       event.preventDefault();
@@ -163,8 +163,6 @@ export default defineComponent({
       const file = event.files[0];
       const formData = new FormData();
       formData.append("image", file);
-
-      console.log(file, formData);
 
       try {
         const res: any = await axios.post(`/user/image`, formData);
@@ -184,7 +182,20 @@ export default defineComponent({
     };
 
     const handleEditProfileData = async (values: any) => {
-      console.log(values, "DATA");
+      try {
+        const res: any = await axios.put(`/user/update`, values);
+        console.log(res, "res");
+        if (res && res !== null) {
+          toast.add({
+            life: 3000,
+            detail: res.data.message,
+            severity: "success",
+            summary: "info",
+          });
+        }
+      } catch (err) {
+        console.log(err, "ERR");
+      }
     };
 
     const { value: name } = useField("name");
@@ -211,10 +222,10 @@ export default defineComponent({
   },
 });
 </script>
-<style>
+<style scoped>
 .image-wrapper {
-  width: 150px; /* Set your desired width */
-  height: 150px; /* Set your desired height */
+  width: 150px;
+  height: 150px;
   overflow: hidden;
   border-radius: 1rem;
 }
@@ -222,7 +233,7 @@ export default defineComponent({
 .image-content {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Preserve aspect ratio while filling the container */
+  object-fit: cover;
   border-radius: 50%;
 }
 </style>
