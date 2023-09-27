@@ -23,19 +23,35 @@
   <ValidationError v-if="errorMessage">{{ errorMessage }}</ValidationError>
 </template>
 
-<script setup>
+<script lang="ts">
 import { useField } from "vee-validate";
 import ValidationError from "../ValidationError.vue";
-import { defineProps, ref, watch } from "vue";
+import { defineComponent, ref } from "vue";
 import Dropdown from "primevue/dropdown";
-const props = defineProps({
-  name: { type: String, required: true },
-  type: { type: String, required: true },
-  placeholder: { type: String },
-  label: { type: String },
-  options: { type: Array },
-  optionLabel: { type: String },
-  optionValue: { type: String },
+
+export default defineComponent({
+  name: "InputSelect",
+  components: { Dropdown },
+  props: {
+    id: { type: String },
+    name: { type: String, required: true },
+    type: { type: String, required: true },
+    placeholder: { type: String },
+    label: { type: String, required: true },
+    options: { type: Array, required: true },
+    optionLabel: { type: String, required: true },
+    optionValue: { type: String, required: true },
+  },
+  setup(props) {
+    const { value, errorMessage, meta } = useField(() => props.name, undefined);
+    // console.log(props.options, props.optionValue, value.value);
+    const selectedValue = ref(
+      props.options.find((opt: any) => opt[`${props.optionValue}`] === value)
+    );
+    // console.log(selectedValue.value, "SELECTED VALUE");
+
+    return { value, errorMessage, meta, selectedValue };
+  },
 });
-const { value, errorMessage, meta } = useField(() => props.name, undefined);
 </script>
+<style scoped></style>

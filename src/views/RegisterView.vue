@@ -196,12 +196,15 @@ export default {
       try {
         let res;
         if (this.currentPath === "/registerProvider") {
-          res = await axios.put("http://localhost:8082/auth/signupProvider", {
-            email: this.email,
-            password: this.password.password,
-            name: this.name,
-            nipt: this.nipt,
-          });
+          res = await axios.put(
+            "http://localhost:1112/api/user/registerProvider",
+            {
+              email: this.email,
+              password: this.password.password,
+              name: this.name,
+              nipt: this.nipt,
+            }
+          );
           if (res.data.message) {
             // this.$toast.open({
             //     message: "Your business account should be submitted by the admin",

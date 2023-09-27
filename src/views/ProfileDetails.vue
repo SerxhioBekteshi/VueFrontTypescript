@@ -4,7 +4,7 @@
       class="md:col-5 sm:col-12 card flex align-items-center justify-content-center"
     >
       <div class="flex flex-column gap-3">
-        <div class="image-wrapper">
+        <div class="image-wrapper flex justify-content-center">
           <img
             v-if="profile.photo"
             class="image-content"
@@ -12,14 +12,14 @@
             :alt="profile.name"
           />
         </div>
-        <div class="text-center">
+        <div class="flex justify-content-center align-items-center">
           <FileUpload
+            @select="handleFileSelection($event)"
             :multiple="false"
-            mode="basic"
             @uploader="handleFileUpload($event)"
             :maxFileSize="1000000"
             accept="image/*"
-            :customUpload="true"
+            :custom-upload="true"
           />
         </div>
       </div>
@@ -129,10 +129,17 @@ import FileUpload from "primevue/fileupload";
 
 export default defineComponent({
   name: "ProfileDetails",
-  components: { InputText, InputSelect, InputDate, Button, FileUpload },
+  components: {
+    InputText,
+    InputSelect,
+    InputDate,
+    Button,
+    FileUpload,
+  },
   props: {},
   setup() {
     const profile = useReduxSelector((state) => state.user);
+
     const toast = useToast();
     const schema = yup.object().shape({
       name: yup.string().required("Name is required").label("Name"),
@@ -154,15 +161,19 @@ export default defineComponent({
       validationSchema: schema,
     });
     provide("profileDetailsForm", { setFieldValue });
-
     const handlePrevent = (event: any) => {
       event.preventDefault();
+    };
+    const handleFileSelection = (event: any) => {
+      console.log(event.files[event.files.length - 1].objectURL);
+      // blobImage.value = event.files[event.files.length - 1].objectURL;
     };
 
     const handleFileUpload = async (event: any) => {
       const file = event.files[0];
       const formData = new FormData();
       formData.append("image", file);
+      console.log(formData);
 
       try {
         const res: any = await axios.post(`/user/image`, formData);
@@ -174,6 +185,7 @@ export default defineComponent({
             severity: "success",
             summary: "info",
           });
+
           //update user state after this from dispatch
         }
       } catch (err) {
@@ -218,6 +230,7 @@ export default defineComponent({
       handleEditProfileData,
       handleSubmit,
       resetForm,
+      handleFileSelection,
     };
   },
 });
