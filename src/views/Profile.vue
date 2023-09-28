@@ -173,9 +173,6 @@
       </div>
     </div>
   </div>
-
-  <!--   
-            "-->
   <Toast />
 </template>
 
@@ -187,11 +184,9 @@ import Button from "primevue/button";
 import { IShowChangePasswordInput } from "@/interfaces/IShowChangePasswordInput";
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-// import InputText from "primevue/inputtext";
 import OverlayPanel from "primevue/overlaypanel";
 import { ICheckPassword } from "@/interfaces/ICheckPassword";
 import InputPassword from "../components/formElements/InputPassword.vue";
-import { provide } from "vue";
 import axios from "axios";
 
 export default defineComponent({

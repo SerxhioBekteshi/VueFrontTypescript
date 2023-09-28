@@ -10,235 +10,363 @@
       </template>
       <template #title> Register </template>
       <template #subtitle>
-        Provide the credentials to register into our app
+        <div class="mb-3">Provide the credentials to register into our app</div>
       </template>
       <template #content>
-        <form>
-          <div class="flex flex-wrap mb-1 gap-1">
-            <label for="name" class="p-sr-only">Name</label>
-            <InputText
-              style="width: 100%"
-              class="fullWidth"
-              id="name"
-              placeholder="Name"
-              v-model="name"
-            />
-            <ValidationError
-              v-if="v$.name.$error"
-              style="width: 100%; background: none"
-              >{{ v$.name.$errors[0].$message }}
-            </ValidationError>
-          </div>
-          <div class="flex flex-wrap mb-1 gap-1">
-            <label for="email" class="p-sr-only">Email</label>
-            <InputText
-              style="width: 100%"
-              class="fullWidth"
-              id="email"
-              placeholder="Email"
-              v-model="email"
-            />
-            <ValidationError v-if="v$.email.$error"
-              >{{ v$.email.$errors[0].$message }}
-            </ValidationError>
-          </div>
-          <div class="flex flex-wrap mb-1 gap-1">
-            <span class="p-input-icon-right" style="width: 100%">
-              <i
-                class="pi pi-eye show"
-                @click="this.showPassword = !showPassword"
-              />
-              <label for="password" class="p-sr-only">Password</label>
+        <form @submit="handlePrevention">
+          <div class="grid">
+            <div class="col-12" style="padding: 0.75rem">
               <InputText
-                class="fullWidth"
-                style="width: 100%"
-                :type="this.showPassword ? 'text' : 'password'"
-                id="password"
-                placeholder="Password"
-                v-model="password.password"
+                name="name"
+                :label="'First Name'"
+                :id="name"
+                placeholder="First Name"
+                v-bind="name"
               />
-            </span>
-
-            <ValidationError
-              v-if="v$.password.password.$error"
-              style="width: 100%; background: none"
-              >{{ v$.password.password.$errors[0].$message }}
-            </ValidationError>
-          </div>
-          <div class="flex flex-wrap mb-1 gap-1">
-            <span class="p-input-icon-right" style="width: 100%">
-              <i
-                class="pi pi-eye show"
-                @click="this.showConfirmPassword = !showConfirmPassword"
-              />
-              <label for="password" class="p-sr-only">Password</label>
+            </div>
+            <div class="col-12" style="padding: 0.75rem">
               <InputText
-                style="width: 100%"
-                :type="this.showConfirmPassword ? 'text' : 'password'"
-                class="fullWidth"
-                id="password"
-                placeholder="Confirm password"
-                v-model="password.confirm"
+                name="lastName"
+                :label="'Last Name'"
+                :id="lastName"
+                placeholder="Last Name"
+                v-bind="lastName"
               />
-            </span>
+            </div>
+            <div class="col-12" style="padding: 0.75rem">
+              <InputText
+                name="email"
+                :label="'Email'"
+                :id="email"
+                placeholder="Email"
+                v-bind="email"
+              />
+            </div>
+            <div class="col-12" style="padding: 0.75rem">
+              <InputPassword
+                :name="'password'"
+                :label="'Password'"
+                :id="'password'"
+                :placeholder="'Password'"
+                :iconPosition="'right'"
+              />
+            </div>
+            <div class="col-12" style="padding: 0.75rem">
+              <InputPassword
+                :name="'passwordConfirm'"
+                :label="'Confirm new password'"
+                :id="'passwordConfirm'"
+                :placeholder="'Confirm new password'"
+                :iconPosition="'right'"
+              />
+            </div>
 
-            <ValidationError
-              v-if="v$.password.confirm.$error"
-              style="width: 100%; background: none"
-              >{{ v$.password.confirm.$errors[0].$message }}
-            </ValidationError>
-          </div>
-
-          <div v-if="this.currentPath === '/registerProvider'">
-            <label for="NIPT" class="p-sr-only">NIPT</label>
-            <InputText
-              style="width: 100%"
-              class="fullWidth"
-              id="NIPT"
-              placeholder="NIPT"
-              v-model="nipt"
-            />
-            <ValidationError
-              v-if="v$.nipt.$error"
-              style="width: 100%; background: none"
-              >{{ v$.nipt.$errors[0].$message }}
-            </ValidationError>
+            <div
+              class="col-12"
+              style="padding: 0.75rem"
+              v-if="currentRoutePath === '/registerProvider'"
+            >
+              <InputText
+                name="nipt"
+                :label="'Nipt'"
+                :id="nipt"
+                placeholder="Nipt"
+                v-bind="nipt"
+              />
+            </div>
           </div>
         </form>
       </template>
       <template #footer>
-        <Button
-          @click.prevent="handleRegister"
-          type="submit"
-          icon="pi pi-check"
-          label="Register"
-          size="small"
-        />
-        <Button
-          @click.prevent="this.$router.push({ name: 'LoginView' })"
-          link
-          icon="pi pi-check"
-          label="Go login"
-          size="small"
-        />
+        <div class="flex justify-content-space-between">
+          <Button
+            @click="handleSubmit(handleRegister)()"
+            type="submit"
+            icon="pi pi-check"
+            label="Register"
+            size="small"
+          />
+          <Button
+            @click.prevent="$router.push({ name: 'LoginView' })"
+            link
+            icon="pi pi-check"
+            label="Go login"
+            size="small"
+          />
+          <Button
+            size="small"
+            severity="info"
+            label="Reset"
+            @click="resetForm()"
+          />
+        </div>
       </template>
     </Card>
   </div>
+  <div>
+    <OverlayPanel ref="op" appendTo="body">
+      <div>
+        <p style="margin: 0.1rem">
+          <span
+            v-if="passwordChecks.capsLetterCheck"
+            class="pi pi-check"
+            :style="{
+              color: 'green',
+              marginRight: '0.5rem',
+            }"
+          >
+          </span>
+          <span
+            v-else
+            class="pi pi-times"
+            :style="{
+              color: 'red',
+              marginRight: '0.5rem',
+            }"
+          ></span>
+          At least 1 uppercase
+        </p>
+
+        <p style="margin: 0.1rem">
+          <span
+            v-if="passwordChecks.lowsLetterCheck"
+            class="pi pi-check"
+            :style="{
+              color: 'green',
+              marginRight: '0.5rem',
+            }"
+          >
+          </span>
+          <span
+            v-else
+            class="pi pi-times"
+            :style="{
+              color: 'red',
+              marginRight: '0.5rem',
+            }"
+          ></span>
+          At least 1 lowercase
+        </p>
+
+        <p style="margin: 0.1rem">
+          <span
+            v-if="passwordChecks.numberCheck"
+            class="pi pi-check"
+            :style="{
+              color: 'green',
+              marginRight: '0.5rem',
+            }"
+          >
+          </span>
+          <span
+            v-else
+            class="pi pi-times"
+            :style="{
+              color: 'red',
+              marginRight: '0.5rem',
+            }"
+          ></span>
+          At least 1 number
+        </p>
+
+        <p style="margin: 0.1rem">
+          <span
+            v-if="passwordChecks.pwdLengthCheck"
+            class="pi pi-check"
+            :style="{
+              color: 'green',
+              marginRight: '0.5rem',
+            }"
+          >
+          </span>
+          <span
+            v-else
+            class="pi pi-times"
+            :style="{
+              color: 'red',
+              marginRight: '0.5rem',
+            }"
+          ></span>
+          Minimum 8 characters
+        </p>
+
+        <p style="margin: 0.1rem">
+          <span
+            v-if="passwordChecks.specialCharCheck"
+            class="pi pi-check"
+            :style="{
+              color: 'green',
+              marginRight: '0.5rem',
+            }"
+          >
+          </span>
+          <span
+            v-else
+            class="pi pi-times"
+            :style="{
+              color: 'red',
+              marginRight: '0.5rem',
+            }"
+          ></span>
+          At least 1 special character
+        </p>
+      </div>
+    </OverlayPanel>
+  </div>
+
+  <Toast />
 </template>
 
-<script>
-// component imports
+<script lang="ts">
 import axios from "axios";
 import Card from "primevue/card";
 import Button from "primevue/button";
-import InputText from "primevue/inputtext";
-import useVuelidate from "@vuelidate/core";
-import {
-  required,
-  email,
-  helpers,
-  minLength,
-  sameAs,
-} from "@vuelidate/validators";
-import ValidationError from "../components/ValidationError.vue";
+import * as yup from "yup";
+import { useToast } from "primevue/usetoast";
+import Toast from "primevue/toast";
+import InputText from "../components/formElements/InputText.vue";
+import { computed, defineComponent, ref } from "vue";
+import { ICheckPassword } from "@/interfaces/ICheckPassword";
+import { useRoute } from "vue-router";
+import { useField, useForm } from "vee-validate";
+import router from "@/router";
+import OverlayPanel from "primevue/overlaypanel";
+import InputPassword from "../components/formElements/InputPassword.vue";
 
-export default {
+export default defineComponent({
   name: "RegisterView",
-  components: { Card, Button, InputText, ValidationError },
-  data() {
-    return {
-      v$: useVuelidate(),
-      showPassword: false,
-      showConfirmPassword: false,
-      email: "",
-      password: {
+  components: { Toast, Button, InputText, OverlayPanel, Card, InputPassword },
+  props: {},
+  setup(props) {
+    const toast = useToast();
+    const route = useRoute();
+    const currentRoutePath = computed(() => route.path);
+
+    const passwordChecks = ref<ICheckPassword>({
+      capsLetterCheck: false,
+      lowsLetterCheck: false,
+      numberCheck: false,
+      pwdLengthCheck: false,
+      specialCharCheck: false,
+    });
+
+    const schemaToValidate = yup.object().shape({
+      email: yup.string().email().required("Email is required"),
+      name: yup.string().required("First Name is required"),
+      lastName: yup.string().required("Last Name is required"),
+      nipt: yup.string().required("NIPT is required"),
+      password: yup
+        .string()
+        .required("Password is required")
+        .min(8, "Password must be at least 8 characters long")
+        .matches(
+          /[a-z]/,
+          "Password must contain at least one lowercase letter."
+        )
+        .matches(
+          /[A-Z]/,
+          "Password must contain at least one uppercase letter."
+        )
+        .matches(
+          /[!@#$%^&*()_+{}|:<>?~]/,
+          "Password must contain at least one special character."
+        )
+        .matches(/[0-9]/, "Password must contain at least one number"),
+      passwordConfirm: yup
+        .string()
+        .required("Confirm New Password is required")
+        .min(8, "Confirm New Password must be at least 8 characters long")
+        .test(
+          "passwords-match",
+          "Confirm new password must match with new password",
+          function (value) {
+            return value === this.parent.password;
+          }
+        ),
+    });
+
+    const { handleSubmit, resetForm, setValues } = useForm({
+      validationSchema: schemaToValidate,
+      initialValues: {
+        name: "",
+        lastName: "",
+        email: "",
         password: "",
-        confirm: "",
+        passwordConfirm: "",
+        nipt: "",
       },
-      name: "",
-      currentPath: "",
-      nipt: "",
-    };
-  },
-  validations() {
-    return {
-      email: {
-        required: helpers.withMessage("Field is required", required),
-        email,
-      },
-      password: {
-        password: {
-          required: helpers.withMessage("Field is required", required),
-          minLength: minLength(6),
-        },
-        confirm: {
-          required: helpers.withMessage("Field is required", required),
-          sameAs: sameAs(this.password.password),
-        },
-      },
-      name: { required: helpers.withMessage("Field is required", required) },
-      nipt: { required: helpers.withMessage("Field is required", required) },
-      // termsAgreed: { required: helpers.withMessage('Field is required', required) }
-    };
-  },
-  mounted() {
-    const path = this.$route.path;
-    this.currentPath = path;
-  },
-  methods: {
-    async handleRegister() {
-      this.v$.$validate();
+    });
 
-      if (this.v$.$errors.length != 0) {
-        return;
-      }
+    const { value: name } = useField<string>("name");
+    const { value: lastName } = useField<string>("lastName");
+    const { value: email } = useField<string>("email");
+    const { value: nipt } = useField<string>("nipt");
+    const { value: password } = useField<string>("password");
+    const { value: passwordConfirm } = useField<string>("passwordConfirm");
 
+    const handleRegister = async (values: any) => {
       try {
-        let res;
-        if (this.currentPath === "/registerProvider") {
-          res = await axios.put(
-            "http://localhost:1112/api/user/registerProvider",
-            {
-              email: this.email,
-              password: this.password.password,
-              name: this.name,
-              nipt: this.nipt,
-            }
-          );
-          if (res.data.message) {
-            // this.$toast.open({
-            //     message: "Your business account should be submitted by the admin",
-            //     type: "success",
-            // });
-            this.$router.push({ name: "LoginView" });
-          }
-        } else {
-          res = await axios.put("http://localhost:8082/auth/signup", {
-            email: this.email,
-            password: this.password.password,
-            name: this.name,
+        const res = await axios.post(
+          "http://localhost:1112/api/user/registerProvider",
+          values
+        );
+        if (res != null && res.data) {
+          toast.add({
+            life: 10000,
+            detail: `Contact: ${res.data.contact}, 
+            Email: ${res.data.email}`,
+            severity: "success",
+            summary: res.data.message,
           });
-          if (res.data.message) {
-            // this.$toast.open({
-            //   message: "Registered",
-            //   type: "success",
-            // });
-            this.$router.push({ name: "LoginView" });
-          }
+
+          if (currentRoutePath.value === "register")
+            router.push({ name: "LoginView" });
         }
       } catch (err) {
-        // this.$toast.open({
-        //   message: err.response.data.message || err.message,
-        //   type: "error",
-        //   position: "top-right",
-        //   // all of other options may go here
-        // });
+        console.log(err, "ERR");
       }
-    },
+    };
+
+    const handleOnKeyUp = (e: any) => {
+      const { value } = e.target;
+      const capsLetterCheck = /[A-Z]/.test(value);
+      const lowsLetterCheck = /[a-z]/.test(value);
+      const numberCheck = /[0-9]/.test(value);
+      const pwdLengthCheck = value.length >= 8;
+      const specialCharCheck = /[!@#$%^&*]/.test(value);
+
+      passwordChecks.value = {
+        capsLetterCheck,
+        lowsLetterCheck,
+        numberCheck,
+        pwdLengthCheck,
+        specialCharCheck,
+      };
+    };
+
+    const handlePrevention = (event: any) => {
+      event.preventDefault();
+    };
+
+    return {
+      handleRegister,
+      handlePrevention,
+      handleOnKeyUp,
+      passwordChecks,
+      handleSubmit,
+      currentRoutePath,
+      name,
+      lastName,
+      email,
+      password,
+      passwordConfirm,
+      nipt,
+      resetForm,
+    };
   },
-};
+});
 </script>
-<style>
+<style scoped>
 .show:hover {
   cursor: pointer;
 }

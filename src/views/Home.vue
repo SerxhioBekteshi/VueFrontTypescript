@@ -43,7 +43,6 @@ export default defineComponent({
 
     const fetchDataAfterSubmit = () => {
       if (tableDataRef.value) {
-        console.log(tableDataRef.value, "aaaaa");
         tableDataRef.value.fetchData();
       }
     };
