@@ -17,12 +17,12 @@
 <script lang="ts">
 import { eFormMode } from "@/assets/enums/EFormMode";
 import Button from "primevue/button";
-import { defineComponent, onMounted, ref, watch } from "vue";
+import { defineComponent, onMounted, ref, shallowRef } from "vue";
 import Drawer from "../components/Drawer.vue";
 import axios from "axios";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
-import { useForm, useField, FieldArray } from "vee-validate"; // Import useForm
+import { useForm, useField, FieldArray, useFieldArray } from "vee-validate"; // Import useForm
 import { provide } from "vue";
 
 export default defineComponent({
@@ -32,11 +32,12 @@ export default defineComponent({
     modeDrawer: {
       type: String as () => keyof typeof eFormMode,
     },
-    onClose: { type: Function },
+    onClose: { type: Function, required: true },
     formData: { type: Object },
-    controller: { type: String },
-    validationSchema: { type: Object },
-    fetchDataAfterSubmit: { type: Function },
+    controller: { type: String, required: true },
+    validationSchema: { type: Object, required: true },
+    fetchDataAfterSubmit: { type: Function, required: true },
+    additionalDataToSubmit: { type: Object },
   },
   setup(props) {
     const openDrawer = ref<boolean>(false);
@@ -46,10 +47,6 @@ export default defineComponent({
       validationSchema: props.validationSchema,
     });
 
-    // if (
-    //   (props.formData !== null || props.formData !== undefined) &&
-    //   openDrawer
-    // ) {
     provide("veeValidateForm", {
       handleSubmit,
       resetForm,
@@ -57,15 +54,19 @@ export default defineComponent({
       setErrors,
       useField,
       FieldArray,
+      useFieldArray,
     });
-    // }
 
     const handleFormSubmit = async (data: any) => {
       let res: any = null;
-      console.log(data, "aaaa");
       try {
         if (props.modeDrawer === eFormMode.Add.toString()) {
-          res = await axios.post(`${props.controller}`, data);
+          res = await axios.post(`${props.controller}`, {
+            ...data,
+            ...(props.additionalDataToSubmit
+              ? props.additionalDataToSubmit
+              : {}),
+          });
         } else {
           res = await axios.put(
             `${props.controller}/${props.formData && props.formData.id}`,
@@ -96,7 +97,7 @@ export default defineComponent({
       }
     };
 
-    const drawerActions = ref<any[]>([
+    const drawerActions = shallowRef<any[]>([
       {
         component: Button,
         props: {

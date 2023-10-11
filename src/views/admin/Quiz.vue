@@ -3,41 +3,98 @@
     <div
       class="col-12 sm:col-4 md:col-4"
       style="display: flex; justify-content: center"
-      v-for="button in questionType"
+      v-for="(button, index) in questionType"
       :key="button.id"
     >
       <Button
-        :id="button.id.toString()"
-        @click="openDrawerFunction(button.type)"
+        :id="`label_${index}`"
+        @click="handleAddClick(button.type)"
         :label="button.type"
         style="width: 100%"
       />
     </div>
   </div>
-  <div v-for="(question, index) in quizQuestion" :key="question.id">
-    <div class="flex flex-start gap-3">
-      <div>
-        <Tag severity="success" style="font-size: 1rem">
-          {{ `${index + 1}: ${question.questionName}` }}
-        </Tag>
+
+  <draggable
+    :list="quizQuestion"
+    item-key="question"
+    class="list-group"
+    ghost-class="ghost"
+    @start="dragging = true"
+    @end="dragging = false"
+  >
+    <template #item="{ element }">
+      <div class="list-group-item">
+        {{ element.question }}
       </div>
-      <div class="flex gap-2">
-        <Button
-          @click="updateQuestion(question.id, question)"
-          severity="warning"
-          size="small"
-          style="padding: 3.5px 5.6px"
-          icon="pi pi-angle-double-right"
+    </template>
+  </draggable>
+
+  <div v-for="(question, i) in quizQuestion" :key="question.id">
+    <Panel :header="question.question" class="mb-2" toggleable>
+      <template #icons>
+        <button
+          class="p-panel-header-icon p-link mr-2"
+          :id="`overlay_menu_${i}`"
+          @click="toggleMenuPopup(i, $event, question)"
+        >
+          <span class="pi pi-cog"></span>
+        </button>
+        <Menu
+          ref="menuRef"
+          :id="`overlay_menu_${i}`"
+          :model="menuItems"
+          :popup="true"
         />
-        <Button
-          @click="handleRemoveQuestionQuiz(question.id)"
-          severity="danger"
-          size="small"
-          style="padding: 3.5px 5.6px"
-          icon="pi pi-delete-left"
-        />
+      </template>
+      <div
+        style="
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <div v-if="question.questionType === 'select'">
+          <SelectButton
+            :options="question.questionOptions"
+            optionLabel="label"
+            multiple
+            aria-labelledby="multiple"
+          />
+        </div>
+        <div v-for="(option, index) in question.questionOptions" :key="index">
+          <div
+            v-if="question.questionType === 'radio'"
+            style="display: flex; align-items: center; padding-inline: 1rem"
+          >
+            <RadioButton
+              class="p-invalid"
+              :inputId="index.toString()"
+              name="option"
+            />
+            <label :for="index.toString()" class="ml-2">{{
+              option.label
+            }}</label>
+          </div>
+
+          <div
+            v-if="question.questionType === 'checkbox'"
+            style="display: flex; align-items: center; padding-inline: 1rem"
+          >
+            <Checkbox
+              class="p-invalid"
+              :inputId="index.toString()"
+              name="option"
+            />
+            <label :for="index.toString()" class="ml-2">{{
+              option.label
+            }}</label>
+          </div>
+        </div>
       </div>
-    </div>
+    </Panel>
+
     <div
       class="mb-3 mt-3 flex quizContent"
       style="width: 100%S"
@@ -54,7 +111,11 @@
       </div>
     </div>
 
-    <div v-if="question.fieldType === 'radio'" class="mb-3 mt-3 flex">
+    <div
+      v-if="question.fieldType === 'radio'"
+      style="display: flex"
+      class="mb-3 mt-3 flex"
+    >
       <div class="flex gap-5">
         <div
           class="flex align-items-center"
@@ -67,7 +128,7 @@
       </div>
     </div>
 
-    <div v-if="question.fieldType === 'checkbox'" class="mb-3 mt-3 flexlex">
+    <div v-if="question.fieldType === 'checkbox'">
       <div class="flex gap-3">
         <div
           class="flex align-items-center"
@@ -79,260 +140,190 @@
         </div>
       </div>
     </div>
-
-    <!-- :options="question.fieldAnswers.map((element: any) => { return { value: element.value, label: element.label } })"  -->
   </div>
 
-  <Drawer
-    v-model:openDrawer="openDrawer"
-    @handleClose="handleCloseDrawer"
-    :title="'Question Type'"
-    :actions="drawerActions"
-  >
-    <form>
-      <div class="flex flex-wrap mb-3 gap-1">
-        <label for="question" style="font-weight: bold"
-          >Determine the question</label
-        >
-        <InputText
-          :style="{
-            width: '100%',
-            borderColor: v$.question.$error ? 'red' : '',
-          }"
-          class="fullWidth"
-          id="question"
-          placeholder="Question"
-          v-model="question"
-        />
-        <ValidationError
-          v-if="v$.question.$error"
-          style="width: 100%; background: none"
-          severity="error"
-          >{{ v$.question.$errors[0].$message }}
-        </ValidationError>
-      </div>
+  <div v-if="formData || modeDrawer">
+    <DetailDrawer
+      :onClose="invalidateState"
+      :modeDrawer="modeDrawer"
+      :formData="formData"
+      :controller="'quiz'"
+      :validationSchema="questionValidationSchema"
+      :fetchDataAfterSubmit="getQuiz"
+      :additionalDataToSubmit="typeOfQuestionToSubmit"
+    >
+      <QuizForm />
+    </DetailDrawer>
+  </div>
 
-      <div class="flex flex-wrap mb-3 gap-1">
-        <label style="font-weight: bold" for="questionOptions"
-          >Give the options</label
-        >
-        <InputText
-          v-tooltip="'Values should be separated with comma'"
-          :style="{
-            width: '100%',
-            borderColor: v$.questionOptions.$error ? 'red' : '',
-          }"
-          class="fullWidth"
-          id="questionOptions"
-          placeholder="questionOptions"
-          v-model="questionOptions"
-        />
-        <ValidationError
-          v-if="v$.questionOptions.$error"
-          style="width: 100%; background: none"
-          severity="error"
-          >{{ v$.questionOptions.$errors[0].$message }}
-        </ValidationError>
-      </div>
-    </form>
-  </Drawer>
+  <Toast />
 </template>
 
 <script lang="ts">
 import Button from "primevue/button";
-// import Select from "primevue/select"
 import RadioButton from "primevue/radiobutton";
 import Checkbox from "primevue/checkbox";
 import Listbox from "primevue/listbox";
-
-import InputText from "primevue/inputtext";
-import Drawer from "../../components/Drawer.vue";
-import { compile, defineComponent } from "vue";
-import ValidationError from "../../components/ValidationError.vue";
-import useVuelidate from "@vuelidate/core";
-import { required, email, helpers } from "@vuelidate/validators";
+import DetailDrawer from "../../components/DetailDrawer.vue";
+import { defineComponent, onMounted, ref, shallowRef } from "vue";
+import { useToast } from "primevue/usetoast";
+import Toast from "primevue/toast";
 import axios from "axios";
-import Tag from "primevue/tag";
+import * as yup from "yup";
+import Panel from "primevue/panel";
+import Menu from "primevue/menu";
+import { eFormMode } from "@/assets/enums/EFormMode";
+import QuizForm from "../../components/formController/QuizForm.vue";
+import SelectButton from "primevue/selectbutton";
+import draggable from "vuedraggable";
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Quiz",
   components: {
     Button,
-    Drawer,
-    InputText,
+    DetailDrawer,
     RadioButton,
     Checkbox,
     Listbox,
-    Tag,
-    ValidationError,
+    Menu,
+    QuizForm,
+    Panel,
+    Toast,
+    SelectButton,
+    draggable,
   },
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  data() {
-    return {
-      openDrawer: false,
-      typeOfQuestionToSubmit: "",
-      quizQuestion: [] as any,
-      v$: useVuelidate(),
-      question: "",
-      questionOptions: "",
-      drawerActions: [
-        {
-          component: Button,
-          props: {
-            type: "Submit",
-            icon: "pi pi-times",
-            label: "Submit",
-            severity: "primary",
-            onClick: this.submitForm,
-          },
-        },
-        {
-          component: Button,
-          props: {
-            label: "Cancel",
-            icon: "pi pi-check",
-            severity: "info",
-            onClick: this.handleCloseDrawer,
-          },
-        },
-      ],
-      questionType: [
-        // { id: 1, type: "text", },
-        { id: 1, type: "select" },
-        { id: 2, type: "radio" },
-        { id: 3, type: "checkbox" },
-      ],
+  props: {},
+  setup() {
+    const toast = useToast();
+    const dragging = ref<boolean>(false);
+    const invalidateState = () => {
+      modeDrawer.value = null;
+      formData.value = null;
     };
-  },
-  validations() {
-    return {
-      question: {
-        required: helpers.withMessage("Field is required", required),
-      },
-      questionOptions: {
-        required: helpers.withMessage(
-          "Field should be completed with the values you want to show",
-          required
-        ),
-      },
-    };
-  },
-  computed: {},
-  mounted() {
-    this.getQuiz();
-  },
-  methods: {
-    openDrawerFunction(inputType: string) {
-      this.openDrawer = true;
-      this.typeOfQuestionToSubmit = inputType;
-    },
+    const modeDrawer = ref<any>(null);
+    const formData = ref<any>(null);
+    const typeOfQuestionToSubmit = ref<any>({ questionType: "" });
+    const quizQuestion = ref<any[]>([]);
+    const questionType = shallowRef<any[]>([
+      { id: 1, type: "select" },
+      { id: 2, type: "radio" },
+      { id: 3, type: "checkbox" },
+    ]);
+    const menuRef = ref();
+    const menuItem = ref<any>(null);
 
-    handleCloseDrawer() {
-      this.openDrawer = false;
-      // (this as any).$v.reset()
-    },
-    async getQuiz() {
+    const onDragEnd = (event: any) => {
+      console.log("Drag ended. New item order:", quizQuestion.value);
+    };
+
+    const questionValidationSchema = yup.object().shape({
+      question: yup.string().required("Question is required").label("question"),
+      questionOptions: yup
+        .array()
+        .of(
+          yup.object().shape({
+            label: yup
+              .string()
+              .required("Label for question is required")
+              .label("Label"),
+            value: yup.string().required("Value required").label("Value"),
+          })
+        )
+        .strict(),
+    });
+
+    const handleRemoveQuestionQuiz = async () => {
       try {
-        const res = await axios.get("/quiz/get-all");
-        if (res.data.message) {
-          console.log(res.data.quiz);
-          this.quizQuestion = res.data.quiz;
-        }
-      } catch (err: any) {
-        // this.$toast.open({
-        //     type: "error",
-        //     message: err,
-        //     duration: 3000,
-        //     position: "top-right"
-        // })
-      }
-    },
-    async handleRemoveQuestionQuiz(id: number) {
-      try {
-        const res: any = await axios.delete(`/quiz/delete/${id}`);
-        if (res.data.message) {
-          //   this.$toast.open({
-          //     type: "success",
-          //     message: res.data.message,
-          //     duration: 3000,
-          //     position: "top-right",
-          //   });
-          this.getQuiz();
+        const res: any = await axios.delete(`/quiz/${menuItem.value.id}`);
+        if (res && res.data) {
+          toast.add({
+            life: 3000,
+            detail: res.data.message,
+            severity: "success",
+            summary: "info",
+          });
+          getQuiz();
         }
       } catch (err) {
         console.log(err, "errererer");
       }
-    },
-    async updateQuestion(id: number, question: any) {
-      this.openDrawer = true;
-      this.question = question.questionName;
-      this.questionOptions = question.fieldAnswers
-        .map((field: any) => field.label)
-        .join(",");
-    },
-    async submitForm() {
-      this.v$.$validate();
+    };
 
-      if (this.v$.$errors.length != 0) {
-        return;
-      }
+    const updateQuestion = async () => {
+      formData.value = menuItem.value;
+    };
 
-      let optionsWithValuesAndLabel;
-      if (this.questionOptions) {
-        optionsWithValuesAndLabel = this.questionOptions
-          .split(",")
-          .map((element: string) => {
-            return {
-              value: element,
-              label: element,
-            };
-          });
-      }
+    const menuItems = ref([
+      {
+        label: "Actions",
+        items: [
+          {
+            label: "Edit",
+            icon: "pi pi-refresh",
+            class: "edit-color",
+            command: () => {
+              updateQuestion();
+            },
+          },
+          {
+            label: "Delete",
+            icon: "pi pi-times",
+            command: () => {
+              handleRemoveQuestionQuiz();
+            },
+          },
+        ],
+      },
+    ]);
+
+    const getQuiz = async () => {
       try {
-        const res: any = await axios.post("/quiz/post", {
-          question: this.question,
-          questionType: this.typeOfQuestionToSubmit,
-          questionOptions: optionsWithValuesAndLabel,
-        });
-        if (res.data.message) {
-          //   this.$toast.open({
-          //     type: "success",
-          //     message: res.data.message,
-          //     duration: 3000,
-          //     position: "top-right",
-          //   });
-          this.handleCloseDrawer();
+        const res = await axios.get("/quiz/get-all");
+        if (res && res.data) {
+          quizQuestion.value = res.data;
         }
       } catch (err: any) {
-        // this.$toast.open({
-        //   type: "error",
-        //   message: err,
-        //   duration: 3000,
-        //   position: "top-right",
-        // });
+        console.log(err, "ERR");
       }
-    },
-    // renderField(question: any, index: number) {
-    //     console.log(JSON.parse(JSON.stringify(question.fieldAnswers)).map((element: any) => { return { value: element.value, label: element.label } }), 'aw')
-    //     switch (question.fieldType) {
-    //         case "select":
-    //             return { component: Listbox, props: { optionLabel: "label", style: "width: fit-content; margin-top: 1rem;", options: JSON.parse(JSON.stringify(options)).map((element: any) => { return { value: element.value, label: element.label } }) } };
+    };
 
-    //         case "radio":
-    //             return { component: RadioButton }
+    onMounted(() => {
+      getQuiz();
+    });
 
-    //         // case "checkbox":
-    //         //     return { component: Checkbox, props: {} }
+    const handleAddClick = (inputType: string) => {
+      typeOfQuestionToSubmit.value.questionType = inputType;
+      modeDrawer.value = eFormMode.Add;
+    };
 
-    //         default:
-    //             return {
-    //                 component: 'DefaultComponent',
-    //                 props: {}
-    //             };
-    //     }
-    // }
+    const toggleMenuPopup = (index: number, event: any, data: any) => {
+      menuItem.value = data;
+      // menu.value.toggle(menuId);
+      menuRef.value[index].toggle(event);
+    };
+
+    return {
+      dragging,
+      modeDrawer,
+      formData,
+      questionValidationSchema,
+      typeOfQuestionToSubmit,
+      quizQuestion,
+      questionType,
+      menuItems,
+      menuRef,
+      invalidateState,
+      getQuiz,
+      toggleMenuPopup,
+      handleAddClick,
+      onDragEnd,
+    };
   },
 });
 </script>
-<style></style>
+<style scoped>
+.edit-color {
+  color: red !important;
+}
+</style>

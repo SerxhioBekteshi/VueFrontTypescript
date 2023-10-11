@@ -14,8 +14,9 @@ import axiosInit from "./initializers/axios";
 import Tooltip from "primevue/tooltip";
 import ToastService from "primevue/toastservice";
 import { createRedux } from "./store/redux/storePlugin";
-import { store } from "./store/redux/configurations";
+// import { store } from "./store/redux/configurations";
 import initApp from "./utils/functions";
+// import  VueDraggable  from "vuedraggable";
 
 (async () => {
   const appStore = await initApp();
@@ -27,6 +28,7 @@ import initApp from "./utils/functions";
     .use(ToastPlugin, { position: "top" })
     .use(PrimeVue, { ripple: true })
     .use(ToastService)
+    // .use(VueDraggable)
     .directive("tooltip", Tooltip)
     .mount("#app");
 

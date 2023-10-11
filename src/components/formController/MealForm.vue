@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form @onSubmit="handleSubmitClicked">
+    <form @onSubmit="handlePrevent">
       <div style="margin-top: 1rem">
         <InputText
           name="name"
@@ -150,11 +150,19 @@ export default defineComponent({
     const { value: calories } = veeValidateForm.useField("calories");
     const { value: intolerance } = veeValidateForm.useField("intolerance");
 
-    const handleSubmitClicked = (event: any) => {
+    const handlePrevent = (event: any) => {
       event.preventDefault();
     };
 
-    return {};
+    return {
+      handlePrevent,
+      name,
+      cousine,
+      carbonFootprint,
+      dietCategory,
+      calories,
+      intolerance,
+    };
   },
 });
 </script>

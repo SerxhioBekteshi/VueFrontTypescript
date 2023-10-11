@@ -33,10 +33,10 @@ import InputText from "primevue/inputtext";
 
 const props = defineProps({
   name: { type: String, required: true },
-  type: { type: String, required: true },
   placeholder: { type: String },
   label: { type: String },
   feedback: { type: Boolean },
+  id: { type: String },
 });
 
 const { handleChange, value, handleBlur, errorMessage, meta } = useField(

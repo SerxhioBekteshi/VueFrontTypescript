@@ -4,7 +4,7 @@
     style="position: relative"
     :visible="openDrawer"
     position="right"
-    class="w-full md:w-20rem lg:w-30rem"
+    class="w-full md:w-30rem"
   >
     <template #header>
       <div class="flex">
@@ -71,7 +71,6 @@ interface Action {
   position: absolute;
   bottom: 0;
   margin-bottom: 1rem;
-  width: 90%;
 }
 
 .actionsAlign {

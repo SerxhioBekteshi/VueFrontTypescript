@@ -28,74 +28,75 @@
       <div>
         <h2>Profile Settings</h2>
       </div>
-      <form @submit="handlePrevent"></form>
-      <div class="grid">
-        <div style="margin-top: 1rem" class="col-6">
-          <InputText
-            name="name"
-            :label="'Name'"
-            id="name"
-            placeholder="Name"
-            v-bind="name"
-          />
-        </div>
+      <form @submit="handlePrevent">
+        <div class="grid">
+          <div style="margin-top: 1rem" class="col-6">
+            <InputText
+              name="name"
+              :label="'Name'"
+              id="name"
+              placeholder="Name"
+              v-bind="name"
+            />
+          </div>
 
-        <div style="margin-top: 1rem" class="col-6">
-          <InputText
-            name="lastName"
-            :label="'Last Name'"
-            id="lastName"
-            placeholder="Last Name"
-            v-bind="lastName"
-          />
-        </div>
-        <div class="col-12">
-          <InputText
-            name="address"
-            :label="'Address'"
-            id="address"
-            placeholder="Address"
-            v-bind="address"
-          />
-        </div>
+          <div style="margin-top: 1rem" class="col-6">
+            <InputText
+              name="lastName"
+              :label="'Last Name'"
+              id="lastName"
+              placeholder="Last Name"
+              v-bind="lastName"
+            />
+          </div>
+          <div class="col-12">
+            <InputText
+              name="address"
+              :label="'Address'"
+              id="address"
+              placeholder="Address"
+              v-bind="address"
+            />
+          </div>
 
-        <div class="col-12">
-          <InputText
-            name="state"
-            :label="'State'"
-            id="state"
-            placeholder="State"
-            v-bind="state"
-          />
-        </div>
+          <div class="col-12">
+            <InputText
+              name="state"
+              :label="'State'"
+              id="state"
+              placeholder="State"
+              v-bind="state"
+            />
+          </div>
 
-        <div class="col-12">
-          <InputSelect
-            :options="[
-              { gender: 'male', value: 'male' },
-              { gender: 'female', value: 'female' },
-            ]"
-            :optionLabel="'gender'"
-            :optionValue="'value'"
-            name="gender"
-            :label="'Gender'"
-            id="state"
-            placeholder="Gender"
-            v-bind="gender"
-          />
-        </div>
+          <div class="col-12">
+            <InputSelect
+              :options="[
+                { gender: 'male', value: 'male' },
+                { gender: 'female', value: 'female' },
+              ]"
+              :optionLabel="'gender'"
+              :optionValue="'value'"
+              name="gender"
+              :label="'Gender'"
+              id="state"
+              placeholder="Gender"
+              v-bind="gender"
+            />
+          </div>
 
-        <div class="col-12">
-          <InputDate
-            name="birthDate"
-            :label="'BirthDate'"
-            id="birthDate"
-            placeholder="birthDate"
-            v-bind="birthDate"
-            :dateFormat="'yy-mm-dd'"
-          />
+          <div class="col-12">
+            <InputDate
+              name="birthDate"
+              :label="'BirthDate'"
+              id="birthDate"
+              placeholder="birthDate"
+              v-bind="birthDate"
+              :dateFormat="'yy-mm-dd'"
+            />
+          </div>
         </div>
-      </div>
+      </form>
 
       <div class="flex justify-content-start mt-3 gap-3">
         <div>
