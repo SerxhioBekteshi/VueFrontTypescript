@@ -104,7 +104,9 @@ class AuthManager {
       } else if (response.user.roleId === eRoleType.Provider) {
         router.push("/provider");
       } else {
-        router.push("/");
+        console.log(response.user.quizFulfilled);
+        if (!response.user.quizFulfilled) router.push("/user/quiz");
+        else router.push("/user");
       }
     }
   }

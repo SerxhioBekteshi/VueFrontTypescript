@@ -1,11 +1,19 @@
 <template>
   <div>
     <form @onSubmit="handlePrevent">
-      <div style="margin-bottom: 1rem">
+      <div style="margin-bottom: 2rem">
         <InputText
           name="question"
           :label="'Determine the question'"
           placeholder="Question"
+        />
+      </div>
+
+      <div style="margin-bottom: 1rem">
+        <InputNumber
+          name="order"
+          :label="'Determine the order of this question'"
+          placeholder="Order"
         />
       </div>
 
@@ -93,24 +101,26 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import InputText from "@/components/formElements/InputText.vue";
+import InputNumber from "@/components/formElements/InputNumber.vue";
 import { inject } from "vue";
 import { FieldArray } from "vee-validate";
 import Button from "primevue/button";
 
 export default defineComponent({
   name: "QuizForm",
-  components: { InputText, FieldArray, Button },
+  components: { InputText, InputNumber, FieldArray, Button },
   setup() {
     const veeValidateForm: any = inject("veeValidateForm");
 
     const { value: question } = veeValidateForm.useField("question");
+    const { value: order } = veeValidateForm.useField("order");
     const { fields: questionOptions } =
       veeValidateForm.useFieldArray("questionOptions");
     const handlePrevent = (event: any) => {
       event.preventDefault();
     };
 
-    return { handlePrevent, question, questionOptions };
+    return { handlePrevent, question, order, questionOptions };
   },
 });
 </script>

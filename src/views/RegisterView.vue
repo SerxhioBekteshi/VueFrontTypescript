@@ -241,6 +241,7 @@ export default defineComponent({
     const toast = useToast();
     const route = useRoute();
     const currentRoutePath = computed(() => route.path);
+    const isNiptRequired = ref(currentRoutePath.value === "/registerProvider");
 
     const passwordChecks = ref<ICheckPassword>({
       capsLetterCheck: false,
@@ -254,7 +255,13 @@ export default defineComponent({
       email: yup.string().email().required("Email is required"),
       name: yup.string().required("First Name is required"),
       lastName: yup.string().required("Last Name is required"),
-      nipt: yup.string().required("NIPT is required"),
+      nipt: yup
+        .string()
+        .when(["currentRoutePath"], (currentRoutePath, schema) => {
+          return isNiptRequired.value
+            ? schema.required("NIPT is required")
+            : schema;
+        }),
       password: yup
         .string()
         .required("Password is required")
@@ -307,20 +314,24 @@ export default defineComponent({
     const handleRegister = async (values: any) => {
       try {
         const res = await axios.post(
-          "http://localhost:1112/api/user/registerProvider",
+          `http://localhost:1112/api/user/${
+            currentRoutePath.value !== "/registerProvider"
+              ? "register"
+              : "registerProvider"
+          }`,
           values
         );
         if (res != null && res.data) {
           toast.add({
             life: 10000,
-            detail: `Contact: ${res.data.contact}, 
+            detail: `Contact: ${res.data.contact},
             Email: ${res.data.email}`,
             severity: "success",
             summary: res.data.message,
           });
 
-          if (currentRoutePath.value === "register")
-            router.push({ name: "LoginView" });
+          // if (currentRoutePath.value === "register")
+          //   router.push({ name: "LoginView" });
         }
       } catch (err) {
         console.log(err, "ERR");

@@ -13,6 +13,9 @@ import ProviderOrders from "../views/provider/ProviderOrders.vue";
 import ProviderMeals from "../views/provider/ProviderMeals.vue";
 import Profile from "../views/Profile.vue";
 import ProfileDetails from "../views/ProfileDetails.vue";
+import QuizLayout from "../views/other/QuizLayout.vue";
+import { useReduxSelector } from "@/store/redux/helpers";
+import eRoleType from "@/assets/enums/eRoleType";
 
 const routes = [
   {
@@ -112,6 +115,22 @@ const routes = [
     ],
   },
   {
+    path: "/user",
+    component: AppLayout,
+    children: [
+      {
+        path: "",
+        name: "ProviderMeals",
+        component: ProviderMeals,
+      },
+    ],
+  },
+  {
+    path: "/user/quiz",
+    component: QuizLayout,
+    name: "Quiz layout",
+  },
+  {
     path: "/",
     component: LandingPage,
     name: "Landing Page",
@@ -147,5 +166,21 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 });
+
+// router.beforeEach((to, from, next) => {
+//   const user: any = useReduxSelector((state) => state.user);
+//   console.log(user, "USER");
+//   const layoutComponent =
+//     !user.quizFulfilled && user.role === eRoleType.User
+//       ? QuizLayout
+//       : AppLayout;
+
+//   // Set the layout component for the route
+//   to.matched.forEach((route: any) => {
+//     route.components.default = layoutComponent;
+//   });
+
+//   next();
+// });
 
 export default router;

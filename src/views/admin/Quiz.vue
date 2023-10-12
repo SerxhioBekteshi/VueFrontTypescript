@@ -14,24 +14,106 @@
       />
     </div>
   </div>
+  <div>
+    <Button
+      style="margin-block: 1rem"
+      :disabled="!dragging"
+      severity="info"
+      :label="'Submit new order '"
+    />
+  </div>
 
   <draggable
     :list="quizQuestion"
     item-key="question"
     class="list-group"
     ghost-class="ghost"
-    @start="dragging = true"
-    @end="dragging = false"
+    @end="dragging = true"
+    @change="handleOrderChange"
   >
-    <template #item="{ element }">
+    <template #item="{ element, index }">
       <div class="list-group-item">
-        {{ element.question }}
+        <Panel
+          :header="element.order + ' ' + element.question"
+          class="mb-2"
+          toggleable
+        >
+          <template #icons>
+            <button
+              class="p-panel-header-icon p-link mr-2"
+              :id="`overlay_menu_${index}`"
+              @click="toggleMenuPopup(index, $event, element)"
+            >
+              <span class="pi pi-cog"></span>
+            </button>
+            {{ index }}
+            <Menu
+              ref="menuRef"
+              :id="`overlay_menu_${index}`"
+              :model="menuItems"
+              :popup="true"
+            />
+          </template>
+          <div
+            style="
+              display: flex;
+              flex-direction: row;
+              justify-content: center;
+              align-items: center;
+            "
+          >
+            <div v-if="element.questionType === 'select'">
+              <SelectButton
+                :options="element.questionOptions"
+                optionLabel="label"
+                multiple
+                aria-labelledby="multiple"
+              />
+            </div>
+            <div
+              v-for="(option, index) in element.questionOptions"
+              :key="index"
+            >
+              <div
+                v-if="element.questionType === 'radio'"
+                style="display: flex; align-items: center; padding-inline: 1rem"
+              >
+                <RadioButton
+                  class="p-invalid"
+                  :inputId="index.toString()"
+                  name="option"
+                />
+                <label :for="index.toString()" class="ml-2">{{
+                  option.label
+                }}</label>
+              </div>
+
+              <div
+                v-if="element.questionType === 'checkbox'"
+                style="display: flex; align-items: center; padding-inline: 1rem"
+              >
+                <Checkbox
+                  class="p-invalid"
+                  :inputId="index.toString()"
+                  name="option"
+                />
+                <label :for="index.toString()" class="ml-2">{{
+                  option.label
+                }}</label>
+              </div>
+            </div>
+          </div>
+        </Panel>
       </div>
     </template>
   </draggable>
 
-  <div v-for="(question, i) in quizQuestion" :key="question.id">
-    <Panel :header="question.question" class="mb-2" toggleable>
+  <!-- <div v-for="(question, i) in quizQuestion" :key="question.id">
+    <Panel
+      :header="question.order + ' ' + question.question"
+      class="mb-2"
+      toggleable
+    >
       <template #icons>
         <button
           class="p-panel-header-icon p-link mr-2"
@@ -40,6 +122,7 @@
         >
           <span class="pi pi-cog"></span>
         </button>
+        {{ i }}
         <Menu
           ref="menuRef"
           :id="`overlay_menu_${i}`"
@@ -140,7 +223,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 
   <div v-if="formData || modeDrawer">
     <DetailDrawer
@@ -163,7 +246,6 @@
 import Button from "primevue/button";
 import RadioButton from "primevue/radiobutton";
 import Checkbox from "primevue/checkbox";
-import Listbox from "primevue/listbox";
 import DetailDrawer from "../../components/DetailDrawer.vue";
 import { defineComponent, onMounted, ref, shallowRef } from "vue";
 import { useToast } from "primevue/usetoast";
@@ -185,7 +267,6 @@ export default defineComponent({
     DetailDrawer,
     RadioButton,
     Checkbox,
-    Listbox,
     Menu,
     QuizForm,
     Panel,
@@ -211,6 +292,7 @@ export default defineComponent({
       { id: 3, type: "checkbox" },
     ]);
     const menuRef = ref();
+
     const menuItem = ref<any>(null);
 
     const onDragEnd = (event: any) => {
@@ -219,6 +301,7 @@ export default defineComponent({
 
     const questionValidationSchema = yup.object().shape({
       question: yup.string().required("Question is required").label("question"),
+      order: yup.number().required("Order is required").label("Order"),
       questionOptions: yup
         .array()
         .of(
@@ -281,6 +364,7 @@ export default defineComponent({
       try {
         const res = await axios.get("/quiz/get-all");
         if (res && res.data) {
+          res.data.sort((a: any, b: any) => a.order - b.order);
           quizQuestion.value = res.data;
         }
       } catch (err: any) {
@@ -300,7 +384,19 @@ export default defineComponent({
     const toggleMenuPopup = (index: number, event: any, data: any) => {
       menuItem.value = data;
       // menu.value.toggle(menuId);
-      menuRef.value[index].toggle(event);
+      if (menuRef.value) menuRef.value.toggle(event);
+    };
+
+    const handleOrderChange = (newOrder: any) => {
+      console.log(newOrder);
+      // const updatedElement = quizQuestion.value.find(
+      //   (question) => question.id === newOrder.moved.element.id
+      // );
+
+      // if (updatedElement) {
+      //   updatedElement.order = newOrder.moved.newIndex;
+      //   console.log(updatedElement);
+      // }
     };
 
     return {
@@ -318,6 +414,7 @@ export default defineComponent({
       toggleMenuPopup,
       handleAddClick,
       onDragEnd,
+      handleOrderChange,
     };
   },
 });
