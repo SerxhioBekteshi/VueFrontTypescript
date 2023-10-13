@@ -14,8 +14,10 @@ import ProviderMeals from "../views/provider/ProviderMeals.vue";
 import Profile from "../views/Profile.vue";
 import ProfileDetails from "../views/ProfileDetails.vue";
 import QuizLayout from "../views/other/QuizLayout.vue";
-import { useReduxSelector } from "@/store/redux/helpers";
-import eRoleType from "@/assets/enums/eRoleType";
+import PersonalDemo from "../components/stepperViews/PaymentDemo.vue";
+import SeatDemo from "../components/stepperViews/SeatDemo.vue";
+import PaymentDemo from "../components/stepperViews/PaymentDemo.vue";
+import ConfirmationDemo from "../components/stepperViews/ConfirmationDemo.vue";
 
 const routes = [
   {
@@ -150,37 +152,31 @@ const routes = [
     name: "LoginView",
     component: LoginView,
   },
-  //   {
-  //     path: "/feed",
-  //     name: "Feed",
-  //     component: Feed,
-  //   },
-  //   {
-  //     path: "/companies",
-  //     name: "Companies",
-  //     component: Companies,
-  //   },
+  // {
+  //   path: "/user/quiz/personal",
+  //   component: PersonalDemo,
+  //   name: "PersonalDemo",
+  // },
+  // {
+  //   path: "/user/quiz/seat",
+  //   name: "SeatDemo",
+  //   component: SeatDemo,
+  // },
+  // {
+  //   path: "/user/quiz/payment",
+  //   name: "PaymentDemo",
+  //   component: PaymentDemo,
+  // },
+  // {
+  //   path: "/user/quiz/confirmation",
+  //   name: "ConfirmationDemo",
+  //   component: ConfirmationDemo,
+  // },
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 });
-
-// router.beforeEach((to, from, next) => {
-//   const user: any = useReduxSelector((state) => state.user);
-//   console.log(user, "USER");
-//   const layoutComponent =
-//     !user.quizFulfilled && user.role === eRoleType.User
-//       ? QuizLayout
-//       : AppLayout;
-
-//   // Set the layout component for the route
-//   to.matched.forEach((route: any) => {
-//     route.components.default = layoutComponent;
-//   });
-
-//   next();
-// });
 
 export default router;
