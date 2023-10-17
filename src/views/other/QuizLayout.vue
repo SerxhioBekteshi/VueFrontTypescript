@@ -1,27 +1,115 @@
 <template>
   <div>
     <div class="card">
-      <Stepper />
+      <Stepper
+        v-if="quizQuestion.length !== 0 || quizQuestion !== null"
+        :activeStep="activeStep"
+        :steps="quizQuestion.length"
+        :actions="stepperActions"
+      >
+        <div v-for="(question, index) in quizQuestion" :key="index">
+          <div v-if="activeStep === index">
+            <Step :data="quizQuestion[index]" />
+          </div>
+
+          <div
+            v-if="activeStep === quizQuestion.length"
+            class="centered-container"
+          >
+            <div class="flex flex-row align-items-center gap-2 mb-3">
+              <i class="pi pi-times" style="color: green"></i>
+              <p>Quiz fulfilled successfully</p>
+            </div>
+            <div class="flex-column align-center">
+              <Button
+                size="small"
+                severity="info"
+                label="Meals"
+                @click="() => router.push('/payments')"
+              />
+            </div>
+          </div>
+        </div>
+      </Stepper>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from "vue";
+import { defineComponent, onMounted, provide, shallowRef } from "vue";
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useToast } from "primevue/usetoast";
 import axios from "axios";
 import Stepper from "../../components/Stepper.vue";
+import Button from "primevue/button";
+import Step from "../other/Step.vue";
+import { useField, useForm } from "vee-validate";
+import * as yup from "yup";
 
 export default defineComponent({
   name: "QuizLayout",
-  components: { Stepper },
+  components: { Stepper, Step, Button },
   props: {},
   setup() {
     const router = useRouter();
     const route = useRoute();
     const quizQuestion = ref<any[]>([]);
+    const activeStep = ref<number>(0);
+    const stepperActions = shallowRef<any[]>([
+      {
+        component: Button,
+        props: {
+          icon: "pi pi-times",
+          label: "Back",
+          severity: "primary",
+          onclick: () => {
+            activeStep.value = activeStep.value - 1;
+          },
+        },
+      },
+      {
+        component: Button,
+        props: {
+          label: "Next",
+          icon: "pi pi-check",
+          severity: "info",
+          // disabled: activeStep.value === quizQuestion.value.length,
+          onclick: () => {
+            activeStep.value = activeStep.value + 1;
+          },
+        },
+      },
+    ]);
+
+    const quizValidationSchema = yup.object().shape({
+      cousine: yup.string().required("Cousine is required").label("Cousine"),
+      dietCategory: yup
+        .string()
+        .required("Diet Category is required")
+        .label("Diet Category"),
+      intolerance: yup
+        .string()
+        .required("Intolerance is required")
+        .label("Intolerance"),
+      healthGoal: yup
+        .string()
+        .required("Health goal is required")
+        .label("Health goal"),
+      state: yup.string().required("State is required").label("State"),
+    });
+
+    const { handleSubmit, resetForm, setFieldError, setErrors } = useForm({
+      // validationSchema: quizValidationSchema,
+    });
+
+    provide("veeQuizForm", {
+      handleSubmit,
+      resetForm,
+      setFieldError,
+      setErrors,
+      useField,
+    });
 
     const getQuiz = async () => {
       try {
@@ -37,11 +125,10 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      // router.push({ name: "PersonalDemo" });
-      // getQuiz();
+      getQuiz();
     });
 
-    return {};
+    return { activeStep, stepperActions, quizQuestion, router };
   },
 });
 </script>
@@ -52,5 +139,13 @@ export default defineComponent({
 
 ::v-deep(.p-card-body) {
   padding: 2rem;
+}
+
+.centered-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 </style>

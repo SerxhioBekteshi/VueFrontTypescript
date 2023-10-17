@@ -35,7 +35,6 @@ export default defineComponent({
   props: {
     id: { type: String },
     name: { type: String, required: true },
-    type: { type: String, required: true },
     placeholder: { type: String },
     label: { type: String, required: true },
     options: { type: Array, required: true },

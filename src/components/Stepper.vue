@@ -1,22 +1,30 @@
 <template>
   <div class="wrapper">
     <div class="rpHeaderContainer">
-      <div v-for="(step, i) in steps" :key="i">
-        <div class="circle">{{ i + 1 }}</div>
+      <div
+        v-for="(step, i) in steps"
+        :key="i"
+        :class="{ filled: i < activeStep }"
+      >
+        <div class="flex align-items-center gap-1">
+          <div
+            class="circle"
+            :style="{
+              'background-color': i < activeStep ? '#3498db' : '',
+            }"
+          >
+            {{ i + 1 }}
+          </div>
+          <div class="line"></div>
+        </div>
       </div>
     </div>
-
     <div class="container">
-      //here it will be the children slot
-      <!-- <div v-if="activeIndex === 0"></div>
-      <div v-else>stepps here</div> -->
-      <div class="panel_add_footer">
-        <div>
-          <Button @click="() => setActiveIndex(activeIndex + 1)">Back</Button>
-        </div>
-        <div>
-          <Button @click="() => setActiveIndex(activeIndex - 1)">Next</Button>
-        </div>
+      <slot></slot>
+    </div>
+    <div class="panel_add_footer">
+      <div v-for="(action, index) in actions" :key="index">
+        <component :is="action.component" v-bind="action.props"></component>
       </div>
     </div>
   </div>
@@ -26,13 +34,20 @@
 import Button from "primevue/button";
 import { ref, onMounted, defineComponent } from "vue";
 
+export interface Action {
+  component: any;
+  props: Record<string, unknown>;
+}
+
 export default defineComponent({
   name: "StepperComponent",
   components: { Button },
   props: {
     steps: { type: Number, required: true, default: 3 },
+    activeStep: { type: Number, required: true },
     selectedVal: { type: Object, required: false },
     onSubmitData: { type: Function, required: false },
+    actions: { type: Array as () => Action[], required: true },
   },
   setup() {
     const allCities = ref(null);
@@ -43,149 +58,40 @@ export default defineComponent({
       activeIndex.value = index;
     };
 
-    const resetForm = () => {
-      // Reset the form here
-    };
-
     const onSubmit = (event: any) => {
       event.preventDefault();
     };
-
-    onMounted(() => {
-      // axios.get(`/cities`).then((data) => {
-      //   allCities.value = data.data;
-      // });
-    });
 
     return {
       allCities,
       activeIndex,
       setActiveIndex,
-      resetForm,
       onSubmit,
     };
   },
 });
 </script>
 <style scoped>
-.balance_div {
-  display: flex;
-  flex-wrap: wrap;
-  align-content: center;
-  justify-content: center;
-  flex-direction: row;
-}
-.balanceContainer {
-  display: flex;
-  flex-direction: row;
-}
-
-.withdrway_btn {
-  background-color: var(--font-h1-primary-comor);
-  padding: 6px;
-  color: #f1faee;
-  border-radius: 10px;
-}
-
-.addNewButton {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-}
-
 .circle {
-  width: 25px;
-  height: 25px;
-  background-color: #3498db; /* Blue color, you can change it to your preferred color */
-  border-radius: 50%; /* Makes it a circle */
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white; /* Text color */
+  border: 2px solid black;
+  color: black;
   font-size: 14px;
 }
 
-.form-column {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-}
-
-.form-columnFooter {
-  display: flex;
-  flex: 1;
-  width: 100%;
-}
-.form-group {
-  flex: 1;
-  padding: 0 10px;
-}
-
-label {
-  font-weight: bold;
-  margin-bottom: 8px;
-}
-
-input[type="text"],
-input[type="tel"],
-textarea {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
-  transition: border-color 0.3s ease;
-}
-
-input[type="text"]:focus,
-input[type="tel"]:focus,
-textarea:focus {
-  border-color: #007bff;
-}
-
-textarea {
-  resize: vertical;
-  min-height: 100px;
-}
-
-.error-message {
-  color: #ff0000;
-  margin-top: 5px;
-}
-/* .wrapper {
-  min-height: 100vh;
-  position: relative;
-} */
-.form-container {
+.container {
+  margin-block: 1rem;
   padding: 3rem;
-  display: flex;
-  flex-direction: column;
-}
-.mainImageCointainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-items: center;
-  width: 100%;
-  height: 100%;
-}
-
-.imageCointainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-items: center;
-  width: 100%;
-  height: 100%;
 }
 
 .panel_add_footer {
-  left: 0;
   padding: 16px;
   display: flex;
-  bottom: 0px;
-  width: 100%;
   justify-content: space-between;
 }
 
@@ -195,6 +101,28 @@ textarea {
   align-items: center;
   padding-inline: 2rem;
   margin-top: 1rem;
-  background-color: red;
+  padding-block: 2rem;
+}
+
+.line {
+  flex: 1; /* Stretch the line horizontally */
+  height: 2px; /* Adjust the height of the line as needed */
+  background-color: #3498db;
+}
+
+.filled {
+  position: relative;
+}
+
+.filled::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: calc(100% - 35px);
+  height: 2px;
+  background-color: #3498db;
+  transition: background-color 0.5s;
+  transform: translateY(-50%);
 }
 </style>

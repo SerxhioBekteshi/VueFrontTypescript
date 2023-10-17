@@ -79,7 +79,7 @@
               :optionValue="'value'"
               name="gender"
               :label="'Gender'"
-              id="state"
+              id="gender"
               placeholder="Gender"
               v-bind="gender"
             />
