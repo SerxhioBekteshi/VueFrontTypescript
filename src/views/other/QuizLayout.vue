@@ -6,6 +6,7 @@
         :activeStep="activeStep"
         :steps="quizQuestion.length"
         :actions="stepperActions"
+        :title="'Fulfill the quiz to get some meals suggested'"
       >
         <div v-for="(question, index) in quizQuestion" :key="index">
           <div v-if="activeStep === index">
@@ -33,6 +34,7 @@
       </Stepper>
     </div>
   </div>
+  <Toast />
 </template>
 
 <script lang="ts">
@@ -46,6 +48,7 @@ import Button from "primevue/button";
 import Step from "../other/Step.vue";
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
+import Toast from "primevue/toast";
 
 export default defineComponent({
   name: "QuizLayout",
@@ -54,6 +57,7 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const route = useRoute();
+    const toast = useToast();
     const quizQuestion = ref<any[]>([]);
     const activeStep = ref<number>(0);
     const stepperActions = shallowRef<any[]>([
@@ -64,7 +68,17 @@ export default defineComponent({
           label: "Back",
           severity: "primary",
           onclick: () => {
-            activeStep.value = activeStep.value - 1;
+            console.log(activeStep.value);
+            if (activeStep.value !== 0) activeStep.value = activeStep.value - 1;
+            else {
+              toast.add({
+                life: 3000,
+                detail: "Cant go more back than this",
+                severity: "warn",
+                summary: "info",
+                group: "bl",
+              });
+            }
           },
         },
       },
@@ -76,7 +90,8 @@ export default defineComponent({
           severity: "info",
           // disabled: activeStep.value === quizQuestion.value.length,
           onclick: () => {
-            activeStep.value = activeStep.value + 1;
+            if (activeStep.value !== quizQuestion.value.length)
+              activeStep.value = activeStep.value + 1;
           },
         },
       },

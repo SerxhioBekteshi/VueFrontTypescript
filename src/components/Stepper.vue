@@ -1,23 +1,11 @@
 <template>
   <div class="wrapper">
-    <div class="rpHeaderContainer">
-      <div
-        v-for="(step, i) in steps"
-        :key="i"
-        :class="{ filled: i < activeStep }"
-      >
-        <div class="flex align-items-center gap-1">
-          <div
-            class="circle"
-            :style="{
-              'background-color': i < activeStep ? '#3498db' : '',
-            }"
-          >
-            {{ i + 1 }}
-          </div>
-          <div class="line"></div>
+    <div>
+      <ol class="stepper">
+        <div v-for="(step, i) in steps" :key="i">
+          <li :class="{ active: i - 1 < activeStep }">STEP</li>
         </div>
-      </div>
+      </ol>
     </div>
     <div class="container">
       <slot></slot>
@@ -31,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import Button from "primevue/button";
+// import Button from "primevue/button";
 import { ref, onMounted, defineComponent } from "vue";
 
 export interface Action {
@@ -41,47 +29,113 @@ export interface Action {
 
 export default defineComponent({
   name: "StepperComponent",
-  components: { Button },
+  components: {},
   props: {
     steps: { type: Number, required: true, default: 3 },
     activeStep: { type: Number, required: true },
-    selectedVal: { type: Object, required: false },
-    onSubmitData: { type: Function, required: false },
     actions: { type: Array as () => Action[], required: true },
+    title: { type: String, required: true },
   },
   setup() {
-    const allCities = ref(null);
-
-    const activeIndex = ref(0);
-
-    const setActiveIndex = (index: number) => {
-      activeIndex.value = index;
-    };
-
     const onSubmit = (event: any) => {
       event.preventDefault();
     };
 
     return {
-      allCities,
-      activeIndex,
-      setActiveIndex,
       onSubmit,
     };
   },
 });
 </script>
 <style scoped>
-.circle {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
+ol.stepper {
+  --default-b: lightgrey;
+  --default-c: black;
+  --active-b: purple;
+  --active-c: white;
+  --circle: 3.5rem;
+  --b: 2px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid black;
-  color: black;
-  font-size: 14px;
+  justify-content: space-between;
+  background: linear-gradient(var(--default-b) 0 0) no-repeat 50%
+    calc((var(--circle) - var(--b)) / 2) / 100% var(--b);
+  /* counter-reset: step; */
+  margin: 20px;
+  padding: 0;
+  font-size: 15px;
+  counter-reset: step;
+  overflow: hidden;
+}
+
+ol.stepper li {
+  display: grid;
+  place-items: center;
+  gap: 5px;
+  font-family: sans-serif;
+  position: relative;
+}
+ol.stepper li::before {
+  content: counter(step) " ";
+  counter-increment: step;
+  display: grid;
+  place-content: center;
+  aspect-ratio: 1;
+  height: var(--circle);
+  border: 5px solid #fff;
+  box-sizing: border-box;
+  background: var(--default-b);
+  color: var(--default-c);
+  border-radius: 50%;
+  z-index: 1;
+}
+
+ol.stepper li.active::before {
+  background: var(--active-b);
+  color: var(--active-c);
+}
+
+ol.stepper li.active .stepNumber::before {
+  background: var(--default-b);
+  color: var(--default-c);
+}
+ol.stepper li.active::after {
+  content: "";
+  position: absolute;
+  height: var(--b);
+  right: 100%;
+  top: calc((var(--circle) - var(--b)) / 2);
+  width: 100vw;
+  background: var(--active-b);
+}
+
+@media (max-width: 400px) {
+  ol.stepper {
+    display: grid;
+    gap: 20px;
+    background: linear-gradient(var(--default-b) 0 0) no-repeat
+      calc((var(--circle) - var(--b)) / 2) 50% / var(--b) 100%;
+  }
+  ol.stepper li {
+    display: flex;
+  }
+
+  ol.stepper li.active::after {
+    content: "";
+    position: absolute;
+    width: var(--b);
+    bottom: 100%;
+    left: calc((var(--circle) - var(--b)) / 2);
+    top: auto;
+    right: auto;
+    height: 100vw;
+    background: var(--active-b);
+  }
+}
+.wrapper {
+  padding: 2rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Add a box shadow */
+  border: 1px solid #ccc;
+  border-radius: 1rem;
 }
 
 .container {
@@ -93,36 +147,5 @@ export default defineComponent({
   padding: 16px;
   display: flex;
   justify-content: space-between;
-}
-
-.rpHeaderContainer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-inline: 2rem;
-  margin-top: 1rem;
-  padding-block: 2rem;
-}
-
-.line {
-  flex: 1; /* Stretch the line horizontally */
-  height: 2px; /* Adjust the height of the line as needed */
-  background-color: #3498db;
-}
-
-.filled {
-  position: relative;
-}
-
-.filled::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: calc(100% - 35px);
-  height: 2px;
-  background-color: #3498db;
-  transition: background-color 0.5s;
-  transform: translateY(-50%);
 }
 </style>

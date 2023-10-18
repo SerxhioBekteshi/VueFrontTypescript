@@ -21,7 +21,7 @@
       </div>
       <div
         v-if="data.questionType === 'radio'"
-        class="flex justify-content-center"
+        class="flex justify-content-center flex-wrap gap-3"
       >
         <div v-for="(option, index) in data.questionOptions" :key="index">
           <div class="flex align-items-center" style="margin-inline: 1rem">
@@ -37,7 +37,7 @@
       </div>
       <div
         v-if="data.questionType === 'checkbox'"
-        class="flex justify-content-center"
+        class="flex justify-content-center flex-wrap gap-3"
       >
         <div v-for="(option, index) in data.questionOptions" :key="index">
           <div class="flex align-items-center" style="margin-inline: 1rem">
@@ -68,7 +68,6 @@ export default defineComponent({
     data: { type: Object, required: true },
   },
   setup(props) {
-    console.log(props.data);
     return {};
   },
 });
