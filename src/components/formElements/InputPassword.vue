@@ -1,34 +1,40 @@
 <template>
-  <label :for="name" :style="{ color: errorMessage ? 'red' : '' }">
-    {{ label }}
-  </label>
-  <span :class="`p-input-icon-${iconPosition} w-full`">
-    <i
-      :class="`pi pi ${
-        inputType === 'password' ? 'pi-eye' : 'pi-eye-slash'
-      } hoverOnIcon`"
-      @click="toggleShowPassword"
-    />
-    <InputText
-      :value="value"
-      :type="inputType"
-      :style="{ borderColor: errorMessage ? 'red' : '', width: '100%' }"
-      :placeholder="placeholder"
-      :inputId="name"
-      :id="id"
-      :class="{
-        dirty: meta.dirty,
-        // valid: !errorMessage,
-        // invalid: errorMessage,
-      }"
-      @change="handleChange"
-      @keyup="handleOnKeyUp"
-      @blur="handleOnBlur"
-      @focus="handleOnFocus"
-    />
-  </span>
+  <div style="display: flex; flex-direction: column">
+    <label
+      style="padding-left: 0.5rem; margin-bottom: 0.5rem"
+      :for="name"
+      :style="{ color: errorMessage ? 'red' : '' }"
+    >
+      {{ label }}
+    </label>
+    <span :class="`p-input-icon-${iconPosition} w-full`">
+      <i
+        :class="`pi pi ${
+          inputType === 'password' ? 'pi-eye' : 'pi-eye-slash'
+        } hoverOnIcon`"
+        @click="toggleShowPassword"
+      />
+      <InputText
+        :value="value"
+        :type="inputType"
+        :style="{ borderColor: errorMessage ? 'red' : '', width: '100%' }"
+        :placeholder="placeholder"
+        :inputId="name"
+        :id="id"
+        :class="{
+          dirty: meta.dirty,
+          // valid: !errorMessage,
+          // invalid: errorMessage,
+        }"
+        @change="handleChange"
+        @keyup="handleOnKeyUp"
+        @blur="handleOnBlur"
+        @focus="handleOnFocus"
+      />
+    </span>
 
-  <ValidationError v-if="errorMessage">{{ errorMessage }}</ValidationError>
+    <ValidationError v-if="errorMessage">{{ errorMessage }}</ValidationError>
+  </div>
 </template>
 
 <script lang="ts">
@@ -36,6 +42,7 @@ import { useField } from "vee-validate";
 import ValidationError from "../ValidationError.vue";
 import { PropType, defineComponent, ref } from "vue";
 import InputText from "primevue/inputtext";
+import { inject } from "vue";
 
 export default defineComponent({
   name: "InputPassword",
@@ -55,6 +62,7 @@ export default defineComponent({
   },
   setup(props) {
     const inputType = ref<string>("password");
+    const veeValidateForm: any = inject("veeValidateForm");
 
     const toggleShowPassword = () => {
       inputType.value = inputType.value === "password" ? "text" : "password";
@@ -63,6 +71,10 @@ export default defineComponent({
     const { value, handleChange, errorMessage, meta } = useField(
       () => props.name,
       undefined
+      // {
+      //   // Conditionally enable or disable validation based on formSubmitted
+      //   enabled: () => veeValidateForm.isSubmitting,
+      // }
     );
 
     return {

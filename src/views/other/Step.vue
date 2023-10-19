@@ -7,68 +7,96 @@
           {{ data.question }}
         </span>
       </div>
-      <div v-if="data.questionType === 'select'">
+      <!-- <div v-if="data.questionType === 'select'">
         <InputSelect
           :options="data.questionOptions"
           :optionLabel="'label'"
           :optionValue="'value'"
           :label="data.question"
-          name="sth"
-          id="sth"
+          :name="data.fieldName"
+          :id="data.fieldName"
           :placeholder="data.question"
-          aria-labelledby="multiple"
+          v-bind="data.fieldName"
+          :showError="false"
         />
-      </div>
-      <div
-        v-if="data.questionType === 'radio'"
-        class="flex justify-content-center flex-wrap gap-3"
-      >
-        <div v-for="(option, index) in data.questionOptions" :key="index">
-          <div class="flex align-items-center" style="margin-inline: 1rem">
-            <RadioButton
-              :inputId="index.toString()"
-              :name="option.label"
-              :value="option.value"
-              v-model="option.label"
-            />
-            <label :for="option.label" class="ml-2">{{ option.label }}</label>
+      </div> -->
+      <form @onSubmit="handlePrevent">
+        <div
+          v-if="data.questionType === 'radio'"
+          class="flex justify-content-center flex-wrap gap-3"
+        >
+          <div v-for="(option, index) in data.questionOptions" :key="index">
+            <div class="flex align-items-center" style="margin-inline: 1rem">
+              <RadioButton
+                :inputId="option.label + index"
+                :name="data.fieldName"
+                :value="option.value"
+                v-model="stepField"
+              />
+              <label :for="option.label + index" class="ml-2">{{
+                option.label
+              }}</label>
+            </div>
           </div>
         </div>
-      </div>
-      <div
-        v-if="data.questionType === 'checkbox'"
-        class="flex justify-content-center flex-wrap gap-3"
-      >
-        <div v-for="(option, index) in data.questionOptions" :key="index">
-          <div class="flex align-items-center" style="margin-inline: 1rem">
-            <Checkbox
-              :inputId="index.toString()"
-              :name="option.label"
-              :value="option.value"
-            />
-            <label :for="option.label" class="ml-2">{{ option.label }}</label>
+        <div
+          v-if="data.questionType === 'checkbox'"
+          class="flex justify-content-center flex-wrap gap-3"
+        >
+          <div v-for="(option, index) in data.questionOptions" :key="index">
+            <div class="flex align-items-center" style="margin-inline: 1rem">
+              <Checkbox
+                :inputId="option.label + index"
+                :name="data.fieldName"
+                :value="option.value"
+                v-model="stepField"
+              />
+              <label :for="option.label + index" class="ml-2">{{
+                option.label
+              }}</label>
+            </div>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import Checkbox from "primevue/checkbox";
-import InputSelect from "../../components/formElements/InputSelect.vue";
+// import InputSelect from "../../components/formElements/InputSelect.vue";
 import RadioButton from "primevue/radiobutton";
-import { defineComponent } from "vue";
+import { defineComponent, inject, ref, watch } from "vue";
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Step",
-  components: { RadioButton, InputSelect, Checkbox },
+  components: { RadioButton, Checkbox },
   props: {
     data: { type: Object, required: true },
   },
   setup(props) {
-    return {};
+    const veeQuizForm: any = inject("veeQuizForm");
+    const fieldValue = ref("");
+
+    const { value: stepField } = veeQuizForm.useField(props.data.fieldName);
+
+    watch(
+      stepField,
+      (newValue: any) => {
+        // Update the data object when stepField changes
+        fieldValue.value = newValue;
+        veeQuizForm.set;
+        console.log(fieldValue.value);
+      },
+      { deep: true }
+    );
+
+    const handlePrevent = (event: any) => {
+      event.preventDefault();
+    };
+
+    return { stepField, handlePrevent };
   },
 });
 </script>

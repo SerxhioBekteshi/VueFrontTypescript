@@ -7,7 +7,6 @@
           :label="'Meal Name'"
           id="name"
           placeholder="Meal Name"
-          v-bind="name"
         />
       </div>
 
@@ -17,7 +16,6 @@
           :label="'Cousine'"
           id="cousine"
           placeholder="Cousine"
-          v-bind="cousine"
         />
       </div>
 
@@ -27,7 +25,6 @@
           name="dietCategory"
           id="dietCategory"
           placeholder="Diet category"
-          v-bind="dietCategory"
         />
       </div>
 
@@ -37,7 +34,6 @@
           name="intolerance"
           id="intolerance"
           placeholder="Intolerance"
-          v-bind="intolerance"
         />
       </div>
 
@@ -48,7 +44,6 @@
           type="number"
           id="calories"
           placeholder="Calories"
-          v-bind="calories"
         />
       </div>
 
@@ -59,7 +54,6 @@
           type="number"
           id="carbonFootprint"
           placeholder="Carbon footprint"
-          v-bind="carbonFootprint"
         />
       </div>
 
@@ -150,6 +144,7 @@ export default defineComponent({
     const { value: calories } = veeValidateForm.useField("calories");
     const { value: intolerance } = veeValidateForm.useField("intolerance");
 
+    console.log(name.value);
     const handlePrevent = (event: any) => {
       event.preventDefault();
     };

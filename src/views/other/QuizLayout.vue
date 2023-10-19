@@ -2,13 +2,13 @@
   <div>
     <div class="card">
       <Stepper
-        v-if="quizQuestion.length !== 0 || quizQuestion !== null"
+        v-if="quizQuestion.length !== 0"
         :activeStep="activeStep"
         :steps="steps"
         :actions="stepperActions"
         :title="'Fulfill the quiz to get some meals suggested'"
       >
-        <div v-for="index in quizQuestion" :key="index">
+        <div v-for="(question, index) in quizQuestion" :key="index">
           <div v-if="activeStep === index">
             <Step :data="quizQuestion[index]" />
           </div>
@@ -58,7 +58,7 @@ import * as yup from "yup";
 import Toast from "primevue/toast";
 
 export interface StepArray {
-  fieldName: string; // You can adjust the type as needed
+  fieldName: string;
 }
 
 export default defineComponent({
@@ -102,13 +102,19 @@ export default defineComponent({
         {
           component: Button,
           props: {
-            label: label.value, // Use the computed label here
+            label: label.value,
             icon: "pi pi-check",
             severity: "info",
+            type: "Submit",
+
+            // type: label.value === "Submit" ? "Submit" : "Button",
             // disabled: activeStep.value === quizQuestion.value.length,
             onclick: () => {
               if (activeStep.value !== quizQuestion.value.length)
                 activeStep.value = activeStep.value + 1;
+              if (activeStep.value === quizQuestion.value.length) {
+                handleSubmit(handleFormSubmit)();
+              }
             },
           },
         },
@@ -133,9 +139,24 @@ export default defineComponent({
     });
 
     const { handleSubmit, resetForm, setFieldError, setErrors } = useForm({
-      validationSchema: quizValidationSchema,
+      // validationSchema: quizValidationSchema,
+      initialValues: {
+        cousine: "",
+        dietCategory: "",
+        calories: "",
+        achievement: "",
+        intolerance: "",
+      },
     });
 
+    const handleFormSubmit = async (data: any) => {
+      console.log(data, "DATA");
+      // try {
+      //     const res: any = await axios.post("/quizResult", data)
+      // }catch(err) {
+      //   console.log(err, "ERROR")
+      // }
+    };
     provide("veeQuizForm", {
       handleSubmit,
       resetForm,
@@ -149,7 +170,6 @@ export default defineComponent({
         const res = await axios.get("/quiz/get-all");
         if (res && res.data) {
           res.data.sort((a: any, b: any) => a.order - b.order);
-          console.log(res.data);
           quizQuestion.value = res.data;
           steps.value = res.data.map((question: any) => ({
             fieldName: question.fieldName,
@@ -159,13 +179,6 @@ export default defineComponent({
         console.log(err, "ERR");
       }
     };
-
-    watch(activeStep, (newVal, oldVal) => {
-      // This function will be called when myVariable changes.
-      console.log("myVariable has changed. New value: " + newVal);
-      console.log("Old value: " + oldVal);
-      // You can perform custom logic here.
-    });
 
     onMounted(() => {
       getQuiz();

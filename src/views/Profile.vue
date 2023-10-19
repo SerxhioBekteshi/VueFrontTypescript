@@ -188,6 +188,7 @@ import OverlayPanel from "primevue/overlaypanel";
 import { ICheckPassword } from "@/interfaces/ICheckPassword";
 import InputPassword from "../components/formElements/InputPassword.vue";
 import axios from "axios";
+import { provide } from "vue";
 
 export default defineComponent({
   name: "ProfilePassword",
@@ -239,7 +240,7 @@ export default defineComponent({
         ),
     });
 
-    const { handleSubmit, resetForm, setValues } = useForm({
+    const { handleSubmit, resetForm, setValues, isSubmitting } = useForm({
       validationSchema: schemaToValidate,
       initialValues: {
         oldPassword: "",
@@ -247,6 +248,7 @@ export default defineComponent({
         passwordConfirm: "",
       },
     });
+    provide("veeValidateForm", { isSubmitting });
 
     const { value: oldPassword } = useField<string>("oldPassword");
     const { value: password } = useField<string>("password");
