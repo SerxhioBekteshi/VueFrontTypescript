@@ -4,11 +4,11 @@
       <Stepper
         v-if="quizQuestion.length !== 0 || quizQuestion !== null"
         :activeStep="activeStep"
-        :steps="quizQuestion.length"
+        :steps="steps"
         :actions="stepperActions"
         :title="'Fulfill the quiz to get some meals suggested'"
       >
-        <div v-for="(question, index) in quizQuestion" :key="index">
+        <div v-for="index in quizQuestion" :key="index">
           <div v-if="activeStep === index">
             <Step :data="quizQuestion[index]" />
           </div>
@@ -38,9 +38,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, provide, shallowRef } from "vue";
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  provide,
+  shallowRef,
+  watch,
+} from "vue";
 import { ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import { useToast } from "primevue/usetoast";
 import axios from "axios";
 import Stepper from "../../components/Stepper.vue";
@@ -50,52 +57,63 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import Toast from "primevue/toast";
 
+export interface StepArray {
+  fieldName: string; // You can adjust the type as needed
+}
+
 export default defineComponent({
   name: "QuizLayout",
   components: { Stepper, Step, Button },
   props: {},
   setup() {
     const router = useRouter();
-    const route = useRoute();
     const toast = useToast();
     const quizQuestion = ref<any[]>([]);
+    const steps = ref<StepArray[]>([]);
     const activeStep = ref<number>(0);
-    const stepperActions = shallowRef<any[]>([
-      {
-        component: Button,
-        props: {
-          icon: "pi pi-times",
-          label: "Back",
-          severity: "primary",
-          onclick: () => {
-            console.log(activeStep.value);
-            if (activeStep.value !== 0) activeStep.value = activeStep.value - 1;
-            else {
-              toast.add({
-                life: 3000,
-                detail: "Cant go more back than this",
-                severity: "warn",
-                summary: "info",
-                group: "bl",
-              });
-            }
+    const label = computed(() => {
+      return activeStep.value === quizQuestion.value.length - 1
+        ? "Submit"
+        : "Next";
+    });
+    const stepperActions = computed(() => {
+      return [
+        {
+          component: Button,
+          props: {
+            icon: "pi pi-times",
+            label: "Back",
+            severity: "primary",
+            onclick: () => {
+              if (activeStep.value !== 0)
+                activeStep.value = activeStep.value - 1;
+              else {
+                toast.add({
+                  life: 3000,
+                  detail: "Cant go more back than this",
+                  severity: "warn",
+                  summary: "info",
+                  group: "bl",
+                });
+              }
+            },
           },
         },
-      },
-      {
-        component: Button,
-        props: {
-          label: "Next",
-          icon: "pi pi-check",
-          severity: "info",
-          // disabled: activeStep.value === quizQuestion.value.length,
-          onclick: () => {
-            if (activeStep.value !== quizQuestion.value.length)
-              activeStep.value = activeStep.value + 1;
+        {
+          component: Button,
+          props: {
+            label: label.value, // Use the computed label here
+            icon: "pi pi-check",
+            severity: "info",
+            // disabled: activeStep.value === quizQuestion.value.length,
+            onclick: () => {
+              if (activeStep.value !== quizQuestion.value.length)
+                activeStep.value = activeStep.value + 1;
+            },
           },
         },
-      },
-    ]);
+      ];
+    });
 
     const quizValidationSchema = yup.object().shape({
       cousine: yup.string().required("Cousine is required").label("Cousine"),
@@ -107,15 +125,15 @@ export default defineComponent({
         .string()
         .required("Intolerance is required")
         .label("Intolerance"),
-      healthGoal: yup
+      achievement: yup
         .string()
         .required("Health goal is required")
         .label("Health goal"),
-      state: yup.string().required("State is required").label("State"),
+      calories: yup.string().label("calories"),
     });
 
     const { handleSubmit, resetForm, setFieldError, setErrors } = useForm({
-      // validationSchema: quizValidationSchema,
+      validationSchema: quizValidationSchema,
     });
 
     provide("veeQuizForm", {
@@ -133,17 +151,27 @@ export default defineComponent({
           res.data.sort((a: any, b: any) => a.order - b.order);
           console.log(res.data);
           quizQuestion.value = res.data;
+          steps.value = res.data.map((question: any) => ({
+            fieldName: question.fieldName,
+          }));
         }
       } catch (err: any) {
         console.log(err, "ERR");
       }
     };
 
+    watch(activeStep, (newVal, oldVal) => {
+      // This function will be called when myVariable changes.
+      console.log("myVariable has changed. New value: " + newVal);
+      console.log("Old value: " + oldVal);
+      // You can perform custom logic here.
+    });
+
     onMounted(() => {
       getQuiz();
     });
 
-    return { activeStep, stepperActions, quizQuestion, router };
+    return { activeStep, stepperActions, quizQuestion, router, steps };
   },
 });
 </script>

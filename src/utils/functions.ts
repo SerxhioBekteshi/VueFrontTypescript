@@ -42,6 +42,13 @@ export const groupDigital = (num: any) => {
     : `${grouped}.${decimal.substring(0, 2)}`;
 };
 
+export const toCamelCase = (string: any) => {
+  return string
+    .replace(/([A-Z])/g, " $1")
+    .trim()
+    .replace(/^./, (firstChar: any) => firstChar.toUpperCase());
+};
+
 export const initApp = async () => {
   let currentUser: IUserState | null = null;
   try {

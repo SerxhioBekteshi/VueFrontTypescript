@@ -9,11 +9,19 @@
         />
       </div>
 
-      <div style="margin-bottom: 1rem">
+      <div style="margin-bottom: 2rem">
         <InputNumber
           name="order"
           :label="'Determine the order of this question'"
           placeholder="Order"
+        />
+      </div>
+
+      <div style="margin-bottom: 1rem">
+        <InputNumber
+          name="fieldName"
+          :label="'Field name'"
+          placeholder="Field name"
         />
       </div>
 

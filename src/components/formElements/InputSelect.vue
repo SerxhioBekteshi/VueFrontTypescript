@@ -20,7 +20,9 @@
     >
   </span>
 
-  <ValidationError v-if="errorMessage">{{ errorMessage }}</ValidationError>
+  <div v-if="showError">
+    <ValidationError v-if="errorMessage">{{ errorMessage }}</ValidationError>
+  </div>
 </template>
 
 <script lang="ts">
@@ -31,7 +33,7 @@ import Dropdown from "primevue/dropdown";
 
 export default defineComponent({
   name: "InputSelect",
-  components: { Dropdown },
+  components: { Dropdown, ValidationError },
   props: {
     id: { type: String },
     name: { type: String, required: true },
@@ -40,6 +42,7 @@ export default defineComponent({
     options: { type: Array, required: true },
     optionLabel: { type: String, required: true },
     optionValue: { type: String, required: true },
+    showError: { type: Boolean, required: false },
   },
   setup(props) {
     const { value, errorMessage, meta } = useField(() => props.name, undefined);

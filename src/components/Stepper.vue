@@ -3,7 +3,9 @@
     <div>
       <ol class="stepper">
         <div v-for="(step, i) in steps" :key="i">
-          <li :class="{ active: i - 1 < activeStep }">STEP</li>
+          <li :class="{ active: i - 1 < activeStep }">
+            {{ toCamelCase(step.fieldName) }}
+          </li>
         </div>
       </ol>
     </div>
@@ -21,27 +23,31 @@
 <script lang="ts">
 // import Button from "primevue/button";
 import { ref, onMounted, defineComponent } from "vue";
-
+import { toCamelCase } from "../utils/functions";
 export interface Action {
   component: any;
   props: Record<string, unknown>;
+}
+
+export interface Step {
+  fieldName: string; // You can adjust the type as needed
 }
 
 export default defineComponent({
   name: "StepperComponent",
   components: {},
   props: {
-    steps: { type: Number, required: true, default: 3 },
+    steps: { type: Array as () => Step[], required: true },
     activeStep: { type: Number, required: true },
     actions: { type: Array as () => Action[], required: true },
     title: { type: String, required: true },
   },
-  setup() {
+  setup(props) {
     const onSubmit = (event: any) => {
       event.preventDefault();
     };
-
     return {
+      toCamelCase,
       onSubmit,
     };
   },
