@@ -138,16 +138,17 @@ export default defineComponent({
       calories: yup.string().label("calories"),
     });
 
-    const { handleSubmit, resetForm, setFieldError, setErrors } = useForm({
-      // validationSchema: quizValidationSchema,
-      initialValues: {
-        cousine: "",
-        dietCategory: "",
-        calories: "",
-        achievement: "",
-        intolerance: "",
-      },
-    });
+    const { handleSubmit, resetForm, setFieldError, setErrors, setFieldValue } =
+      useForm({
+        // validationSchema: quizValidationSchema,
+        // initialValues: {
+        //   cousine: "",
+        //   dietCategory: "",
+        //   calories: "",
+        //   achievement: "",
+        //   intolerance: "",
+        // },
+      });
 
     const handleFormSubmit = async (data: any) => {
       console.log(data, "DATA");
@@ -163,6 +164,7 @@ export default defineComponent({
       setFieldError,
       setErrors,
       useField,
+      setFieldValue,
     });
 
     const getQuiz = async () => {

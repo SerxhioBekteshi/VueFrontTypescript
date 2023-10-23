@@ -7,7 +7,7 @@
           {{ data.question }}
         </span>
       </div>
-      <!-- <div v-if="data.questionType === 'select'">
+      <div v-if="data.questionType === 'select'">
         <InputSelect
           :options="data.questionOptions"
           :optionLabel="'label'"
@@ -16,10 +16,9 @@
           :name="data.fieldName"
           :id="data.fieldName"
           :placeholder="data.question"
-          v-bind="data.fieldName"
           :showError="false"
         />
-      </div> -->
+      </div>
       <form @onSubmit="handlePrevent">
         <div
           v-if="data.questionType === 'radio'"
@@ -64,14 +63,14 @@
 
 <script lang="ts">
 import Checkbox from "primevue/checkbox";
-// import InputSelect from "../../components/formElements/InputSelect.vue";
+import InputSelect from "../../components/formElements/InputSelect.vue";
 import RadioButton from "primevue/radiobutton";
 import { defineComponent, inject, ref, watch } from "vue";
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Step",
-  components: { RadioButton, Checkbox },
+  components: { RadioButton, Checkbox, InputSelect },
   props: {
     data: { type: Object, required: true },
   },
@@ -84,14 +83,14 @@ export default defineComponent({
     watch(
       stepField,
       (newValue: any) => {
-        // Update the data object when stepField changes
-        fieldValue.value = newValue;
-        veeQuizForm.set;
         console.log(fieldValue.value);
+        const key = props.data.fieldName;
+        // veeQuizForm.setFieldValue(key, newValue);
       },
       { deep: true }
     );
 
+    console.log(stepField);
     const handlePrevent = (event: any) => {
       event.preventDefault();
     };

@@ -43,12 +43,8 @@ export default defineComponent({
     title: { type: String, required: true },
   },
   setup(props) {
-    const onSubmit = (event: any) => {
-      event.preventDefault();
-    };
     return {
       toCamelCase,
-      onSubmit,
     };
   },
 });
