@@ -50,7 +50,6 @@ export default defineComponent({
     const selectedValue = ref(
       props.options.find((opt: any) => opt[`${props.optionValue}`] === value)
     );
-    // console.log(selectedValue.value, "SELECTED VALUE");
 
     return { value, errorMessage, meta, selectedValue };
   },

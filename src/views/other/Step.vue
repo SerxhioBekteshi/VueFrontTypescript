@@ -42,7 +42,11 @@
           v-if="data.questionType === 'checkbox'"
           class="flex justify-content-center flex-wrap gap-3"
         >
-          <div v-for="(option, index) in data.questionOptions" :key="index">
+          <InputCheckBox
+            :options="data.questionOptions"
+            :name="data.fieldName"
+          />
+          <!-- <div v-for="(option, index) in data.questionOptions" :key="index">
             <div class="flex align-items-center" style="margin-inline: 1rem">
               <Checkbox
                 :inputId="option.label + index"
@@ -54,7 +58,7 @@
                 option.label
               }}</label>
             </div>
-          </div>
+          </div> -->
         </div>
       </form>
     </div>
@@ -62,15 +66,16 @@
 </template>
 
 <script lang="ts">
-import Checkbox from "primevue/checkbox";
+// import Checkbox from "primevue/checkbox";
 import InputSelect from "../../components/formElements/InputSelect.vue";
 import RadioButton from "primevue/radiobutton";
 import { defineComponent, inject, ref, watch } from "vue";
+import InputCheckBox from "@/components/formElements/InputCheckBox.vue";
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Step",
-  components: { RadioButton, Checkbox, InputSelect },
+  components: { RadioButton, InputSelect, InputCheckBox },
   props: {
     data: { type: Object, required: true },
   },
