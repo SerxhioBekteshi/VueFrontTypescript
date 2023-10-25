@@ -25,6 +25,13 @@
       />
     </template>
     <template #footer>
+      <!-- <TablePagination
+        :pageSize="pageSize"
+        :totalItems="totalItems"
+        :handlePageChange="handleChangePage"
+        :handleRowDropdownChange="handleRowDropdownChange"
+        :rowsPerPageOptions="rowsPerPageOptions"
+      /> -->
       <Paginator
         :template="{
           '640px': 'PrevPageLink CurrentPageReport NextPageLink ',

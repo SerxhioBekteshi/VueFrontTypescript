@@ -14,10 +14,7 @@ import ProviderMeals from "../views/provider/ProviderMeals.vue";
 import Profile from "../views/Profile.vue";
 import ProfileDetails from "../views/ProfileDetails.vue";
 import QuizLayout from "../views/other/QuizLayout.vue";
-import PersonalDemo from "../components/stepperViews/PaymentDemo.vue";
-import SeatDemo from "../components/stepperViews/SeatDemo.vue";
-import PaymentDemo from "../components/stepperViews/PaymentDemo.vue";
-import ConfirmationDemo from "../components/stepperViews/ConfirmationDemo.vue";
+import UserMainPage from "../views/user/UserMainPage.vue";
 
 const routes = [
   {
@@ -113,6 +110,17 @@ const routes = [
         path: "",
         name: "ProfileDetails",
         component: ProfileDetails,
+      },
+    ],
+  },
+  {
+    path: "/user",
+    component: AppLayout,
+    children: [
+      {
+        path: "",
+        name: "UserMainPage",
+        component: UserMainPage,
       },
     ],
   },
