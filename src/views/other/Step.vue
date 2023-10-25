@@ -24,19 +24,11 @@
           v-if="data.questionType === 'radio'"
           class="flex justify-content-center flex-wrap gap-3"
         >
-          <div v-for="(option, index) in data.questionOptions" :key="index">
-            <div class="flex align-items-center" style="margin-inline: 1rem">
-              <RadioButton
-                :inputId="option.label + index"
-                :name="data.fieldName"
-                :value="option.value"
-                v-model="stepField"
-              />
-              <label :for="option.label + index" class="ml-2">{{
-                option.label
-              }}</label>
-            </div>
-          </div>
+          <InputRadioButton
+            :options="data.questionOptions"
+            :name="data.fieldName"
+            :id="data.id.toString()"
+          />
         </div>
         <div
           v-if="data.questionType === 'checkbox'"
@@ -45,6 +37,7 @@
           <InputCheckBox
             :options="data.questionOptions"
             :name="data.fieldName"
+            :id="data.id.toString()"
           />
           <!-- <div v-for="(option, index) in data.questionOptions" :key="index">
             <div class="flex align-items-center" style="margin-inline: 1rem">
@@ -66,36 +59,33 @@
 </template>
 
 <script lang="ts">
-// import Checkbox from "primevue/checkbox";
 import InputSelect from "../../components/formElements/InputSelect.vue";
-import RadioButton from "primevue/radiobutton";
 import { defineComponent, inject, ref, watch } from "vue";
 import InputCheckBox from "@/components/formElements/InputCheckBox.vue";
+import InputRadioButton from "@/components/formElements/InputRadioButton.vue";
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Step",
-  components: { RadioButton, InputSelect, InputCheckBox },
+  components: { InputRadioButton, InputSelect, InputCheckBox },
   props: {
     data: { type: Object, required: true },
   },
   setup(props) {
     const veeQuizForm: any = inject("veeQuizForm");
-    const fieldValue = ref("");
-
     const { value: stepField } = veeQuizForm.useField(props.data.fieldName);
 
-    watch(
-      stepField,
-      (newValue: any) => {
-        console.log(fieldValue.value);
-        const key = props.data.fieldName;
-        // veeQuizForm.setFieldValue(key, newValue);
-      },
-      { deep: true }
-    );
+    // const fieldValue = ref("");
+    // watch(
+    //   stepField,
+    //   (newValue: any) => {
+    //     console.log(fieldValue.value);
+    //     const key = props.data.fieldName;
+    //     // veeQuizForm.setFieldValue(key, newValue);
+    //   },
+    //   { deep: true }
+    // );
 
-    console.log(stepField);
     const handlePrevent = (event: any) => {
       event.preventDefault();
     };

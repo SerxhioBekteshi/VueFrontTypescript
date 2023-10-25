@@ -117,7 +117,7 @@ const routes = [
     ],
   },
   {
-    path: "/user",
+    path: "/user/meals",
     component: AppLayout,
     children: [
       {

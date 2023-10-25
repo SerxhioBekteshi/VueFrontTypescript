@@ -1,11 +1,11 @@
 <template>
   <div v-for="(option, index) in options" :key="index">
     <div class="flex align-items-center" style="margin-inline: 1rem">
-      <Checkbox
+      <RadioButton
         :inputId="`${option.label}${index}`"
         :name="name"
         :value="option.value"
-        :style="{ borderColor: errorMessage ? 'red' : '', width: '100%' }"
+        :style="{ borderColor: errorMessage ? 'red' : '' }"
         :id="id"
         v-model="value"
       />
@@ -22,32 +22,25 @@
 import { useField } from "vee-validate";
 import ValidationError from "../ValidationError.vue";
 import { PropType, defineComponent, ref } from "vue";
-import Checkbox from "primevue/checkbox";
+import RadioButton from "primevue/radiobutton";
 
-export interface ICheckBox {
+export interface IRadioButton {
   value: string;
   label: string;
 }
 
 export default defineComponent({
   name: "InputCheckbox",
-  components: { Checkbox, ValidationError },
+  components: { RadioButton, ValidationError },
   props: {
     id: { type: String },
     name: { type: String, required: true },
     placeholder: { type: String },
     label: { type: String },
-    options: { type: Array as PropType<ICheckBox[]>, required: true },
+    options: { type: Array as PropType<IRadioButton[]>, required: true },
   },
   setup(props) {
-    console.log(props.name, "awdawd");
     const { value, errorMessage, meta } = useField(() => props.name, undefined);
-    // console.log(props.options, props.optionValue, value.value);
-    // const selectedValue = ref(
-    //   props.options.find((opt: any) => opt[`${props.optionValue}`] === value)
-    // );
-    // // console.log(selectedValue.value, "SELECTED VALUE");
-
     return { value, errorMessage, meta };
   },
 });

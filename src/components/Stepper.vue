@@ -12,7 +12,7 @@
     <div class="container">
       <slot></slot>
     </div>
-    <div class="panel_add_footer">
+    <div v-if="actions.length !== 0" class="panel_add_footer">
       <div v-for="(action, index) in actions" :key="index">
         <component :is="action.component" v-bind="action.props"></component>
       </div>
@@ -40,7 +40,7 @@ export default defineComponent({
     steps: { type: Array as () => Step[], required: true },
     activeStep: { type: Number, required: true },
     actions: { type: Array as () => Action[], required: true },
-    title: { type: String, required: true },
+    title: { type: String },
   },
   setup(props) {
     return {
