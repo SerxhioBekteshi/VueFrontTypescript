@@ -137,7 +137,7 @@
                       severity="danger"
                       text
                       rounded
-                      @click="deleteMeal(slotProps.data.id)"
+                      @click="() => openModalFunction(slotProps.data.id)"
                       size="small"
                       aria-label="Cancel"
                     />
@@ -358,6 +358,7 @@ export default defineComponent({
         });
         if (res && res.data) {
           meals.value = res.data.rows;
+          console.log(res.data.rows, "WDAWD");
           totalItems.value = res.data.totalCount;
         }
         isLoading.value = false;
@@ -385,10 +386,8 @@ export default defineComponent({
     const openDrawer = ref<boolean>(false);
     const openModal = ref<boolean>(false);
     const mealImage = ref<any>(null);
+    const mealId = ref<number>(0);
 
-    const handleCloseDrawer = () => {
-      openDrawer.value = false;
-    };
     const schema = yup.object().shape({
       ingredients: yup
         .array()
@@ -425,9 +424,7 @@ export default defineComponent({
         .label("Intolerance"),
     });
 
-    const { handleSubmit, defineInputBinds, resetForm } = useForm({
-      validationSchema: schema,
-    });
+    const { resetForm } = useForm();
 
     const actionButton = ref<any>({
       component: Button,
@@ -439,43 +436,23 @@ export default defineComponent({
       },
     });
 
-    const openModalFunction = () => {
+    const openModalFunction = (idOfMeal: number) => {
       openModal.value = true;
+      mealId.value = idOfMeal;
     };
 
     const handleModalClose = () => {
       openModal.value = false;
     };
 
-    async function onSubmit(values: any) {
-      let res: any = null;
-
-      if (formDrawerMode.value === "create")
-        res = await axios.post("/meals", values);
-      else if (formDrawerMode.value === "edit")
-        res = await axios.put(`/meals/${values.id}`, values);
-
-      if (res && res.data.doc) {
-        toast.add({
-          life: 3000,
-          detail: res.data.message,
-          severity: "success",
-          summary: "info",
-        });
-        handleCloseDrawer();
-        resetForm();
-        fetchMeals();
-      }
-    }
-
-    const deleteMeal = async (mealId: number) => {
+    const deleteMeal = async () => {
       try {
-        const res: any = await axios.delete(`/meals/${mealId}`);
+        const res: any = await axios.delete(`/meals/${mealId.value}`);
         if (res && res.data.message) {
           toast.add({
             life: 3000,
             detail: res.data.message,
-            severity: "error",
+            severity: "success",
             summary: "info",
           });
           handleModalClose();
@@ -566,6 +543,7 @@ export default defineComponent({
       fetchMeal,
       onEditClick,
       deleteMeal,
+      openModalFunction,
     };
   },
 });

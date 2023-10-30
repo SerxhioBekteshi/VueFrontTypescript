@@ -11,6 +11,7 @@ import Quiz from "../views/admin/Quiz.vue";
 import ProvidersRegistration from "../views/admin/ProvidersRegistration.vue";
 import ProviderOrders from "../views/provider/ProviderOrders.vue";
 import ProviderMeals from "../views/provider/ProviderMeals.vue";
+import UserMeals from "../views/user/UserMeals.vue";
 import Profile from "../views/Profile.vue";
 import ProfileDetails from "../views/ProfileDetails.vue";
 import QuizLayout from "../views/other/QuizLayout.vue";
@@ -130,8 +131,8 @@ const routes = [
     children: [
       {
         path: "",
-        name: "ProviderMeals",
-        component: ProviderMeals,
+        name: "UserMeals",
+        component: UserMeals,
       },
     ],
   },

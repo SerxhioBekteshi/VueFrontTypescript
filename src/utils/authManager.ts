@@ -102,11 +102,10 @@ class AuthManager {
       if (response.user.roleId === eRoleType.Admin) {
         router.push("/admin");
       } else if (response.user.roleId === eRoleType.Provider) {
-        router.push("/provider");
+        router.push("/provider/meals");
       } else {
-        console.log(response.user.quizFulfilled);
         if (!response.user.quizFulfilled) router.push("/user/quiz");
-        else router.push("/user");
+        else router.push("/user/meals");
       }
     }
   }

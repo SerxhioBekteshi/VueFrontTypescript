@@ -1,7 +1,7 @@
 <template>
   <div>
     <form @onSubmit="handlePrevent">
-      <div style="margin-top: 1rem">
+      <div class="gapper">
         <InputText
           name="name"
           :label="'Meal Name'"
@@ -10,7 +10,7 @@
         />
       </div>
 
-      <div style="margin-top: 1rem">
+      <div class="gapper">
         <InputText
           name="cousine"
           :label="'Cousine'"
@@ -19,7 +19,7 @@
         />
       </div>
 
-      <div style="margin-top: 1rem">
+      <div class="gapper">
         <InputText
           :label="'Diet Category'"
           name="dietCategory"
@@ -28,7 +28,7 @@
         />
       </div>
 
-      <div style="margin-top: 1rem">
+      <div class="gapper">
         <InputText
           :label="'Intolerance'"
           name="intolerance"
@@ -37,7 +37,7 @@
         />
       </div>
 
-      <div style="margin-top: 1rem">
+      <div class="gapper">
         <InputText
           :label="'Calories'"
           name="calories"
@@ -47,7 +47,7 @@
         />
       </div>
 
-      <div style="margin-top: 1rem">
+      <div class="gapper">
         <InputText
           :label="'Carbon footprint'"
           name="carbonFootprint"
@@ -57,82 +57,105 @@
         />
       </div>
 
-      <!-- <div>
-        <FieldArray
-          class="ingredients"
-          name="ingredients"
-          v-slot="{ fields, push, remove }"
-        >
-          {{ (fields, "fields") }}
-
-          <fieldset v-for="(field, idx) in fields" :key="field.key">
-            <legend>Ingredient #{{ idx }}</legend>
-
-            <div class="grid">
+      <div
+        style="
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          margin-top: 1rem;
+        "
+      >
+        <FieldArray name="ingredients" v-slot="{ fields, push, remove }">
+          <fieldset
+            v-for="(field, idx) in fields"
+            :key="field.key"
+            class="ingredients"
+          >
+            <div>
               <div
-                class="col-9"
-                :style="{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '1rem',
-                }"
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  background-color: #f5f5f5;
+                  padding-inline: 1rem;
+                  border-top-left-radius: 1rem;
+                  border-top-right-radius: 1rem;
+                "
               >
-                <div :style="{ display: 'flex', flexDirection: 'column' }">
-                  <label :for="`name_${idx}`">Name</label>
-                  <InputText
-                    :type="'text'"
-                    :id="`name_${idx}`"
-                    :name="`ingredients[${idx}].name`"
+                <legend style="margin-block: 1.75rem">
+                  Ingredient {{ idx + 1 }}
+                </legend>
+                <div>
+                  <Button
+                    icon="pi pi-trash"
+                    rounded
+                    text
+                    size="small"
+                    severity="danger"
+                    @click="remove(idx)"
+                    :disabled="fields.length <= 1"
                   />
-                  <ErrorMessage :name="`ingredients[${idx}].name`" />
-                </div>
-
-                <div :style="{ display: 'flex', flexDirection: 'column' }">
-                  <label :for="`portion_${idx}`">Portion</label>
-                  <InputText
-                    :type="'number'"
-                    :id="`portion_${idx}`"
-                    :name="`ingredients[${idx}].portion`"
-                  />
-                  <ErrorMessage :name="`ingredients[${idx}].portion`" />
                 </div>
               </div>
+              <div class="grid" style="margin-top: 1rem; padding-inline: 1rem">
+                <div
+                  class="col-12"
+                  :style="{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '2rem',
+                  }"
+                >
+                  <div>
+                    <InputText
+                      :name="`ingredients[${idx}].name`"
+                      :label="'Enter the ingredient name'"
+                      :id="`name_${idx}`"
+                      :placeholder="'Ingredient name'"
+                    />
+                  </div>
 
-              <div class="col-3" style="display: flex; align-items: center">
-                <Button
-                  icon="pi pi-times"
-                  rounded
-                  severity="danger"
-                  @click="remove(idx)"
-                  :disabled="fields.length <= 1"
-                />
+                  <div>
+                    <InputNumber
+                      :name="`ingredients[${idx}].portion`"
+                      :label="'Enter the portion'"
+                      :id="`portion_${idx}`"
+                      :placeholder="'Portion'"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </fieldset>
 
-          <Button
-            severity="success"
-            style="margin-top: 1rem"
-            @click="push({ name: '', portion: null })"
-          >
-            Add ingredient
-          </Button>
+          <div style="margin-top: 1rem">
+            <Button
+              severity="info"
+              size="small"
+              style="width: fit-content"
+              @click="push({ label: '', value: '' })"
+            >
+              Add ingredient
+            </Button>
+          </div>
         </FieldArray>
-      </div> -->
+      </div>
     </form>
   </div>
 </template>
 
 <script lang="ts">
-// import Button from "primevue/button"
-import { defineComponent, ref } from "vue";
+import { defineComponent } from "vue";
 import InputText from "@/components/formElements/InputText.vue";
 import { inject } from "vue";
+import { FieldArray } from "vee-validate";
+import InputNumber from "@/components/formElements/InputNumber.vue";
+import Button from "primevue/button";
 
 export default defineComponent({
-  // eslint-disable-next-line vue/multi-word-component-names
   name: "MealForm",
-  components: { InputText },
+  components: { InputText, InputNumber, Button, FieldArray },
   setup() {
     const veeValidateForm: any = inject("veeValidateForm");
 
@@ -143,8 +166,9 @@ export default defineComponent({
     const { value: dietCategory } = veeValidateForm.useField("dietCategory");
     const { value: calories } = veeValidateForm.useField("calories");
     const { value: intolerance } = veeValidateForm.useField("intolerance");
+    const { fields: ingredients } =
+      veeValidateForm.useFieldArray("ingredients");
 
-    console.log(name.value);
     const handlePrevent = (event: any) => {
       event.preventDefault();
     };
@@ -157,8 +181,21 @@ export default defineComponent({
       dietCategory,
       calories,
       intolerance,
+      ingredients,
     };
   },
 });
 </script>
-<style></style>
+<style scoped>
+.gapper {
+  margin-top: 1.5rem;
+}
+
+.ingredients {
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+  border: 1px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.1) !important;
+  border-radius: 1rem;
+  padding: 0rem !important;
+}
+</style>

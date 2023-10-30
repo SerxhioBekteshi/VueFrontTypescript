@@ -9,15 +9,12 @@ import { defineComponent } from "vue";
 import MealsPage from "../other/MealsPage.vue";
 
 export default defineComponent({
-  name: "UserMainPage",
-  components: {
-    MealsPage,
-  },
+  name: "UserMeals",
+  components: { MealsPage },
   props: {},
   setup() {
     return {};
   },
 });
 </script>
-
-<style scoped></style>
+<style></style>
