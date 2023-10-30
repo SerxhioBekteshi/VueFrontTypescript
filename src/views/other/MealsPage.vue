@@ -3,15 +3,24 @@
     <div>
       <DataView :value="meals" :layout="layout" dataKey="id">
         <template #header>
-          <GenericToolbar
-            :show-export="true"
-            :showSearch="true"
-            :controller="'meals'"
-            :showAddBt="true"
-            :value="searchValue"
-            :actionButton="actionButton"
-            @change="handleSearchValue"
-          />
+          <div style="dispay: flex; flex-direction: column; gap: 2rem">
+            <GenericToolbar
+              :show-export="true"
+              :showSearch="true"
+              :controller="'meals'"
+              :showAddBt="shouldCrud"
+              :value="searchValue"
+              :actionButton="actionButton"
+              @change="handleSearchValue"
+            />
+            <TablePaginator
+              :pageSize="pageSize"
+              :totalItems="totalItems"
+              :rowsPerPageOptions="rowsPerPageOptions"
+              :handleChangePage="handleChangePage"
+              :handleRowDropdownChange="handleRowDropdownChange"
+            />
+          </div>
         </template>
         <template #list="slotProps">
           <div v-if="meals && meals.length != 0" class="col-12">
@@ -32,11 +41,12 @@
                   <div class="text-2xl font-bold text-900">
                     {{ slotProps.data.name }}
                   </div>
-                  <Rating
-                    :modelValue="slotProps.data.rating"
-                    readonly
-                    :cancel="false"
-                  ></Rating>
+                  <Rate
+                    :controller="'meals/rate'"
+                    :rateId="slotProps.data.id"
+                    :rateValue="slotProps.data.rating"
+                    :shouldRate="shouldRate"
+                  />
                   <div class="flex align-items-center gap-3">
                     <span class="flex align-items-center gap-2">
                       <i class="pi pi-code"></i>
@@ -104,13 +114,33 @@
               </div>
               <div v-else>
                 <div
-                  class="flex flex-wrap align-items-center justify-content-between gap-2"
+                  class="flex flex-wrap align-items-center justify-content-between"
                 >
                   <div class="flex align-items-center gap-2">
                     <i class="pi pi-code"></i>
                     <span class="font-semibold">{{
                       slotProps.data.dietCategory
                     }}</span>
+                  </div>
+                  <div v-if="shouldCrud" style="display: flex">
+                    <Button
+                      icon="pi pi-file-edit"
+                      severity="help"
+                      text
+                      rounded
+                      size="small"
+                      @click="onEditClick(slotProps.data, slotProps.data.id)"
+                      aria-label="Favorite"
+                    />
+                    <Button
+                      icon="pi pi-trash"
+                      severity="danger"
+                      text
+                      rounded
+                      @click="deleteMeal(slotProps.data.id)"
+                      size="small"
+                      aria-label="Cancel"
+                    />
                   </div>
                 </div>
 
@@ -127,11 +157,13 @@
                   <div class="text-2xl font-bold">
                     {{ slotProps.data.name }}
                   </div>
-                  <Rating
-                    :modelValue="slotProps.data.rating"
-                    readonly
-                    :cancel="false"
-                  ></Rating>
+                  <Rate
+                    :controller="'meals/rate'"
+                    :rateId="slotProps.data.id"
+                    :rateValue="slotProps.data.rating"
+                    :shouldRate="shouldRate"
+                  />
+
                   <Tag
                     :value="slotProps.data.inventoryStatus"
                     :severity="getSeverity(slotProps.data)"
@@ -224,13 +256,27 @@
       <MealForm />
     </DetailDrawer>
   </div>
+
+  <div>
+    <Modal
+      v-model:openModal="openModal"
+      @handleClose="handleModalClose"
+      :title="'Delete meal'"
+      :actions="modalActions"
+    >
+      Are you sure you want to delete
+      <!-- <span style="font-weight: bold">
+      {{ fieldModalToShow.name }}
+    </span> -->
+    </Modal>
+  </div>
+  <Toast />
 </template>
 
 <script lang="ts">
 import { ref, onMounted, defineComponent, watch } from "vue";
 import * as yup from "yup";
 import DataView from "primevue/dataview";
-import Rating from "primevue/rating";
 import Tag from "primevue/tag";
 import axios from "axios";
 import Accordion from "primevue/accordion";
@@ -241,13 +287,17 @@ import InlineMessage from "primevue/inlinemessage";
 import Message from "primevue/message";
 import ProgressSpinner from "primevue/progressspinner";
 import GenericToolbar from "../../components/GenericToolbar.vue";
-import { useField, useForm } from "vee-validate";
+import { useForm } from "vee-validate";
 import { useToast } from "primevue/usetoast";
 import Button from "primevue/button";
 import { eFormMode } from "@/assets/enums/EFormMode";
 import { PrimeIcons } from "primevue/api";
 import DetailDrawer from "../../components/DetailDrawer.vue";
 import MealForm from "../../components/formController/MealForm.vue";
+import Rate from "../../components/formElements/Rate.vue";
+import Modal from "../../components/Modal.vue";
+import TablePaginator from "../../components/table/TablePaginator.vue";
+import { PageState } from "primevue/paginator";
 
 export default defineComponent({
   name: "MealsPage",
@@ -259,23 +309,30 @@ export default defineComponent({
     ProgressSpinner,
     GenericToolbar,
     Tag,
-    Rating,
+    Rate,
     DetailDrawer,
     MealForm,
+    Button,
+    Modal,
+    TablePaginator,
+    Toast,
   },
   props: {
     shouldCrud: { type: Boolean, required: true },
     shouldRate: { type: Boolean, required: true },
   },
   setup() {
-    const formDrawerMode = ref<string>("");
+    const formDrawerMode = ref<any>();
     const meals = ref<any>([]);
     const currentPage = ref<number>(1);
-    const pageSize = ref<any>(3);
+    const pageSize = ref<any>(10);
     const totalItems = ref<number>(0);
     const isLoading = ref<boolean>(false);
     const searchValue = ref<string>("");
     const formData = ref<any>(null);
+    const rate = ref<any>();
+    const toast = useToast();
+    const rowsPerPageOptions = ref<any>([3, 5, 10]);
 
     const handleAddData = () => {
       formDrawerMode.value = eFormMode.Add;
@@ -327,9 +384,7 @@ export default defineComponent({
     const layout = ref<"grid" | "list" | undefined>("grid");
     const openDrawer = ref<boolean>(false);
     const openModal = ref<boolean>(false);
-    const mealIdToDelete = ref<number>(0);
     const mealImage = ref<any>(null);
-    const toast = useToast();
 
     const handleCloseDrawer = () => {
       openDrawer.value = false;
@@ -384,11 +439,6 @@ export default defineComponent({
       },
     });
 
-    const handleDeleteMethod = (mealId: number) => {
-      mealIdToDelete.value = mealId;
-      openModalFunction();
-    };
-
     const openModalFunction = () => {
       openModal.value = true;
     };
@@ -420,7 +470,7 @@ export default defineComponent({
 
     const deleteMeal = async (mealId: number) => {
       try {
-        const res: any = await axios.delete(`/meals/${mealIdToDelete.value}`);
+        const res: any = await axios.delete(`/meals/${mealId}`);
         if (res && res.data.message) {
           toast.add({
             life: 3000,
@@ -480,43 +530,48 @@ export default defineComponent({
       resetForm({ values: mealObjectToAdd });
     };
 
+    const handleChangePage = (event: PageState) => {
+      currentPage.value = event.page + 1;
+    };
+
+    const handleRowDropdownChange = (rowsPerPage: number) => {
+      pageSize.value = rowsPerPage;
+      currentPage.value = 1;
+    };
+
     return {
       meals,
+      pageSize,
+      currentPage,
+      handleChangePage,
+      handleRowDropdownChange,
       isLoading,
-      getSeverity,
+      openModal,
       layout,
       searchValue,
-      handleSearchValue,
       formDrawerMode,
-      fetchMeals,
       schema,
       formData,
+      actionButton,
+      modalActions,
+      rate,
+      rowsPerPageOptions,
+      totalItems,
+      getSeverity,
+      handleModalClose,
       invalidateState,
       handleAddData,
-      actionButton,
+      fetchMeals,
+      handleSearchValue,
       fetchMeal,
+      onEditClick,
+      deleteMeal,
     };
   },
 });
 </script>
 
 <style scoped>
-.InputGroup {
-  padding: 10px;
-  border: 2px dotted black;
-  margin-bottom: 30px;
-  position: relative;
-}
-
-::v-deep .ingredients {
-  all: unset !important;
-}
-::v-deep .custom-dropdown-style {
-  background-color: lightgray;
-  border: 1px solid gray;
-  padding: 5px;
-  border-radius: 4px;
-}
 .image-wrapper {
   width: 150px;
   height: 150px;

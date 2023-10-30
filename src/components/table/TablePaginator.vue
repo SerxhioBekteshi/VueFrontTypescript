@@ -26,18 +26,16 @@
 </template>
 
 <script lang="ts">
-import { Prop, PropType, defineComponent } from "vue";
-import Toast from "primevue/toast";
-import Button from "primevue/button";
+import { PropType, defineComponent } from "vue";
 import Paginator, { PageState } from "primevue/paginator";
 
 export default defineComponent({
   name: "ProfilePassword",
-  components: { Toast, Button, Paginator },
+  components: { Paginator },
   props: {
     pageSize: { type: Number, required: true },
     totalItems: { type: Number, required: true },
-    rowsPerPageOptions: { type: Array as () => Number[], required: true },
+    rowsPerPageOptions: { type: Array as () => number[], required: true },
     handleChangePage: {
       type: Function as PropType<(event: PageState) => void>,
       required: true,
