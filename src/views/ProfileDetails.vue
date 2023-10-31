@@ -36,7 +36,6 @@
               :label="'Name'"
               id="name"
               placeholder="Name"
-              v-bind="name"
             />
           </div>
 
@@ -46,7 +45,6 @@
               :label="'Last Name'"
               id="lastName"
               placeholder="Last Name"
-              v-bind="lastName"
             />
           </div>
           <div class="col-12">
@@ -55,7 +53,6 @@
               :label="'Address'"
               id="address"
               placeholder="Address"
-              v-bind="address"
             />
           </div>
 
@@ -65,7 +62,6 @@
               :label="'State'"
               id="state"
               placeholder="State"
-              v-bind="state"
             />
           </div>
 
@@ -81,7 +77,6 @@
               :label="'Gender'"
               id="gender"
               placeholder="Gender"
-              v-bind="gender"
             />
           </div>
 
@@ -91,7 +86,6 @@
               :label="'BirthDate'"
               id="birthDate"
               placeholder="birthDate"
-              v-bind="birthDate"
               :dateFormat="'yy-mm-dd'"
             />
           </div>

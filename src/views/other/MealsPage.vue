@@ -173,8 +173,8 @@
 
                 <div class="flex align-items-center justify-content-between">
                   <span class="text-2xl font-semibold"
-                    >{{ slotProps.data.calories }} Kj</span
-                  >
+                    >{{ slotProps.data.calories }} Calories
+                  </span>
                 </div>
 
                 <div>
@@ -298,6 +298,9 @@ import Rate from "../../components/formElements/Rate.vue";
 import Modal from "../../components/Modal.vue";
 import TablePaginator from "../../components/table/TablePaginator.vue";
 import { PageState } from "primevue/paginator";
+import { eRoles } from "@/assets/enums/eRoles";
+import { useReduxSelector } from "@/store/redux/helpers";
+import { eFilterOperator } from "@/assets/enums/eFilterOperator";
 
 export default defineComponent({
   name: "MealsPage",
@@ -316,16 +319,18 @@ export default defineComponent({
     Modal,
     TablePaginator,
     Toast,
+    InlineMessage,
   },
   props: {
     shouldCrud: { type: Boolean, required: true },
     shouldRate: { type: Boolean, required: true },
   },
   setup() {
+    const profile = useReduxSelector((state) => state.user);
     const formDrawerMode = ref<any>();
     const meals = ref<any>([]);
     const currentPage = ref<number>(1);
-    const pageSize = ref<any>(10);
+    const pageSize = ref<any>(5);
     const totalItems = ref<number>(0);
     const isLoading = ref<boolean>(false);
     const searchValue = ref<string>("");
@@ -333,6 +338,19 @@ export default defineComponent({
     const rate = ref<any>();
     const toast = useToast();
     const rowsPerPageOptions = ref<any>([3, 5, 10]);
+    const quizResult = ref<any>();
+
+    const getQuizResults = async () => {
+      try {
+        const res: any = await axios.get("quizResult/get-all");
+        if (res && res.data) {
+          quizResult.value = res.data;
+          fetchMeals();
+        }
+      } catch (err) {
+        console.log(err, "ERR");
+      }
+    };
 
     const handleAddData = () => {
       formDrawerMode.value = eFormMode.Add;
@@ -348,17 +366,72 @@ export default defineComponent({
       formData.value = null;
     };
 
+    const calculateFilters = () => {
+      const formattedArray: {
+        columnName: string;
+        value: any;
+        operation: eFilterOperator;
+      }[] = [];
+
+      Object.entries(quizResult.value).forEach(([columnName, value]) => {
+        if (Array.isArray(value)) {
+          // If the value is an array, include the column for each item in the array
+          value.forEach((item: any) => {
+            formattedArray.push({
+              columnName,
+              value: item,
+              operation: eFilterOperator.Contain,
+            });
+          });
+        } else if (
+          columnName === "calories" &&
+          typeof value === "string" &&
+          value.includes("-")
+        ) {
+          const [valueStart, valueEnd] = value.split("-");
+          formattedArray.push({
+            columnName,
+            value: Number(valueStart),
+            operation: eFilterOperator.GreaterOrEqual,
+          });
+          formattedArray.push({
+            columnName,
+            value: Number(valueEnd),
+            operation: eFilterOperator.LessOrEqual,
+          });
+        } else {
+          formattedArray.push({
+            columnName,
+            value,
+            operation: eFilterOperator.Contain,
+          });
+        }
+      });
+      return formattedArray;
+    };
+
     const fetchMeals = async () => {
       isLoading.value = true;
       try {
+        const formattedFilters = calculateFilters();
+        console.log(formattedFilters);
         const res: any = await axios.post("/table/meals", {
           page: currentPage.value,
           pageSize: pageSize.value,
           search: searchValue.value,
+          filters:
+            profile.value.role === eRoles.Provider
+              ? [
+                  {
+                    columnName: "providerId",
+                    operation: eFilterOperator.Equal,
+                    value: profile.value.id,
+                  },
+                ]
+              : formattedFilters,
         });
         if (res && res.data) {
           meals.value = res.data.rows;
-          console.log(res.data.rows, "WDAWD");
           totalItems.value = res.data.totalCount;
         }
         isLoading.value = false;
@@ -379,7 +452,7 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      fetchMeals();
+      getQuizResults();
     });
 
     const layout = ref<"grid" | "list" | undefined>("grid");
@@ -418,10 +491,10 @@ export default defineComponent({
         .number()
         .required("Calories are required")
         .label("Calories"),
-      intolerance: yup
+      achievement: yup
         .string()
-        .required("Intolerance is required")
-        .label("Intolerance"),
+        .required("Health goal is required")
+        .label("Health goal"),
     });
 
     const { resetForm } = useForm();

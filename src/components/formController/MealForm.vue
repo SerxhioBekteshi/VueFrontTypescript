@@ -11,39 +11,51 @@
       </div>
 
       <div class="gapper">
-        <InputText
-          name="cousine"
+        <InputSelect
+          :name="'cousine'"
           :label="'Cousine'"
-          id="cousine"
-          placeholder="Cousine"
+          :id="'cousine'"
+          :placeholder="'Cousine'"
+          :controller="'quiz/get-all'"
         />
       </div>
 
       <div class="gapper">
-        <InputText
+        <InputSelect
+          :name="'dietCategory'"
           :label="'Diet Category'"
-          name="dietCategory"
-          id="dietCategory"
-          placeholder="Diet category"
+          :id="'dietCategory'"
+          :placeholder="'Diet Category'"
+          :controller="'quiz/get-all'"
         />
       </div>
 
       <div class="gapper">
-        <InputText
+        <InputSelect
+          :name="'intolerance'"
           :label="'Intolerance'"
-          name="intolerance"
-          id="intolerance"
-          placeholder="Intolerance"
+          :id="'intolerance'"
+          :placeholder="'Intolerance'"
+          :controller="'quiz/get-all'"
         />
       </div>
 
       <div class="gapper">
         <InputText
+          :name="'calories'"
           :label="'Calories'"
-          name="calories"
-          type="number"
-          id="calories"
-          placeholder="Calories"
+          :id="'calories'"
+          :placeholder="'Calories'"
+        />
+      </div>
+
+      <div class="gapper">
+        <InputSelect
+          :name="'achievement'"
+          :label="'Achievement'"
+          :id="'achievement'"
+          :placeholder="'Achievement'"
+          :controller="'quiz/get-all'"
         />
       </div>
 
@@ -152,10 +164,11 @@ import { inject } from "vue";
 import { FieldArray } from "vee-validate";
 import InputNumber from "@/components/formElements/InputNumber.vue";
 import Button from "primevue/button";
+import InputSelect from "@/components/formElements/InputSelect.vue";
 
 export default defineComponent({
   name: "MealForm",
-  components: { InputText, InputNumber, Button, FieldArray },
+  components: { InputText, InputNumber, Button, FieldArray, InputSelect },
   setup() {
     const veeValidateForm: any = inject("veeValidateForm");
 

@@ -16,6 +16,7 @@ import Profile from "../views/Profile.vue";
 import ProfileDetails from "../views/ProfileDetails.vue";
 import QuizLayout from "../views/other/QuizLayout.vue";
 import UserMainPage from "../views/user/UserMainPage.vue";
+import MealsConfiguration from "../views/other/MealsConfigurations.vue";
 
 const routes = [
   {
@@ -51,7 +52,17 @@ const routes = [
       },
     ],
   },
-
+  {
+    path: "/admin/mealsConfigurations",
+    component: AppLayout,
+    children: [
+      {
+        path: "",
+        name: "mealsConfigurations",
+        component: MealsConfiguration,
+      },
+    ],
+  },
   {
     path: "/provider",
     component: AppLayout,

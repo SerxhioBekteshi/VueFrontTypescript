@@ -1,8 +1,9 @@
 <template>
+  <!-- <div v-if="!isLoading"> -->
   <span class="p-float-label">
     <Dropdown
       :optionLabel="optionLabel"
-      :options="options"
+      :options="selectOptions"
       :style="{ borderColor: errorMessage ? 'red' : '', width: '100%' }"
       :placeholder="placeholder"
       :id="id"
@@ -23,35 +24,71 @@
   <div v-if="showError">
     <ValidationError v-if="errorMessage">{{ errorMessage }}</ValidationError>
   </div>
+  <!-- </div> -->
+
+  <Toast />
 </template>
 
 <script lang="ts">
 import { useField } from "vee-validate";
 import ValidationError from "../ValidationError.vue";
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import Dropdown from "primevue/dropdown";
+import axios from "axios";
+import Toast from "primevue/toast";
+import { useToast } from "primevue/usetoast";
 
 export default defineComponent({
   name: "InputSelect",
-  components: { Dropdown, ValidationError },
+  components: { Dropdown, ValidationError, Toast },
   props: {
     id: { type: String },
     name: { type: String, required: true },
     placeholder: { type: String },
     label: { type: String, required: true },
-    options: { type: Array, required: true },
-    optionLabel: { type: String, required: true },
-    optionValue: { type: String, required: true },
-    showError: { type: Boolean, required: false },
+    options: { type: Array, default: () => [] },
+    optionLabel: { type: String, default: "label" },
+    optionValue: { type: String, default: "value" },
+    showError: { type: Boolean, default: true },
+    controller: { type: String },
   },
   setup(props) {
     const { value, errorMessage, meta } = useField(() => props.name, undefined);
-    // console.log(props.options, props.optionValue, value.value);
-    const selectedValue = ref(
-      props.options.find((opt: any) => opt[`${props.optionValue}`] === value)
-    );
+    const toast = useToast();
+    const selectOptions = ref<any>(props.options);
+    const isLoading = ref<boolean>(props.controller ? true : false);
+    // const selectedValue = ref();
 
-    return { value, errorMessage, meta, selectedValue };
+    onMounted(async () => {
+      if (props.controller) {
+        try {
+          const res: any = await axios.get(`${props.controller}`);
+
+          if (res && res.data) {
+            selectOptions.value = res.data.filter(
+              (option: any) => option.fieldName === props.name
+            )[0].questionOptions;
+            isLoading.value = false;
+            // selectedValue.value = selectOptions.value.find((opt: any) => {
+            //   opt[`${props.optionValue}`] === value.value;
+            // });
+          }
+        } catch (err) {
+          toast.add({
+            life: 3000,
+            detail: "Something went wrong on options data getter",
+            severity: "error",
+            summary: "info",
+          });
+        }
+      }
+      // if (props.options)
+      //   selectedValue.value = props.options.find(
+      //     (opt: any) => opt[`${props.optionValue}`] === value
+      //   );
+    });
+
+    return { value, errorMessage, meta, selectOptions, isLoading };
   },
 });
 </script>

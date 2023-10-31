@@ -96,6 +96,10 @@ export default defineComponent({
         .string()
         .required("Intolerance is required")
         .label("Intolerance"),
+      achievement: yup
+        .string()
+        .required("Health goal is required")
+        .label("Health goal"),
     });
 
     const onEditClick = (data: any, rowId: number) => {
@@ -107,12 +111,6 @@ export default defineComponent({
       modeDrawer.value = null;
       formData.value = null;
     };
-
-    // const handleClose = () =>
-    // {
-    //     invalidateState();
-
-    // }
 
     return {
       actionButton,
