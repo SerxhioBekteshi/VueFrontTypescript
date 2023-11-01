@@ -137,9 +137,7 @@
                       severity="danger"
                       text
                       rounded
-                      @click="
-                        () => openModalFunction(slotProps.data.id, 'delete')
-                      "
+                      @click="() => openModalFunction(slotProps.data, 'delete')"
                       size="small"
                       aria-label="Cancel"
                     />
@@ -151,7 +149,7 @@
                       text
                       rounded
                       size="small"
-                      @click="() => openModalFunction(0, 'order')"
+                      @click="() => openModalFunction(slotProps.data, 'order')"
                     />
                   </div>
                 </div>
@@ -186,6 +184,9 @@
                 <div class="flex align-items-center justify-content-between">
                   <span class="text-2xl font-semibold"
                     >{{ slotProps.data.calories }} Calories
+                  </span>
+                  <span class="text-2xl font-semibold"
+                    >{{ slotProps.data.price }} $
                   </span>
                 </div>
 
@@ -276,9 +277,12 @@
       :title="'Delete meal'"
       :actions="modalActions"
     >
-      Are you sure you want to delete Are you sure you want to delete Are you
-      sure you want to deleteAre you sure you want to deleteAre you sure you
-      want to deleteAre you sure you want to delete
+      <div v-if="reasonOfModalOpen === 'delete'">
+        Are you sure you want to delete {{ meal.name }}
+      </div>
+      <div v-else>
+        <OrderSystemMealForm :price="meal.price" />
+      </div>
       <!-- <span style="font-weight: bold">
       {{ fieldModalToShow.name }}
     </span> -->
@@ -288,7 +292,7 @@
 </template>
 
 <script lang="ts">
-import { ref, onMounted, defineComponent, watch } from "vue";
+import { ref, onMounted, defineComponent, watch, computed } from "vue";
 import * as yup from "yup";
 import DataView from "primevue/dataview";
 import Tag from "primevue/tag";
@@ -316,6 +320,7 @@ import { eRoles } from "@/assets/enums/eRoles";
 import { useReduxSelector } from "@/store/redux/helpers";
 import { eFilterOperator } from "@/assets/enums/eFilterOperator";
 import { calculateFiltersForMeal } from "@/utils/functions";
+import OrderSystemMealForm from "./OrderSystemMealForm.vue";
 
 export default defineComponent({
   name: "MealsPage",
@@ -336,6 +341,7 @@ export default defineComponent({
     Toast,
     InlineMessage,
     Message,
+    OrderSystemMealForm,
   },
   props: {
     shouldCrud: { type: Boolean, required: true },
@@ -355,6 +361,7 @@ export default defineComponent({
     const toast = useToast();
     const rowsPerPageOptions = ref<any>([3, 5, 10]);
     const quizResult = ref<any>();
+    const reasonOfModalOpen = ref<string>("");
 
     const getQuizResults = async () => {
       try {
@@ -433,7 +440,7 @@ export default defineComponent({
     const layout = ref<"grid" | "list" | undefined>("grid");
     const openModal = ref<boolean>(false);
     const mealImage = ref<any>(null);
-    const mealId = ref<number>(0);
+    const meal = ref<any>();
 
     const schema = yup.object().shape({
       ingredients: yup
@@ -452,6 +459,7 @@ export default defineComponent({
         )
         .strict(),
       name: yup.string().required("Name is required").label("Name"),
+      price: yup.number().required("Price is required").label("Price"),
       cousine: yup.string().required("Cousine is required").label("Cousine"),
       carbonFootprint: yup
         .number()
@@ -483,10 +491,11 @@ export default defineComponent({
       },
     });
 
-    const openModalFunction = (idOfMeal: number, cause: string) => {
+    const openModalFunction = (m: any, cause: string) => {
       openModal.value = true;
-
-      mealId.value = idOfMeal;
+      console.log(m);
+      reasonOfModalOpen.value = cause;
+      meal.value = m;
     };
 
     const handleModalClose = () => {
@@ -495,7 +504,7 @@ export default defineComponent({
 
     const deleteMeal = async () => {
       try {
-        const res: any = await axios.delete(`/meals/${mealId.value}`);
+        const res: any = await axios.delete(`/meals/${meal.value.id}`);
         if (res && res.data.message) {
           toast.add({
             life: 3000,
@@ -510,28 +519,29 @@ export default defineComponent({
         console.log(err, "ERROR");
       }
     };
-
-    const modalActions = ref<any[]>([
-      {
-        component: Button,
-        props: {
-          type: "Submit",
-          icon: "pi pi-times",
-          label: "Delete",
-          severity: "danger",
-          onclick: deleteMeal,
+    const modalActions = computed(() => {
+      return [
+        {
+          component: Button,
+          props: {
+            type: "Submit",
+            icon: "pi pi-times",
+            label: reasonOfModalOpen.value === "Delete" ? "Delete" : "Submit",
+            severity: "danger",
+            onclick: deleteMeal,
+          },
         },
-      },
-      {
-        component: Button,
-        props: {
-          label: "Cancel",
-          icon: "pi pi-check",
-          severity: "info",
-          onclick: handleModalClose,
+        {
+          component: Button,
+          props: {
+            label: "Cancel",
+            icon: "pi pi-check",
+            severity: "info",
+            onclick: handleModalClose,
+          },
         },
-      },
-    ]);
+      ];
+    });
 
     const getSeverity = (product: any) => {
       switch (product.inventoryStatus) {
@@ -570,6 +580,8 @@ export default defineComponent({
       currentPage,
       handleChangePage,
       handleRowDropdownChange,
+      meal,
+      reasonOfModalOpen,
       isLoading,
       openModal,
       layout,

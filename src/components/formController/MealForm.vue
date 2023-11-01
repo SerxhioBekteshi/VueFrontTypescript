@@ -60,12 +60,21 @@
       </div>
 
       <div class="gapper">
-        <InputText
+        <InputNumber
           :label="'Carbon footprint'"
           name="carbonFootprint"
           type="number"
           id="carbonFootprint"
           placeholder="Carbon footprint"
+        />
+      </div>
+
+      <div class="gapper">
+        <InputNumber
+          :label="'Price'"
+          :name="'price'"
+          :id="'price'"
+          :placeholder="'Price'"
         />
       </div>
 
