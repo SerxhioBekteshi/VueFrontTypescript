@@ -134,7 +134,7 @@ const items = ref([
         class="p-link layout-topbar-button"
       >
         <i class="pi pi-sign-out"></i>
-        <span>Settings</span>
+        <span>Log out</span>
       </button>
     </div>
   </div>

@@ -2,6 +2,7 @@ import { IUserState } from "@/interfaces/IUserState";
 import JwtManager from "./jwtManager";
 import AuthManager from "./authManager";
 import initStore from "@/store/redux/initStore";
+import { eFilterOperator } from "@/assets/enums/eFilterOperator";
 
 export function getNameById(myObject: any, id: number) {
   for (const [key, value] of Object.entries(myObject)) {
@@ -49,6 +50,52 @@ export const toCamelCase = (string: any) => {
     .replace(/^./, (firstChar: any) => firstChar.toUpperCase());
 };
 
+export const calculateFiltersForMeal = (array: any) => {
+  const formattedArray: {
+    columnName: string;
+    value: any;
+    operation: eFilterOperator;
+  }[] = [];
+
+  Object.entries(array).forEach(([columnName, value]) => {
+    if (Array.isArray(value)) {
+      // If the value is an array, include the column for each item in the array
+      value.forEach((item: any) => {
+        formattedArray.push({
+          columnName,
+          value: item,
+          operation: eFilterOperator.Contain,
+        });
+      });
+    } else if (typeof value === "string" && value.includes("-")) {
+      const [valueStart, valueEnd] = value.split("-");
+      formattedArray.push({
+        columnName,
+        value: Number(valueStart),
+        operation: eFilterOperator.GreaterOrEqual,
+      });
+      formattedArray.push({
+        columnName,
+        value: Number(valueEnd),
+        operation: eFilterOperator.LessOrEqual,
+      });
+    } else if (typeof value === "string" && value.startsWith(">")) {
+      formattedArray.push({
+        columnName,
+        value,
+        operation: eFilterOperator.GreaterOrEqual,
+      });
+    } else {
+      formattedArray.push({
+        columnName,
+        value,
+        operation: eFilterOperator.Contain,
+      });
+    }
+  });
+  return formattedArray;
+};
+
 export const initApp = async () => {
   let currentUser: IUserState | null = null;
   try {
@@ -63,4 +110,5 @@ export const initApp = async () => {
 
   return appStore;
 };
+
 export default initApp;

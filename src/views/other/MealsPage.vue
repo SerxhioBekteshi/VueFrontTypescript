@@ -137,9 +137,21 @@
                       severity="danger"
                       text
                       rounded
-                      @click="() => openModalFunction(slotProps.data.id)"
+                      @click="
+                        () => openModalFunction(slotProps.data.id, 'delete')
+                      "
                       size="small"
                       aria-label="Cancel"
+                    />
+                  </div>
+                  <div v-else>
+                    <Button
+                      icon="pi pi-cart-plus"
+                      severity="warning"
+                      text
+                      rounded
+                      size="small"
+                      @click="() => openModalFunction(0, 'order')"
                     />
                   </div>
                 </div>
@@ -237,7 +249,7 @@
             </div>
           </div>
           <div v-else>
-            <Message severity="warn">There are no meals</Message>
+            <Message severity="error">There are no meals</Message>
           </div>
         </template>
       </DataView>
@@ -264,7 +276,9 @@
       :title="'Delete meal'"
       :actions="modalActions"
     >
-      Are you sure you want to delete
+      Are you sure you want to delete Are you sure you want to delete Are you
+      sure you want to deleteAre you sure you want to deleteAre you sure you
+      want to deleteAre you sure you want to delete
       <!-- <span style="font-weight: bold">
       {{ fieldModalToShow.name }}
     </span> -->
@@ -301,6 +315,7 @@ import { PageState } from "primevue/paginator";
 import { eRoles } from "@/assets/enums/eRoles";
 import { useReduxSelector } from "@/store/redux/helpers";
 import { eFilterOperator } from "@/assets/enums/eFilterOperator";
+import { calculateFiltersForMeal } from "@/utils/functions";
 
 export default defineComponent({
   name: "MealsPage",
@@ -320,6 +335,7 @@ export default defineComponent({
     TablePaginator,
     Toast,
     InlineMessage,
+    Message,
   },
   props: {
     shouldCrud: { type: Boolean, required: true },
@@ -366,55 +382,13 @@ export default defineComponent({
       formData.value = null;
     };
 
-    const calculateFilters = () => {
-      const formattedArray: {
-        columnName: string;
-        value: any;
-        operation: eFilterOperator;
-      }[] = [];
-
-      Object.entries(quizResult.value).forEach(([columnName, value]) => {
-        if (Array.isArray(value)) {
-          // If the value is an array, include the column for each item in the array
-          value.forEach((item: any) => {
-            formattedArray.push({
-              columnName,
-              value: item,
-              operation: eFilterOperator.Contain,
-            });
-          });
-        } else if (
-          columnName === "calories" &&
-          typeof value === "string" &&
-          value.includes("-")
-        ) {
-          const [valueStart, valueEnd] = value.split("-");
-          formattedArray.push({
-            columnName,
-            value: Number(valueStart),
-            operation: eFilterOperator.GreaterOrEqual,
-          });
-          formattedArray.push({
-            columnName,
-            value: Number(valueEnd),
-            operation: eFilterOperator.LessOrEqual,
-          });
-        } else {
-          formattedArray.push({
-            columnName,
-            value,
-            operation: eFilterOperator.Contain,
-          });
-        }
-      });
-      return formattedArray;
-    };
-
     const fetchMeals = async () => {
       isLoading.value = true;
       try {
-        const formattedFilters = calculateFilters();
-        console.log(formattedFilters);
+        let formattedFilters;
+        if (profile.value.role === eRoles.User)
+          formattedFilters = calculateFiltersForMeal(quizResult.value);
+
         const res: any = await axios.post("/table/meals", {
           page: currentPage.value,
           pageSize: pageSize.value,
@@ -452,11 +426,11 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      getQuizResults();
+      if (profile.value.role === eRoles.User) getQuizResults();
+      else fetchMeals();
     });
 
     const layout = ref<"grid" | "list" | undefined>("grid");
-    const openDrawer = ref<boolean>(false);
     const openModal = ref<boolean>(false);
     const mealImage = ref<any>(null);
     const mealId = ref<number>(0);
@@ -509,8 +483,9 @@ export default defineComponent({
       },
     });
 
-    const openModalFunction = (idOfMeal: number) => {
+    const openModalFunction = (idOfMeal: number, cause: string) => {
       openModal.value = true;
+
       mealId.value = idOfMeal;
     };
 

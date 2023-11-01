@@ -8,6 +8,8 @@
     :header="title"
     :draggable="true"
     :closable="true"
+    :style="{ width: '50rem', marginTop: '5rem' }"
+    :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
   >
     <template #closeicon>
       <i
