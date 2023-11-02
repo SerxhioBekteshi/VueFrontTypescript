@@ -10,6 +10,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",
     "@types/yup": "^0.32.0",
+    "@vue-stripe/vue-stripe": "^4.5.0",
     "@vuelidate/core": "^2.0.2",
     "@vuelidate/validators": "^2.0.2",
     "axios": "^1.4.0",

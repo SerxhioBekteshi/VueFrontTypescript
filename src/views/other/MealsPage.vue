@@ -278,14 +278,14 @@
       :actions="modalActions"
     >
       <div v-if="reasonOfModalOpen === 'delete'">
-        Are you sure you want to delete {{ meal.name }}
+        Are you sure you want to delete
+        <span style="font-weight: bold">
+          {{ meal.name }}
+        </span>
       </div>
       <div v-else>
         <OrderSystemMealForm :price="meal.price" />
       </div>
-      <!-- <span style="font-weight: bold">
-      {{ fieldModalToShow.name }}
-    </span> -->
     </Modal>
   </div>
   <Toast />
@@ -321,6 +321,7 @@ import { useReduxSelector } from "@/store/redux/helpers";
 import { eFilterOperator } from "@/assets/enums/eFilterOperator";
 import { calculateFiltersForMeal } from "@/utils/functions";
 import OrderSystemMealForm from "./OrderSystemMealForm.vue";
+import IMeal from "@/interfaces/database/IMeal";
 
 export default defineComponent({
   name: "MealsPage",
@@ -350,16 +351,16 @@ export default defineComponent({
   setup() {
     const profile = useReduxSelector((state) => state.user);
     const formDrawerMode = ref<any>();
-    const meals = ref<any>([]);
+    const meals = ref<IMeal[]>([]);
     const currentPage = ref<number>(1);
-    const pageSize = ref<any>(5);
+    const pageSize = ref<number>(5);
     const totalItems = ref<number>(0);
     const isLoading = ref<boolean>(false);
     const searchValue = ref<string>("");
-    const formData = ref<any>(null);
+    const formData = ref<IMeal>();
     const rate = ref<any>();
     const toast = useToast();
-    const rowsPerPageOptions = ref<any>([3, 5, 10]);
+    const rowsPerPageOptions = ref<number[]>([3, 5, 10]);
     const quizResult = ref<any>();
     const reasonOfModalOpen = ref<string>("");
 
@@ -379,14 +380,14 @@ export default defineComponent({
       formDrawerMode.value = eFormMode.Add;
     };
 
-    const onEditClick = (data: any) => {
+    const onEditClick = (data: IMeal) => {
       formDrawerMode.value = eFormMode.Edit;
       formData.value = data;
     };
 
     const invalidateState = () => {
       formDrawerMode.value = "";
-      formData.value = null;
+      formData.value = undefined;
     };
 
     const fetchMeals = async () => {
@@ -526,7 +527,7 @@ export default defineComponent({
           props: {
             type: "Submit",
             icon: "pi pi-times",
-            label: reasonOfModalOpen.value === "Delete" ? "Delete" : "Submit",
+            label: reasonOfModalOpen.value === "Delete" ? "Delete" : "Checkout",
             severity: "danger",
             onclick: deleteMeal,
           },
