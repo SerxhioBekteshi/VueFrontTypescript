@@ -181,11 +181,11 @@ import { defineComponent, ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
 import Button from "primevue/button";
-import { IShowChangePasswordInput } from "@/interfaces/IShowChangePasswordInput";
+// import { IShowChangePasswordInput } from "@/interfaces/other/IShowChangePasswordInput";
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import OverlayPanel from "primevue/overlaypanel";
-import { ICheckPassword } from "@/interfaces/ICheckPassword";
+import { ICheckPassword } from "@/interfaces/other/ICheckPassword";
 import InputPassword from "../components/formElements/InputPassword.vue";
 import axios from "axios";
 import { provide } from "vue";
@@ -240,7 +240,7 @@ export default defineComponent({
         ),
     });
 
-    const { handleSubmit, resetForm, setValues, isSubmitting } = useForm({
+    const { handleSubmit, resetForm, isSubmitting } = useForm({
       validationSchema: schemaToValidate,
       initialValues: {
         oldPassword: "",
@@ -255,7 +255,7 @@ export default defineComponent({
     const { value: passwordConfirm } = useField<string>("passwordConfirm");
 
     const op = ref();
-    const handleOnBlur = (event: any) => {
+    const handleOnBlur = () => {
       if (op.value) op.value.hide();
 
       // const nextInput: any = document.querySelector(".cnp");

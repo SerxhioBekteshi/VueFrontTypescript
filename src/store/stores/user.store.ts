@@ -1,4 +1,4 @@
-import { IUserState } from "@/interfaces/IUserState";
+import { IUserState } from "@/interfaces/other/IUserState";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const userStore = createSlice({

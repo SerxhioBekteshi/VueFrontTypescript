@@ -9,7 +9,6 @@
 </template>
 
 <script lang="ts">
-import Avatar from "primevue/avatar";
 import TabPanel from "primevue/tabpanel";
 import TabView from "primevue/tabview";
 import { defineComponent, ref } from "vue";

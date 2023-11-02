@@ -1,4 +1,4 @@
-import { eFilterOperator } from "./eFilterOperator";
+import { eFilterOperator } from "@/assets/enums/eFilterOperator";
 
 export default interface IFilter {
   columnName: string;

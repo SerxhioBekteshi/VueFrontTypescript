@@ -179,15 +179,15 @@ import {
 import axios from "axios";
 import Message from "primevue/message";
 import Paginator from "primevue/paginator";
-import Modal from "../components/Modal.vue";
-import IColumn from "@/interfaces/IColumn";
-import GenericToolbar from "../components/GenericToolbar.vue";
-import TableHeader from "../components/table/TableHeader.vue";
-import TableCell from "../components/table/TableCell.vue";
-import TableCellActions from "../components/table/TableCellActions.vue";
+import Modal from "@/components/Modal.vue";
+import IColumn from "@/interfaces/table/IColumn";
+import GenericToolbar from "@/components/GenericToolbar.vue";
+import TableHeader from "./TableHeader.vue";
+import TableCell from "./TableCell.vue";
+import TableCellActions from "./TableCellActions.vue";
 import { useToast } from "primevue/usetoast";
 import ProgressSpinner from "primevue/progressspinner";
-import CellEditor from "../components/table/CellEditor.vue";
+import CellEditor from "@/components/table/CellEditor.vue";
 
 interface Action {
   component: any;

@@ -62,7 +62,6 @@ export default defineComponent({
   },
   setup(props) {
     const inputType = ref<string>("password");
-    const veeValidateForm: any = inject("veeValidateForm");
 
     const toggleShowPassword = () => {
       inputType.value = inputType.value === "password" ? "text" : "password";

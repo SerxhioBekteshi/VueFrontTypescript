@@ -130,6 +130,7 @@ export default defineComponent({
     InputDate,
     Button,
     FileUpload,
+    Toast,
   },
   props: {},
   setup() {
@@ -168,7 +169,6 @@ export default defineComponent({
       const file = event.files[0];
       const formData = new FormData();
       formData.append("image", file);
-      console.log(formData);
 
       try {
         const res: any = await axios.post(`/user/image`, formData);
@@ -180,7 +180,6 @@ export default defineComponent({
             severity: "success",
             summary: "info",
           });
-
           //update user state after this from dispatch
         }
       } catch (err) {
@@ -191,7 +190,6 @@ export default defineComponent({
     const handleEditProfileData = async (values: any) => {
       try {
         const res: any = await axios.put(`/user/update`, values);
-        console.log(res, "res");
         if (res && res !== null) {
           toast.add({
             life: 3000,

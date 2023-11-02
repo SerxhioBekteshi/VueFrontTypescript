@@ -64,7 +64,7 @@
 
 <script lang="ts">
 // import eDataType from "@/assets/enums/eDataType";
-import IColumn from "@/interfaces/IColumn";
+import IColumn from "@/interfaces/table/IColumn";
 import { groupDigital } from "@/utils/functions";
 import moment from "moment";
 import { PropType, defineComponent, h, ref } from "vue";

@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import IColumn from "@/interfaces/IColumn";
+import IColumn from "@/interfaces/table/IColumn";
 import Column from "primevue/column";
 import { PropType, defineComponent, ref } from "vue";
 export default defineComponent({

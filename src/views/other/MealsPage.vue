@@ -129,7 +129,7 @@
                       text
                       rounded
                       size="small"
-                      @click="onEditClick(slotProps.data, slotProps.data.id)"
+                      @click="onEditClick(slotProps.data)"
                       aria-label="Favorite"
                     />
                     <Button
@@ -379,7 +379,7 @@ export default defineComponent({
       formDrawerMode.value = eFormMode.Add;
     };
 
-    const onEditClick = (data: any, rowId: number) => {
+    const onEditClick = (data: any) => {
       formDrawerMode.value = eFormMode.Edit;
       formData.value = data;
     };

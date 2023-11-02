@@ -29,11 +29,11 @@
 </template>
 
 <script setup>
-import { useField, setFieldValue } from "vee-validate";
+import { useField } from "vee-validate";
 import ValidationError from "../ValidationError.vue";
-import { defineProps, ref, watch } from "vue";
+import { defineProps, ref } from "vue";
 import Calendar from "primevue/calendar";
-import { computed, onMounted } from "vue";
+import { onMounted } from "vue";
 import moment from "moment";
 import { inject } from "vue";
 

@@ -31,7 +31,7 @@
 <script lang="ts">
 import Button from "primevue/button";
 import InputPV from "primevue/inputtext";
-import { defineComponent, ref } from "vue";
+import { defineComponent } from "vue";
 
 interface Action {
   component: any;

@@ -5,9 +5,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent } from "vue";
 import MealsPage from "../other/MealsPage.vue";
-import axios from "axios";
 
 export default defineComponent({
   name: "UserMeals",

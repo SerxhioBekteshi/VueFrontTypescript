@@ -32,7 +32,7 @@
 <script lang="ts">
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
-import { defineComponent, ref } from "vue";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names

@@ -22,7 +22,7 @@
 
 <script lang="ts">
 // import Button from "primevue/button";
-import { ref, onMounted, defineComponent } from "vue";
+import { defineComponent } from "vue";
 import { toCamelCase } from "../utils/functions";
 export interface Action {
   component: any;

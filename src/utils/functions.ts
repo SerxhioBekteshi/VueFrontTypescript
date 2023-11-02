@@ -1,4 +1,4 @@
-import { IUserState } from "@/interfaces/IUserState";
+import { IUserState } from "@/interfaces/other/IUserState";
 import JwtManager from "./jwtManager";
 import AuthManager from "./authManager";
 import initStore from "@/store/redux/initStore";

@@ -24,7 +24,7 @@
 <script lang="ts">
 // import Button from "primevue/button"
 import Button from "primevue/button";
-import TableData from "../components/TableData.vue";
+import TableData from "@/components/table/TableData.vue";
 import { defineComponent, ref } from "vue";
 import { PrimeIcons } from "primevue/api";
 import { eFormMode } from "@/assets/enums/EFormMode";

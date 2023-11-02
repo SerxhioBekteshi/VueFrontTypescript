@@ -17,35 +17,60 @@
           <div class="grid">
             <div class="col-12" style="padding: 0.75rem">
               <InputText
-                name="name"
-                :label="'First Name'"
-                :id="name"
-                placeholder="First Name"
-                v-bind="name"
+                :name="'name'"
+                :label="'Name'"
+                :id="'name'"
+                :placeholder="'Name'"
               />
             </div>
             <div class="col-12" style="padding: 0.75rem">
               <InputText
                 name="lastName"
                 :label="'Last Name'"
-                :id="lastName"
+                :id="'lastName'"
                 placeholder="Last Name"
-                v-bind="lastName"
               />
             </div>
             <div class="col-12" style="padding: 0.75rem">
               <InputText
                 name="email"
                 :label="'Email'"
-                :id="email"
+                :id="'email'"
                 placeholder="Email"
-                v-bind="email"
               />
             </div>
+
+            <div class="col-12" style="padding: 0.75rem">
+              <InputSelect
+                :name="'paymentMethod'"
+                :label="'PaymentMethod'"
+                :id="'paymentMethod'"
+                placeholder="paymentMethod"
+                :options="[
+                  {
+                    label: ePaymentMethod.Stripe,
+                    value: ePaymentMethod.Stripe,
+                  },
+                  {
+                    label: ePaymentMethod.Paypal,
+                    value: ePaymentMethod.Paypal,
+                  },
+                ]"
+              />
+            </div>
+
+            <div class="col-12" style="padding: 0.75rem">
+              <InputText
+                :name="'address'"
+                :label="'Address'"
+                :id="'address'"
+                :placeholder="'Address'"
+              />
+            </div>
+
             <div class="col-12" style="padding: 0.75rem">
               <InputPassword
                 :name="'password'"
-                :label="'Password'"
                 :id="'password'"
                 :placeholder="'Password'"
                 :iconPosition="'right'"
@@ -54,7 +79,6 @@
             <div class="col-12" style="padding: 0.75rem">
               <InputPassword
                 :name="'passwordConfirm'"
-                :label="'Confirm new password'"
                 :id="'passwordConfirm'"
                 :placeholder="'Confirm new password'"
                 :iconPosition="'right'"
@@ -67,11 +91,10 @@
               v-if="currentRoutePath === '/registerProvider'"
             >
               <InputText
-                name="nipt"
+                :name="'nipt'"
                 :label="'Nipt'"
-                :id="nipt"
+                :id="'nipt'"
                 placeholder="Nipt"
-                v-bind="nipt"
               />
             </div>
           </div>
@@ -218,26 +241,39 @@
 </template>
 
 <script lang="ts">
+import { computed, defineComponent, ref } from "vue";
+import { useRoute } from "vue-router";
+import { useForm } from "vee-validate";
 import axios from "axios";
+
 import Card from "primevue/card";
 import Button from "primevue/button";
-import * as yup from "yup";
-import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
-import InputText from "../components/formElements/InputText.vue";
-import { computed, defineComponent, ref } from "vue";
-import { ICheckPassword } from "@/interfaces/ICheckPassword";
-import { useRoute } from "vue-router";
-import { useField, useForm } from "vee-validate";
-import router from "@/router";
 import OverlayPanel from "primevue/overlaypanel";
-import InputPassword from "../components/formElements/InputPassword.vue";
+import { useToast } from "primevue/usetoast";
+
+import * as yup from "yup";
+import InputText from "@/components/formElements/InputText.vue";
+
+import InputPassword from "@/components/formElements/InputPassword.vue";
+import InputSelect from "@/components/formElements/InputSelect.vue";
+
+import { ICheckPassword } from "@/interfaces/other/ICheckPassword";
+import ePaymentMethod from "@/assets/enums/ePaymentMethod";
 
 export default defineComponent({
   name: "RegisterView",
-  components: { Toast, Button, InputText, OverlayPanel, Card, InputPassword },
+  components: {
+    Toast,
+    Button,
+    InputText,
+    OverlayPanel,
+    Card,
+    InputPassword,
+    InputSelect,
+  },
   props: {},
-  setup(props) {
+  setup() {
     const toast = useToast();
     const route = useRoute();
     const currentRoutePath = computed(() => route.path);
@@ -292,7 +328,7 @@ export default defineComponent({
         ),
     });
 
-    const { handleSubmit, resetForm, setValues } = useForm({
+    const { handleSubmit, resetForm } = useForm({
       validationSchema: schemaToValidate,
       initialValues: {
         name: "",
@@ -301,15 +337,18 @@ export default defineComponent({
         password: "",
         passwordConfirm: "",
         nipt: "",
+        paymentMethod: "",
+        address: "",
       },
     });
 
-    const { value: name } = useField<string>("name");
-    const { value: lastName } = useField<string>("lastName");
-    const { value: email } = useField<string>("email");
-    const { value: nipt } = useField<string>("nipt");
-    const { value: password } = useField<string>("password");
-    const { value: passwordConfirm } = useField<string>("passwordConfirm");
+    // const { value: name } = useField<string>("name");
+    // const { value: lastName } = useField<string>("lastName");
+    // const { value: email } = useField<string>("email");
+    // const { value: nipt } = useField<string>("nipt");
+    // const { value: password } = useField<string>("password");
+    // const { value: passwordConfirm } = useField<string>("passwordConfirm");
+    // const { value: paymentMethod } = useField<string>("paymentMethod");
 
     const handleRegister = async (values: any) => {
       try {
@@ -367,11 +406,7 @@ export default defineComponent({
       handleSubmit,
       currentRoutePath,
       name,
-      lastName,
-      email,
-      password,
-      passwordConfirm,
-      nipt,
+      ePaymentMethod,
       resetForm,
     };
   },

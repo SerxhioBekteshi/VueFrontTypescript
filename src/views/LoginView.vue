@@ -72,7 +72,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import InputText from "primevue/inputtext";
 import Card from "primevue/card";
 import Button from "primevue/button";

@@ -24,7 +24,7 @@ export default defineComponent({
   props: {
     price: { type: Number, required: true },
   },
-  setup(props) {
+  setup() {
     const quantity = ref<number>(0);
     return { quantity };
   },
