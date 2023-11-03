@@ -3,16 +3,26 @@
     <div>
       <DataView :value="meals" :layout="layout" dataKey="id">
         <template #header>
-          <div style="dispay: flex; flex-direction: column; gap: 2rem">
-            <GenericToolbar
-              :show-export="true"
-              :showSearch="true"
-              :controller="'meals'"
-              :showAddBt="shouldCrud"
-              :value="searchValue"
-              :actionButton="actionButton"
-              @change="handleSearchValue"
-            />
+          <div style="dispay: flex; flex-direction: column">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 1rem;
+              "
+            >
+              <GenericToolbar
+                :show-export="true"
+                :showSearch="true"
+                :controller="'meals'"
+                :showAddBt="shouldCrud"
+                :value="searchValue"
+                :actionButton="actionButton"
+                @change="handleSearchValue"
+              />
+              <DataViewLayoutOptions v-model="layout" />
+            </div>
+
             <TablePaginator
               :pageSize="pageSize"
               :totalItems="totalItems"
@@ -27,11 +37,14 @@
             <div
               class="flex flex-column xl:flex-row xl:align-items-start p-4 gap-4"
             >
-              <img
-                class="w-9 sm:w-16rem xl:w-10rem shadow-2 block xl:block mx-auto border-round"
-                :src="`http://localhost:1112/${slotProps.data.image}`"
-                :alt="slotProps.data.name"
-              />
+              <div class="image-wrapper">
+                <img
+                  class="image-content"
+                  :src="`http://localhost:1112/${slotProps.data.image}`"
+                  :alt="slotProps.data.name"
+                />
+                {{ slotProps.data.image }}
+              </div>
               <div
                 class="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4"
               >
@@ -49,7 +62,6 @@
                   />
                   <div class="flex align-items-center gap-3">
                     <span class="flex align-items-center gap-2">
-                      <i class="pi pi-code"></i>
                       <span class="font-semibold">{{
                         slotProps.data.dietCategory
                       }}</span>
@@ -59,24 +71,51 @@
                       :value="slotProps.data.inventoryStatus"
                       :severity="getSeverity(slotProps.data)"
                     >
+                      STOCK
                     </Tag>
+                  </div>
+                  <div v-if="shouldCrud" class="flex flex-column">
+                    <span class="text-xl font-semibold"
+                      >{{ slotProps.data.calories }} Cal</span
+                    >
+
+                    <span class="text-xl font-semibold"
+                      >{{ slotProps.data.price }} $</span
+                    >
                   </div>
                 </div>
 
                 <div
-                  class="flex sm:flex-column align-items-center sm:align-items-end gap-3 sm:gap-2"
+                  class="flex align-items-center sm:align-items-end gap-3 sm:gap-2"
                 >
-                  <span class="text-2xl font-semibold"
-                    >${{ slotProps.data.calories }}</span
-                  >
                   <Button
+                    icon="pi pi-file-edit"
+                    severity="help"
+                    text
+                    rounded
+                    size="small"
+                    style="padding-left: 0; padding-right: 0"
+                    @click="onEditClick(slotProps.data)"
+                    aria-label="Favorite"
+                  />
+                  <Button
+                    icon="pi pi-trash"
+                    severity="danger"
+                    text
+                    rounded
+                    style="padding-inline: 0; padding-right: 0"
+                    @click="() => openModalFunction(slotProps.data, 'delete')"
+                    size="small"
+                    aria-label="Cancel"
+                  />
+                  <!-- <Button
                     @click="fetchMeal(slotProps.data)"
                     severity="warning"
                     icon="pi pi-file-edit"
                     rounded
                     outlined
                   >
-                  </Button>
+                  </Button> -->
                 </div>
               </div>
             </div>
@@ -113,11 +152,8 @@
                 </div>
               </div>
               <div v-else>
-                <div
-                  class="flex flex-wrap align-items-center justify-content-between"
-                >
+                <div class="header-layout">
                   <div class="flex align-items-center gap-2">
-                    <i class="pi pi-code"></i>
                     <span class="font-semibold">{{
                       slotProps.data.dietCategory
                     }}</span>
@@ -153,39 +189,40 @@
                     />
                   </div>
                 </div>
+                <div>
+                  <div class="flex flex-column align-items-center gap-3 py-5">
+                    <div class="image-wrapper">
+                      <img
+                        class="image-content"
+                        :src="`http://localhost:1112/${slotProps.data.image}`"
+                        :alt="slotProps.data.name"
+                      />
+                      {{ slotProps.data.image }}
+                    </div>
 
-                <div class="flex flex-column align-items-center gap-3 py-5">
-                  <div class="image-wrapper">
-                    <img
-                      class="image-content"
-                      :src="`http://localhost:1112/${slotProps.data.image}`"
-                      :alt="slotProps.data.name"
+                    <div class="text-2xl font-bold">
+                      {{ slotProps.data.name }}
+                    </div>
+                    <Rate
+                      :controller="'meals/rate'"
+                      :rateId="slotProps.data.id"
+                      :rateValue="slotProps.data.rating"
+                      :shouldRate="shouldRate"
                     />
-                    {{ slotProps.data.image }}
-                  </div>
 
-                  <div class="text-2xl font-bold">
-                    {{ slotProps.data.name }}
+                    <Tag
+                      :value="slotProps.data.inventoryStatus"
+                      :severity="getSeverity(slotProps.data)"
+                      >HSTOCK</Tag
+                    >
                   </div>
-                  <Rate
-                    :controller="'meals/rate'"
-                    :rateId="slotProps.data.id"
-                    :rateValue="slotProps.data.rating"
-                    :shouldRate="shouldRate"
-                  />
-
-                  <Tag
-                    :value="slotProps.data.inventoryStatus"
-                    :severity="getSeverity(slotProps.data)"
-                    >HERE MIGHT BE THE STOCK FOR THE FOOD</Tag
-                  >
                 </div>
 
-                <div class="flex align-items-center justify-content-between">
-                  <span class="text-2xl font-semibold"
+                <div class="custom-layout">
+                  <span class="text-xl font-semibold"
                     >{{ slotProps.data.calories }} Calories
                   </span>
-                  <span class="text-2xl font-semibold"
+                  <span class="text-xl font-semibold"
                     >{{ slotProps.data.price }} $
                   </span>
                 </div>
@@ -202,6 +239,7 @@
                     <span :style="{ fontWeight: 'bold' }"> Intolerance: </span>
                     {{ slotProps.data.intolerance }}
                   </div>
+
                   <div :style="{ marginTop: '1rem' }">
                     <Accordion :activeIndex="1">
                       <AccordionTab
@@ -322,6 +360,7 @@ import { eFilterOperator } from "@/assets/enums/eFilterOperator";
 import { calculateFiltersForMeal } from "@/utils/functions";
 import OrderSystemMealForm from "./OrderSystemMealForm.vue";
 import IMeal from "@/interfaces/database/IMeal";
+import DataViewLayoutOptions from "primevue/dataviewlayoutoptions";
 
 export default defineComponent({
   name: "MealsPage",
@@ -343,6 +382,7 @@ export default defineComponent({
     InlineMessage,
     Message,
     OrderSystemMealForm,
+    DataViewLayoutOptions,
   },
   props: {
     shouldCrud: { type: Boolean, required: true },
@@ -520,7 +560,8 @@ export default defineComponent({
         console.log(err, "ERROR");
       }
     };
-    const modalActions = computed(() => {
+
+    const modalActions = computed<any>(() => {
       return [
         {
           component: Button,
@@ -560,11 +601,11 @@ export default defineComponent({
       }
     };
 
-    const fetchMeal = (meal: any) => {
-      const mealObjectToAdd = JSON.parse(JSON.stringify(meal));
-      formDrawerMode.value = "edit";
-      resetForm({ values: mealObjectToAdd });
-    };
+    // const fetchMeal = (meal: any) => {
+    //   const mealObjectToAdd = JSON.parse(JSON.stringify(meal));
+    //   formDrawerMode.value = "edit";
+    //   resetForm({ values: mealObjectToAdd });
+    // };
 
     const handleChangePage = (event: PageState) => {
       currentPage.value = event.page + 1;
@@ -601,7 +642,7 @@ export default defineComponent({
       handleAddData,
       fetchMeals,
       handleSearchValue,
-      fetchMeal,
+      // fetchMeal,
       onEditClick,
       deleteMeal,
       openModalFunction,
@@ -612,8 +653,8 @@ export default defineComponent({
 
 <style scoped>
 .image-wrapper {
-  width: 150px;
-  height: 150px;
+  width: 100px;
+  height: 100px;
   overflow: hidden;
   border-radius: 1rem;
 }
@@ -622,5 +663,47 @@ export default defineComponent({
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.custom-layout {
+  display: flex;
+  flex-direction: column;
+  justify-content: start; /* Default for screens above 700px */
+}
+
+@media (min-width: 700px) {
+  .custom-layout {
+    flex-direction: row;
+    justify-content: space-between; /* For screens 700px and above */
+  }
+}
+
+.header-layout {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+}
+
+@media (min-width: 650px) {
+  .header-layout {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.centered-content-layout {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (min-width: 800px) {
+  .centered-content-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding-block: 3rem;
+  }
 }
 </style>

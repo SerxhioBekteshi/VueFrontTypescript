@@ -40,7 +40,7 @@ export default defineComponent({
   props: {
     openModal: { type: Boolean, required: true },
     title: { type: String, required: true },
-    actions: { type: Array as () => Action[], required: true },
+    actions: { type: Array as () => ModalAction[], required: true },
   },
   components: {
     Dialog,
@@ -56,7 +56,7 @@ export default defineComponent({
   },
 });
 
-interface Action {
+interface ModalAction {
   component: string;
   props: Record<string, unknown>;
 }

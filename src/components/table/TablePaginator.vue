@@ -50,8 +50,8 @@ export default defineComponent({
   },
 });
 </script>
-<style>
-.hoverOnIcon:hover {
-  cursor: pointer;
+<style scoped>
+::v-deep .p-paginator {
+  background-color: transparent !important;
 }
 </style>
