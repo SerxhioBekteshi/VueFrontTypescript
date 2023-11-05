@@ -109,8 +109,6 @@ export const initApp = async () => {
     console.log("initApp", e);
   }
   const appStore = initStore(currentUser);
-  // initLanguage(lang);
-
   return appStore;
 };
 

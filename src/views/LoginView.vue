@@ -63,7 +63,7 @@
           icon="pi pi-user"
           label="Register"
           link
-          @click.prevent="this.$router.push({ name: 'RegisterView' })"
+          @click.prevent="router.push({ name: 'RegisterView' })"
           style="margin-left: 0.5em"
         />
       </template>
@@ -71,7 +71,8 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, ref } from "vue";
 import InputText from "primevue/inputtext";
 import Card from "primevue/card";
 import Button from "primevue/button";
@@ -79,48 +80,42 @@ import ValidationError from "../components/ValidationError.vue";
 import useVuelidate from "@vuelidate/core";
 import { required, email, helpers } from "@vuelidate/validators";
 import AuthManager from "../utils/authManager";
-import router from "../router";
+import { useRouter } from "vue-router";
+import { useDispatch } from "@/store/redux/helpers";
+import store from "@/store/redux/configurations";
 
-export default {
+export default defineComponent({
   name: "LoginView",
   components: { InputText, Card, Button, ValidationError },
-  data() {
-    return {
-      v$: useVuelidate(),
-      email: "",
-      password: "",
-    };
-  },
-
-  methods: {
-    async handleLoginSubmit() {
-      this.v$.$validate();
+  setup() {
+    const v$ = useVuelidate();
+    const email = ref("");
+    const password = ref("");
+    const router = useRouter();
+    // const dispatch = useDispatch();
+    // console.log(dispatch, "DISPATCH");
+    // const dd = store.dispatch;
+    // console.log(dd);
+    const handleLoginSubmit = async () => {
+      // v$.validate();
       const loginUser = {
-        email: this.email,
-        password: this.password,
+        email: email.value,
+        password: password.value,
       };
       try {
         await AuthManager.login(loginUser, router);
-        // const res = await axios.post("http://localhost:8082/auth/login", {
-        //     email: this.email,
-        //     password: this.password,
-        // });
-        // if (res.token) {
-        //     this.$toast.open({
-        //         message: "Loged in successfully",
-        //         type: "success",
-        //     });
-        //     window.localStorage.setItem("TokenForLocalStorage", res.token);
-
-        // }
       } catch (err) {
-        // this.$toast.open({
-        //     message: err.message,
-        //     type: "error",
-        //     position: "top-right"
-        // });
+        console.log(err, "ERR");
       }
-    },
+    };
+
+    return {
+      v$,
+      email,
+      password,
+      handleLoginSubmit,
+      router,
+    };
   },
   validations() {
     return {
@@ -133,6 +128,7 @@ export default {
       },
     };
   },
-};
+});
 </script>
+
 <style></style>
