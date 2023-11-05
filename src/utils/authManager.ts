@@ -149,7 +149,7 @@ class AuthManager {
 
   static logout(dispatch: any) {
     JwtManager.clearToken();
-    dispatch(navigateTo("/"));
+    // dispatch(navigateTo("/"));
     dispatch(setUser(null));
   }
 }
