@@ -1,10 +1,5 @@
 <template>
-  <!-- <div
-    style="display: flex; justify-content: space-between;, margin-top: 0.5rem; margin-bottom: 0.2rem"
-  > -->
-  <div
-    class="flex gap-3 p-flex-column-xs xs:justify-content-start sm:justify-content-between"
-  >
+  <div class="flex justify-content-between flex-wrap gap-3 w-full">
     <div v-if="showAddBt">
       <div>
         <component
@@ -14,22 +9,32 @@
         ></component>
       </div>
     </div>
-    <div v-if="showSearch">
-      <div class="p-inputgroup flex-1">
-        <InputPV
-          :value="value"
-          @change="$emit('change', $event)"
-          placeholder="Search"
-        />
-        <Button icon="pi pi-search" severity="secondary" outlined disabled />
+    <div class="flex flex-wrap gap-3">
+      <div v-if="showSearch">
+        <div class="p-inputgroup flex-1">
+          <InputPV
+            :value="value"
+            @change="$emit('change', $event)"
+            placeholder="Search"
+          />
+          <Button icon="pi pi-search" severity="secondary" outlined disabled />
+        </div>
+      </div>
+
+      <div v-if="customComponent">
+        <component
+          :is="customComponent.component"
+          v-bind="customComponent.props"
+          @update:modelValue="$emit('update:modelValue', $event)"
+        ></component>
       </div>
     </div>
   </div>
-  <!-- </div> -->
 </template>
 
 <script lang="ts">
 import Button from "primevue/button";
+import DataViewLayoutOptions from "primevue/dataviewlayoutoptions";
 import InputPV from "primevue/inputtext";
 import { defineComponent } from "vue";
 
@@ -38,9 +43,14 @@ interface Action {
   props: Record<string, unknown>;
 }
 
+interface Layout {
+  component: any;
+  props: Record<string, unknown>;
+}
+
 export default defineComponent({
   name: "GenericToolbar",
-  components: { Button, InputPV },
+  components: { Button, InputPV, DataViewLayoutOptions },
   props: {
     tableColumns: Array,
     controller: String,
@@ -49,11 +59,12 @@ export default defineComponent({
     value: String,
     showSearch: Boolean,
     showAddBt: Boolean,
+    customComponent: { type: Object as () => Layout },
     actionButton: { type: Object as () => Action },
   },
-  // setup() {
-  //   console.log("sd");
-  // },
+  setup(props) {
+    return {};
+  },
 });
 </script>
-<style></style>
+<style scoped></style>
