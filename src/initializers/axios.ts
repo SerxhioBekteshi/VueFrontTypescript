@@ -26,6 +26,7 @@ const handleResponseMessage = (
     clearSession();
     return;
   }
+  console.log(response, "RESPONSE");
   switch (notificationType) {
     case eNotificationType.Success:
       $toast.open({
@@ -88,7 +89,7 @@ const axiosInit = async (useToast: any) => {
       // }
 
       if (
-        error.response.data?.message ||
+        (error.response && error.response?.data?.message) ||
         error.response.status !== 200 ||
         error.response.status !== 201
       ) {

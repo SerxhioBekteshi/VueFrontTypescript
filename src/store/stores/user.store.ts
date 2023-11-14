@@ -8,6 +8,9 @@ const userStore = createSlice({
     setUser(_state, action: PayloadAction<any>) {
       return action.payload;
     },
+    clearUser(_state) {
+      return null as unknown as IUserState;
+    },
   },
 });
 

@@ -3,6 +3,8 @@ import JwtManager from "./jwtManager";
 import AuthManager from "./authManager";
 import initStore from "@/store/redux/initStore";
 import { eFilterOperator } from "@/assets/enums/eFilterOperator";
+import axiosInit from "@/initializers/axios";
+import { useToast } from "vue-toast-notification";
 
 export function getNameById(myObject: any, id: number) {
   for (const [key, value] of Object.entries(myObject)) {
@@ -97,6 +99,7 @@ export const calculateFiltersForMeal = (array: any) => {
 };
 
 export const initApp = async () => {
+  await axiosInit(useToast);
   let currentUser: IUserState | null = null;
   try {
     if (JwtManager.accessToken) {
@@ -106,8 +109,6 @@ export const initApp = async () => {
     console.log("initApp", e);
   }
   const appStore = initStore(currentUser);
-  // initLanguage(lang);
-
   return appStore;
 };
 

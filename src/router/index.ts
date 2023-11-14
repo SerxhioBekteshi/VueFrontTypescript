@@ -17,6 +17,7 @@ import ProfileDetails from "../views/ProfileDetails.vue";
 import QuizLayout from "../views/other/QuizLayout.vue";
 import UserMainPage from "../views/user/UserMainPage.vue";
 import MealsConfiguration from "../views/other/MealsConfigurations.vue";
+import PaymentPage from "@/views/payments/index.vue";
 
 const routes = [
   {
@@ -28,36 +29,18 @@ const routes = [
         name: "Dashboard",
         component: Home,
       },
-    ],
-  },
-  {
-    path: "/admin/quiz",
-    component: AppLayout,
-    children: [
       {
-        path: "",
+        path: "quiz",
         name: "Quiz",
         component: Quiz,
       },
-    ],
-  },
-  {
-    path: "/admin/providers/registration",
-    component: AppLayout,
-    children: [
       {
-        path: "",
+        path: "providers/registration",
         name: "ProvidersRegistration",
         component: ProvidersRegistration,
       },
-    ],
-  },
-  {
-    path: "/admin/mealsConfigurations",
-    component: AppLayout,
-    children: [
       {
-        path: "",
+        path: "mealsConfigurations",
         name: "mealsConfigurations",
         component: MealsConfiguration,
       },
@@ -66,60 +49,35 @@ const routes = [
   {
     path: "/provider",
     component: AppLayout,
-    // component: AppLayout,
     children: [
       {
         path: "",
         name: "ProviderDashboard",
         component: Home,
-        // children: [
-        //   {
-        //     path: "",
-        //     component: Home,
-        //   },
-        // ],
       },
-    ],
-  },
-  {
-    path: "/provider/orders",
-    component: AppLayout,
-    children: [
       {
-        path: "",
+        path: "orders",
         name: "ProviderOrders",
         component: ProviderOrders,
       },
-    ],
-  },
-  {
-    path: "/provider/meals",
-    component: AppLayout,
-    children: [
       {
-        path: "",
+        path: "meals",
         name: "ProviderMeals",
         component: ProviderMeals,
       },
     ],
   },
   {
-    path: "/profile/personal",
+    path: "/profile",
     component: AppLayout,
     children: [
       {
-        path: "",
+        path: "personal",
         name: "Profile",
         component: Profile,
       },
-    ],
-  },
-  {
-    path: "/profile/details",
-    component: AppLayout,
-    children: [
       {
-        path: "",
+        path: "details",
         name: "ProfileDetails",
         component: ProfileDetails,
       },
@@ -131,26 +89,31 @@ const routes = [
     children: [
       {
         path: "",
-        name: "UserMainPage",
-        component: UserMainPage,
+        name: "Home",
+        component: Home,
       },
-    ],
-  },
-  {
-    path: "/user/meals",
-    component: AppLayout,
-    children: [
       {
-        path: "",
+        path: "meals",
         name: "UserMeals",
         component: UserMeals,
       },
+      {
+        path: "quiz",
+        component: QuizLayout,
+        name: "Quiz layout",
+      },
+      {
+        path: "payments",
+        component: PaymentPage,
+        props: true,
+        name: "Payment",
+      },
+      {
+        path: "orders",
+        name: "UserOrders",
+        component: ProviderOrders,
+      },
     ],
-  },
-  {
-    path: "/user/quiz",
-    component: QuizLayout,
-    name: "Quiz layout",
   },
   {
     path: "/",
@@ -173,25 +136,11 @@ const routes = [
     component: LoginView,
   },
   // {
-  //   path: "/user/quiz/personal",
-  //   component: PersonalDemo,
-  //   name: "PersonalDemo",
-  // },
-  // {
-  //   path: "/user/quiz/seat",
-  //   name: "SeatDemo",
-  //   component: SeatDemo,
-  // },
-  // {
-  //   path: "/user/quiz/payment",
-  //   name: "PaymentDemo",
-  //   component: PaymentDemo,
-  // },
-  // {
-  //   path: "/user/quiz/confirmation",
-  //   name: "ConfirmationDemo",
-  //   component: ConfirmationDemo,
-  // },
+  //   path: "/user/:type",
+  //   component: PaypalPage,
+  //   props: true,
+  //   name: "Payment",
+  // }
 ];
 
 const router = createRouter({

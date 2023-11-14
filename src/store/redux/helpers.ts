@@ -3,7 +3,7 @@ import { storeKey } from "./storePlugin";
 import { store } from "./configurations";
 import { RootState } from "./rootState";
 
-export const useDispath = () => store.dispatch;
+export const useDispatch = () => store.dispatch;
 
 // export const useSelector = <State extends RootState = RootState>(
 //   fn: (state: State) => State[keyof State]

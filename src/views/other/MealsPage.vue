@@ -18,9 +18,11 @@
                 :showAddBt="shouldCrud"
                 :value="searchValue"
                 :actionButton="actionButton"
+                :customComponent="customToolbarComponent"
+                @update:modelValue="(newValue: any) => layout =
+              newValue"
                 @change="handleSearchValue"
               />
-              <DataViewLayoutOptions v-model="layout" />
             </div>
 
             <TablePaginator
@@ -34,17 +36,12 @@
         </template>
         <template #list="slotProps">
           <div v-if="meals && meals.length != 0" class="col-12">
+            <MealsSkeleton v-if="isLoading" :layout="'list'" />
+
             <div
+              v-else
               class="flex flex-column xl:flex-row xl:align-items-start p-4 gap-4"
             >
-              <div class="image-wrapper">
-                <img
-                  class="image-content"
-                  :src="`http://localhost:1112/${slotProps.data.image}`"
-                  :alt="slotProps.data.name"
-                />
-                {{ slotProps.data.image }}
-              </div>
               <div
                 class="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4"
               >
@@ -74,48 +71,68 @@
                       STOCK
                     </Tag>
                   </div>
-                  <div v-if="shouldCrud" class="flex flex-column">
-                    <span class="text-xl font-semibold"
+                  <div>
+                    <span class="text-xl"
                       >{{ slotProps.data.calories }} Cal</span
-                    >
+                    >,
+                    <span class="text-xl">{{ slotProps.data.price }} $</span>
+                  </div>
+                  <div>
+                    <span :style="{ fontWeight: 'bold' }">
+                      Carbon Footprint:
+                    </span>
+                    {{ slotProps.data.carbonFootprint }} %
+                  </div>
 
-                    <span class="text-xl font-semibold"
-                      >{{ slotProps.data.price }} $</span
-                    >
+                  <div>
+                    <span :style="{ fontWeight: 'bold' }"> Intolerance: </span>
+                    {{ slotProps.data.intolerance }}
                   </div>
                 </div>
 
-                <div
-                  class="flex align-items-center sm:align-items-end gap-3 sm:gap-2"
-                >
-                  <Button
-                    icon="pi pi-file-edit"
-                    severity="help"
-                    text
-                    rounded
-                    size="small"
-                    style="padding-left: 0; padding-right: 0"
-                    @click="onEditClick(slotProps.data)"
-                    aria-label="Favorite"
-                  />
-                  <Button
-                    icon="pi pi-trash"
-                    severity="danger"
-                    text
-                    rounded
-                    style="padding-inline: 0; padding-right: 0"
-                    @click="() => openModalFunction(slotProps.data, 'delete')"
-                    size="small"
-                    aria-label="Cancel"
-                  />
-                  <!-- <Button
-                    @click="fetchMeal(slotProps.data)"
-                    severity="warning"
-                    icon="pi pi-file-edit"
-                    rounded
-                    outlined
-                  >
-                  </Button> -->
+                <div class="flex flex-column align-items-center gap-2">
+                  <!-- BUTONAT -->
+                  <div v-if="shouldCrud">
+                    <Button
+                      icon="pi pi-file-edit"
+                      severity="help"
+                      text
+                      rounded
+                      size="small"
+                      style="padding-left: 0; padding-right: 0"
+                      @click="onEditClick(slotProps.data)"
+                      aria-label="Favorite"
+                    />
+                    <Button
+                      icon="pi pi-trash"
+                      severity="danger"
+                      text
+                      rounded
+                      style="padding-inline: 0; padding-right: 0"
+                      @click="() => openModalFunction(slotProps.data, 'delete')"
+                      size="small"
+                      aria-label="Cancel"
+                    />
+                  </div>
+                  <div v-else>
+                    <Button
+                      icon="pi pi-cart-plus"
+                      severity="warning"
+                      text
+                      rounded
+                      size="small"
+                      @click="() => openModalFunction(slotProps.data, 'order')"
+                    />
+                  </div>
+                  <!-- IMAZHI -->
+                  <div class="image-wrapper">
+                    <img
+                      class="image-content"
+                      :src="`http://localhost:1112/${slotProps.data.image}`"
+                      :alt="slotProps.data.name"
+                    />
+                    {{ slotProps.data.image }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -127,30 +144,7 @@
             class="col-12 sm:col-6 lg:col-12 xl:col-4 p-2"
           >
             <div class="p-4 border-1 surface-border surface-card border-round">
-              <div v-if="isLoading">
-                <div
-                  class="flex flex-wrap align-items-center justify-content-between gap-2"
-                >
-                  <Skeleton class="w-6rem border-round h-2rem" />
-                  <Skeleton class="w-3rem border-round h-1rem" />
-                </div>
-                <div class="flex flex-column align-items-center gap-3 py-5">
-                  <Skeleton class="w-9 shadow-2 border-round h-10rem" />
-                  <Skeleton class="w-8rem border-round h-2rem" />
-                  <Skeleton class="w-6rem border-round h-1rem" />
-                </div>
-                <div class="flex align-items-center justify-content-between">
-                  <Skeleton class="w-4rem border-round h-2rem" />
-                  <Skeleton shape="circle" class="w-3rem h-3rem" />
-                </div>
-                <div class="flex flex-column gap-3 mb-3">
-                  <Skeleton class="w-9 shadow-2 border-round h-2rem" />
-                  <Skeleton class="w-9 shadow-2 border-round h-2rem" />
-                </div>
-                <div>
-                  <Skeleton class="shadow-2 border-round h-10rem" />
-                </div>
-              </div>
+              <MealsSkeleton v-if="isLoading" :layout="'grid'" />
               <div v-else>
                 <div class="header-layout">
                   <div class="flex align-items-center gap-2">
@@ -330,7 +324,14 @@
 </template>
 
 <script lang="ts">
-import { ref, onMounted, defineComponent, watch, computed } from "vue";
+import {
+  ref,
+  onMounted,
+  defineComponent,
+  watch,
+  computed,
+  shallowRef,
+} from "vue";
 import * as yup from "yup";
 import DataView from "primevue/dataview";
 import Tag from "primevue/tag";
@@ -338,12 +339,10 @@ import axios from "axios";
 import Accordion from "primevue/accordion";
 import AccordionTab from "primevue/accordiontab";
 import Toast from "primevue/toast";
-import Skeleton from "primevue/skeleton";
 import InlineMessage from "primevue/inlinemessage";
 import Message from "primevue/message";
 import ProgressSpinner from "primevue/progressspinner";
 import GenericToolbar from "../../components/GenericToolbar.vue";
-import { useForm } from "vee-validate";
 import { useToast } from "primevue/usetoast";
 import Button from "primevue/button";
 import { eFormMode } from "@/assets/enums/EFormMode";
@@ -361,6 +360,8 @@ import { calculateFiltersForMeal } from "@/utils/functions";
 import OrderSystemMealForm from "./OrderSystemMealForm.vue";
 import IMeal from "@/interfaces/database/IMeal";
 import DataViewLayoutOptions from "primevue/dataviewlayoutoptions";
+import MealsSkeleton from "./MealsSkeleton.vue";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "MealsPage",
@@ -368,7 +369,7 @@ export default defineComponent({
     DataView,
     Accordion,
     AccordionTab,
-    Skeleton,
+    MealsSkeleton,
     ProgressSpinner,
     GenericToolbar,
     Tag,
@@ -382,7 +383,7 @@ export default defineComponent({
     InlineMessage,
     Message,
     OrderSystemMealForm,
-    DataViewLayoutOptions,
+    // DataViewLayoutOptions,
   },
   props: {
     shouldCrud: { type: Boolean, required: true },
@@ -390,6 +391,8 @@ export default defineComponent({
   },
   setup() {
     const profile = useReduxSelector((state) => state.user);
+    const router = useRouter();
+
     const formDrawerMode = ref<any>();
     const meals = ref<IMeal[]>([]);
     const currentPage = ref<number>(1);
@@ -403,6 +406,7 @@ export default defineComponent({
     const rowsPerPageOptions = ref<number[]>([3, 5, 10]);
     const quizResult = ref<any>();
     const reasonOfModalOpen = ref<string>("");
+    const layout = ref<any>("grid");
 
     const getQuizResults = async () => {
       try {
@@ -478,9 +482,7 @@ export default defineComponent({
       else fetchMeals();
     });
 
-    const layout = ref<"grid" | "list" | undefined>("grid");
     const openModal = ref<boolean>(false);
-    const mealImage = ref<any>(null);
     const meal = ref<any>();
 
     const schema = yup.object().shape({
@@ -520,9 +522,7 @@ export default defineComponent({
         .label("Health goal"),
     });
 
-    const { resetForm } = useForm();
-
-    const actionButton = ref<any>({
+    const actionButton = shallowRef<any>({
       component: Button,
       props: {
         icon: PrimeIcons.PLUS,
@@ -532,9 +532,23 @@ export default defineComponent({
       },
     });
 
+    const customToolbarComponent = shallowRef<any>({
+      component: DataViewLayoutOptions,
+      props: {
+        modelValue: layout.value,
+        pt: {
+          [`${layout.value}Button`]: {
+            style: {
+              backgroundColor: layout.value ? "#6366F1" : "#ffffff",
+              color: layout.value ? "#ffffff" : "#6366F1",
+            },
+          },
+        },
+      },
+    });
+
     const openModalFunction = (m: any, cause: string) => {
       openModal.value = true;
-      console.log(m);
       reasonOfModalOpen.value = cause;
       meal.value = m;
     };
@@ -570,7 +584,10 @@ export default defineComponent({
             icon: "pi pi-times",
             label: reasonOfModalOpen.value === "Delete" ? "Delete" : "Checkout",
             severity: "danger",
-            onclick: deleteMeal,
+            onclick:
+              reasonOfModalOpen.value === "Delete"
+                ? () => deleteMeal()
+                : () => router.push("payments/paypal"),
           },
         },
         {
@@ -636,13 +653,13 @@ export default defineComponent({
       rate,
       rowsPerPageOptions,
       totalItems,
+      customToolbarComponent,
       getSeverity,
       handleModalClose,
       invalidateState,
       handleAddData,
       fetchMeals,
       handleSearchValue,
-      // fetchMeal,
       onEditClick,
       deleteMeal,
       openModalFunction,

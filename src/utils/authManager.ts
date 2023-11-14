@@ -6,6 +6,7 @@ import { navigateTo } from "../store/stores/navigation.store";
 import { useRouter } from "vue-router";
 import eRoleType from "@/assets/enums/eRoleType";
 import { eRoles } from "@/assets/enums/eRoles";
+import { useDispatch } from "@/store/redux/helpers";
 
 export interface IUserInfo {
   user: any;
@@ -98,14 +99,15 @@ class AuthManager {
       JwtManager.setAccessToken(response.accessToken);
       // JwtManager.setRefreshToken(response.refreshToken);
       // dispatch(setUser(response.user));
-
+      // dispatch(setUser(response.user));
+      useDispatch()(setUser(response.user));
       if (response.user.roleId === eRoleType.Admin) {
         router.push("/admin");
       } else if (response.user.roleId === eRoleType.Provider) {
-        router.push("/provider/meals");
+        router.push("/provider");
       } else {
         if (!response.user.quizFulfilled) router.push("/user/quiz");
-        else router.push("/user/meals");
+        else router.push("/user");
       }
     }
   }
@@ -149,8 +151,9 @@ class AuthManager {
 
   static logout(dispatch: any) {
     JwtManager.clearToken();
-    dispatch(navigateTo("/"));
-    dispatch(setUser(null));
+    // dispatch(navigateTo("/"));
+    useDispatch()(setUser(null));
+    // dispatch(setUser(null));
   }
 }
 
