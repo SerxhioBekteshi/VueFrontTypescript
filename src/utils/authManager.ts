@@ -104,10 +104,10 @@ class AuthManager {
       if (response.user.roleId === eRoleType.Admin) {
         router.push("/admin");
       } else if (response.user.roleId === eRoleType.Provider) {
-        router.push("/provider/meals");
+        router.push("/provider");
       } else {
         if (!response.user.quizFulfilled) router.push("/user/quiz");
-        else router.push("/user/meals");
+        else router.push("/user");
       }
     }
   }

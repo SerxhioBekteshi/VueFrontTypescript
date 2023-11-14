@@ -1,5 +1,9 @@
 <template>
-  <div class="flex justify-content-between flex-wrap gap-3 w-full">
+  <div
+    :class="`flex justify-content-${
+      showAddBt ? 'between' : 'end'
+    } flex-wrap gap-3 w-full`"
+  >
     <div v-if="showAddBt">
       <div>
         <component

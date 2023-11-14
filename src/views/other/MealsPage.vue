@@ -343,7 +343,6 @@ import InlineMessage from "primevue/inlinemessage";
 import Message from "primevue/message";
 import ProgressSpinner from "primevue/progressspinner";
 import GenericToolbar from "../../components/GenericToolbar.vue";
-import { useForm } from "vee-validate";
 import { useToast } from "primevue/usetoast";
 import Button from "primevue/button";
 import { eFormMode } from "@/assets/enums/EFormMode";
@@ -362,6 +361,7 @@ import OrderSystemMealForm from "./OrderSystemMealForm.vue";
 import IMeal from "@/interfaces/database/IMeal";
 import DataViewLayoutOptions from "primevue/dataviewlayoutoptions";
 import MealsSkeleton from "./MealsSkeleton.vue";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "MealsPage",
@@ -391,6 +391,8 @@ export default defineComponent({
   },
   setup() {
     const profile = useReduxSelector((state) => state.user);
+    const router = useRouter();
+
     const formDrawerMode = ref<any>();
     const meals = ref<IMeal[]>([]);
     const currentPage = ref<number>(1);
@@ -582,7 +584,10 @@ export default defineComponent({
             icon: "pi pi-times",
             label: reasonOfModalOpen.value === "Delete" ? "Delete" : "Checkout",
             severity: "danger",
-            onclick: deleteMeal,
+            onclick:
+              reasonOfModalOpen.value === "Delete"
+                ? () => deleteMeal()
+                : () => router.push("payments/paypal"),
           },
         },
         {
