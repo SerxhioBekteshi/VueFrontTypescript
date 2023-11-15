@@ -3,7 +3,9 @@
     :title="
       modeDrawer === eFormMode.Add.toString()
         ? `Add ${controller}`
-        : `Edit ${controller}`
+        : eFormMode.Edit.toString() === modeDrawer
+        ? `Edit ${controller}`
+        : `${customTitle}`
     "
     v-model:openModal="openModal"
     @handleClose="handleCloseModal"
@@ -18,7 +20,7 @@
 import { eFormMode } from "@/assets/enums/EFormMode";
 import Button from "primevue/button";
 import { defineComponent, onMounted, ref, shallowRef } from "vue";
-import Drawer from "../components/Drawer.vue";
+import Modal from "../components/Modal.vue";
 import axios from "axios";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
@@ -27,19 +29,20 @@ import { provide } from "vue";
 
 export default defineComponent({
   name: "DetailModal",
-  components: { Drawer, Toast },
+  components: { Modal, Toast },
   props: {
     modeDrawer: {
       type: String as () => keyof typeof eFormMode,
     },
+    customTitle: { type: String },
     onClose: { type: Function, required: true },
     formData: { type: Object },
-    controller: { type: String, required: true },
-    validationSchema: { type: Object, required: true },
-    fetchDataAfterSubmit: { type: Function, required: true },
+    controller: { type: String },
+    validationSchema: { type: Object },
+    fetchDataAfterSubmit: { type: Function },
     additionalDataToSubmit: { type: Object },
   },
-  setup(props) {
+  setup(props, { emit }) {
     const openModal = ref<boolean>(false);
     const toast = useToast();
     const { handleSubmit, resetForm, setFieldError, setErrors } = useForm({
@@ -60,26 +63,30 @@ export default defineComponent({
     const handleFormSubmit = async (data: any) => {
       let res: any = null;
       try {
-        if (props.modeDrawer === eFormMode.Add.toString()) {
-          res = await axios.post(`${props.controller}`, {
-            ...data,
-            ...(props.additionalDataToSubmit
-              ? props.additionalDataToSubmit
-              : {}),
+        if (props.modeDrawer && props.controller) {
+          if (props.modeDrawer === eFormMode.Add.toString()) {
+            res = await axios.post(`${props.controller}`, {
+              ...data,
+              ...(props.additionalDataToSubmit
+                ? props.additionalDataToSubmit
+                : {}),
+            });
+          } else {
+            res = await axios.put(
+              `${props.controller}/${props.formData && props.formData.id}`,
+              data
+            );
+          }
+          toast.add({
+            life: 3000,
+            detail: res.data.message,
+            severity: "success",
+            summary: "info",
           });
         } else {
-          res = await axios.put(
-            `${props.controller}/${props.formData && props.formData.id}`,
-            data
-          );
+          emit("customSubmitAction", data);
         }
 
-        toast.add({
-          life: 3000,
-          detail: res.data.message,
-          severity: "success",
-          summary: "info",
-        });
         if (props.fetchDataAfterSubmit) {
           props.fetchDataAfterSubmit();
         }
@@ -113,7 +120,7 @@ export default defineComponent({
         props: {
           label: "Cancel",
           icon: "pi pi-check",
-          severity: "info",
+          severity: "danger",
           onClick: handleCloseModal,
         },
       },

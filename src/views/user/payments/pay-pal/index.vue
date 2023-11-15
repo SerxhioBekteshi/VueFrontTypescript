@@ -1,17 +1,20 @@
 <template>
-  <div>HERE IT WILL BE THE CONFITMATION MODAL FOR EITHER STRIPE OR PAYPA</div>
+  <div class="flex flex-wrap justify-content-center gap-3">
+    <Button severity="danger" label="Cancel" />
+    <Button severity="warning" label="Suspend" />
+    <Button severity="info" label="Activate" />
+    <Button severity="secondary" label="Upgrade" />
+  </div>
 </template>
 
 <script lang="ts">
 import Button from "primevue/button";
-import Card from "primevue/card";
-import Sidebar from "primevue/sidebar";
 import { defineComponent, ref } from "vue";
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Paypal",
-  components: {},
+  components: { Button },
   setup() {
     const drawer = ref<boolean>(true);
     const saving = ref<boolean>(false);

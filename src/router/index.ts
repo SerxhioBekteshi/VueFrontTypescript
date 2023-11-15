@@ -17,7 +17,8 @@ import ProfileDetails from "../views/ProfileDetails.vue";
 import QuizLayout from "../views/other/QuizLayout.vue";
 import UserMainPage from "../views/user/UserMainPage.vue";
 import MealsConfiguration from "../views/other/MealsConfigurations.vue";
-import PaymentPage from "@/views/payments/index.vue";
+import PaymentPage from "@/views/user/payments/index.vue";
+import PaymentProcessPage from "@/views/other/PaymentProcessPage.vue";
 
 const routes = [
   {
@@ -107,6 +108,12 @@ const routes = [
         component: PaymentPage,
         props: true,
         name: "Payment",
+      },
+      {
+        path: "payments/:type",
+        component: PaymentProcessPage,
+        props: true,
+        name: "PaymentProcesspage",
       },
       {
         path: "orders",

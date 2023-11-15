@@ -109,7 +109,9 @@
                       text
                       rounded
                       style="padding-inline: 0; padding-right: 0"
-                      @click="() => openModalFunction(slotProps.data, 'delete')"
+                      @click="
+                        () => openModalFunction(slotProps.data.id, 'delete')
+                      "
                       size="small"
                       aria-label="Cancel"
                     />
@@ -121,7 +123,9 @@
                       text
                       rounded
                       size="small"
-                      @click="() => openModalFunction(slotProps.data, 'order')"
+                      @click="
+                        () => openModalFunction(slotProps.data, 'checkout')
+                      "
                     />
                   </div>
                   <!-- IMAZHI -->
@@ -167,7 +171,9 @@
                       severity="danger"
                       text
                       rounded
-                      @click="() => openModalFunction(slotProps.data, 'delete')"
+                      @click="
+                        () => openModalFunction(slotProps.data.id, 'delete')
+                      "
                       size="small"
                       aria-label="Cancel"
                     />
@@ -179,7 +185,9 @@
                       text
                       rounded
                       size="small"
-                      @click="() => openModalFunction(slotProps.data, 'order')"
+                      @click="
+                        () => openModalFunction(slotProps.data, 'checkout')
+                      "
                     />
                   </div>
                 </div>
@@ -303,42 +311,41 @@
   </div>
 
   <div>
-    <Modal
-      v-model:openModal="openModal"
-      @handleClose="handleModalClose"
-      :title="'Delete meal'"
-      :actions="modalActions"
-    >
-      <div v-if="reasonOfModalOpen === 'delete'">
-        Are you sure you want to delete
-        <span style="font-weight: bold">
-          {{ meal.name }}
-        </span>
-      </div>
-      <div v-else>
+    <div v-if="typeof meal === 'object'">
+      <DetailModal
+        :customTitle="'Proceed with payment'"
+        :onClose="invalidateState"
+        :validationSchema="modalSchema"
+        @customSubmitAction="handleCheckout"
+      >
         <OrderSystemMealForm :price="meal.price" />
-      </div>
-    </Modal>
+      </DetailModal>
+    </div>
+    <div v-if="typeof meal === 'number'">
+      <DetailModal
+        :customTitle="'Delete'"
+        :controller="'meal'"
+        :onClose="invalidateState"
+      >
+        <div>
+          Are you sure you want to delete
+          <!-- <span style="font-weight: bold">
+            {{ meal.name }}
+          </span> -->
+        </div>
+      </DetailModal>
+    </div>
   </div>
-  <Toast />
 </template>
 
 <script lang="ts">
-import {
-  ref,
-  onMounted,
-  defineComponent,
-  watch,
-  computed,
-  shallowRef,
-} from "vue";
+import { ref, onMounted, defineComponent, watch, shallowRef } from "vue";
 import * as yup from "yup";
 import DataView from "primevue/dataview";
 import Tag from "primevue/tag";
 import axios from "axios";
 import Accordion from "primevue/accordion";
 import AccordionTab from "primevue/accordiontab";
-import Toast from "primevue/toast";
 import InlineMessage from "primevue/inlinemessage";
 import Message from "primevue/message";
 import ProgressSpinner from "primevue/progressspinner";
@@ -348,13 +355,13 @@ import Button from "primevue/button";
 import { eFormMode } from "@/assets/enums/EFormMode";
 import { PrimeIcons } from "primevue/api";
 import DetailDrawer from "../../components/DetailDrawer.vue";
+import DetailModal from "../../components/DetailModal.vue";
 import MealForm from "../../components/formController/MealForm.vue";
 import Rate from "../../components/formElements/Rate.vue";
-import Modal from "../../components/Modal.vue";
 import TablePaginator from "../../components/table/TablePaginator.vue";
 import { PageState } from "primevue/paginator";
 import { eRoles } from "@/assets/enums/eRoles";
-import { useReduxSelector } from "@/store/redux/helpers";
+import { useDispatch, useReduxSelector } from "@/store/redux/helpers";
 import { eFilterOperator } from "@/assets/enums/eFilterOperator";
 import { calculateFiltersForMeal } from "@/utils/functions";
 import OrderSystemMealForm from "./OrderSystemMealForm.vue";
@@ -362,6 +369,7 @@ import IMeal from "@/interfaces/database/IMeal";
 import DataViewLayoutOptions from "primevue/dataviewlayoutoptions";
 import MealsSkeleton from "./MealsSkeleton.vue";
 import { useRouter } from "vue-router";
+import { setPaymentData } from "@/store/stores/payment.store";
 
 export default defineComponent({
   name: "MealsPage",
@@ -375,15 +383,13 @@ export default defineComponent({
     Tag,
     Rate,
     DetailDrawer,
+    DetailModal,
     MealForm,
     Button,
-    Modal,
     TablePaginator,
-    Toast,
     InlineMessage,
     Message,
     OrderSystemMealForm,
-    // DataViewLayoutOptions,
   },
   props: {
     shouldCrud: { type: Boolean, required: true },
@@ -395,6 +401,7 @@ export default defineComponent({
 
     const formDrawerMode = ref<any>();
     const meals = ref<IMeal[]>([]);
+    const meal = ref<any>(undefined);
     const currentPage = ref<number>(1);
     const pageSize = ref<number>(5);
     const totalItems = ref<number>(0);
@@ -402,10 +409,8 @@ export default defineComponent({
     const searchValue = ref<string>("");
     const formData = ref<IMeal>();
     const rate = ref<any>();
-    const toast = useToast();
     const rowsPerPageOptions = ref<number[]>([3, 5, 10]);
     const quizResult = ref<any>();
-    const reasonOfModalOpen = ref<string>("");
     const layout = ref<any>("grid");
 
     const getQuizResults = async () => {
@@ -431,6 +436,7 @@ export default defineComponent({
 
     const invalidateState = () => {
       formDrawerMode.value = "";
+      meal.value = undefined;
       formData.value = undefined;
     };
 
@@ -482,9 +488,6 @@ export default defineComponent({
       else fetchMeals();
     });
 
-    const openModal = ref<boolean>(false);
-    const meal = ref<any>();
-
     const schema = yup.object().shape({
       ingredients: yup
         .array()
@@ -522,6 +525,10 @@ export default defineComponent({
         .label("Health goal"),
     });
 
+    const modalSchema = yup.object().shape({
+      quantity: yup.number().required("Quantity is required").label("Quantity"),
+    });
+
     const actionButton = shallowRef<any>({
       component: Button,
       props: {
@@ -548,59 +555,22 @@ export default defineComponent({
     });
 
     const openModalFunction = (m: any, cause: string) => {
-      openModal.value = true;
-      reasonOfModalOpen.value = cause;
-      meal.value = m;
+      if (cause === "order") meal.value = m;
+      else meal.value = m;
     };
 
-    const handleModalClose = () => {
-      openModal.value = false;
+    const handleCheckout = (dataComing: any) => {
+      useDispatch()(
+        setPaymentData({
+          quantity: dataComing.quantity,
+          mealName: meal.value.name,
+          totalPrice: meal.value.price * dataComing.quantity,
+          priceUnit: meal.value.price,
+          mealId: meal.value.id,
+        })
+      );
+      router.push("payments/paypal");
     };
-
-    const deleteMeal = async () => {
-      try {
-        const res: any = await axios.delete(`/meals/${meal.value.id}`);
-        if (res && res.data.message) {
-          toast.add({
-            life: 3000,
-            detail: res.data.message,
-            severity: "success",
-            summary: "info",
-          });
-          handleModalClose();
-          fetchMeals();
-        }
-      } catch (err) {
-        console.log(err, "ERROR");
-      }
-    };
-
-    const modalActions = computed<any>(() => {
-      return [
-        {
-          component: Button,
-          props: {
-            type: "Submit",
-            icon: "pi pi-times",
-            label: reasonOfModalOpen.value === "Delete" ? "Delete" : "Checkout",
-            severity: "danger",
-            onclick:
-              reasonOfModalOpen.value === "Delete"
-                ? () => deleteMeal()
-                : () => router.push("payments/paypal"),
-          },
-        },
-        {
-          component: Button,
-          props: {
-            label: "Cancel",
-            icon: "pi pi-check",
-            severity: "info",
-            onclick: handleModalClose,
-          },
-        },
-      ];
-    });
 
     const getSeverity = (product: any) => {
       switch (product.inventoryStatus) {
@@ -618,12 +588,6 @@ export default defineComponent({
       }
     };
 
-    // const fetchMeal = (meal: any) => {
-    //   const mealObjectToAdd = JSON.parse(JSON.stringify(meal));
-    //   formDrawerMode.value = "edit";
-    //   resetForm({ values: mealObjectToAdd });
-    // };
-
     const handleChangePage = (event: PageState) => {
       currentPage.value = event.page + 1;
     };
@@ -640,29 +604,26 @@ export default defineComponent({
       handleChangePage,
       handleRowDropdownChange,
       meal,
-      reasonOfModalOpen,
       isLoading,
-      openModal,
       layout,
       searchValue,
       formDrawerMode,
       schema,
+      modalSchema,
       formData,
       actionButton,
-      modalActions,
       rate,
       rowsPerPageOptions,
       totalItems,
       customToolbarComponent,
       getSeverity,
-      handleModalClose,
       invalidateState,
       handleAddData,
       fetchMeals,
       handleSearchValue,
       onEditClick,
-      deleteMeal,
       openModalFunction,
+      handleCheckout,
     };
   },
 });

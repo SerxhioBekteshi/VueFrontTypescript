@@ -1,23 +1,10 @@
 <template>
   <TabView>
     <TabPanel header="Paypal">
-      <div class="flex flex-wrap justify-content-center gap-3">
-        <Button severity="danger" label="Cancel" />
-        <Button severity="warning" label="Suspend" />
-        <Button severity="info" label="Activate" />
-        <Button severity="secondary" label="Upgrade" />
-      </div>
+      <PaypalView />
     </TabPanel>
-    <TabPanel header="Stripe"> STRIPE STUFF </TabPanel>
+    <TabPanel header="Stripe"> <StripeView /> </TabPanel>
   </TabView>
-
-  <div v-if="paymentType === 'paypal'">
-    awdawd
-    <PaypalView />
-  </div>
-  <div v-else>
-    <StripeView />
-  </div>
 </template>
 
 <script lang="ts">
@@ -27,17 +14,15 @@ import StripeView from "./stripe/index.vue";
 import { useRoute } from "vue-router";
 import TabView from "primevue/tabview";
 import TabPanel from "primevue/tabpanel";
-import Button from "primevue/button";
 
 export default defineComponent({
   name: "PaymentView",
-  components: { PaypalView, StripeView, TabView, TabPanel, Button },
+  components: { PaypalView, StripeView, TabView, TabPanel },
   setup() {
     const route = useRoute();
 
     const paymentType = ref<string>("");
 
-    // Extract the payment type from the route and update the paymentType ref
     onMounted(() => {
       const typeFromRoute = route.params.type;
       paymentType.value = Array.isArray(typeFromRoute)
