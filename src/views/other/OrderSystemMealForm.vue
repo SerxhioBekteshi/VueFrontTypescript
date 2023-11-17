@@ -7,7 +7,6 @@
           :name="'quantity'"
           :id="'quantity'"
           :placeholder="'Quantity'"
-          v-model="quantity"
         />
       </div>
     </form>
@@ -26,7 +25,13 @@ export default defineComponent({
   },
   setup() {
     const quantity = ref<number>(0);
-    return { quantity };
+
+    const inputNumberProps = {
+      modelValue: quantity.value,
+      "onUpdate:modelValue": (value: number) => (quantity.value = value),
+    };
+
+    return { quantity, inputNumberProps };
   },
 });
 </script>

@@ -2,14 +2,14 @@ import { IPaymentState } from "@/interfaces/other/IPaymentState";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const paymentStore = createSlice({
-  name: "user",
-  initialState: null as unknown as IPaymentState,
+  name: "payment",
+  initialState: [] as unknown as IPaymentState[],
   reducers: {
     setPaymentData(_state, action: PayloadAction<any>) {
-      return action.payload;
+      return [..._state, action.payload];
     },
     clearPaymentState(_state) {
-      return null as unknown as IPaymentState;
+      return [] as unknown as [];
     },
   },
 });

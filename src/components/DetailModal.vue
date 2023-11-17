@@ -30,6 +30,7 @@ import { provide } from "vue";
 export default defineComponent({
   name: "DetailModal",
   components: { Modal, Toast },
+  emits: ["customSubmitAction"],
   props: {
     modeDrawer: {
       type: String as () => keyof typeof eFormMode,

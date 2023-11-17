@@ -562,9 +562,8 @@ export default defineComponent({
     const handleCheckout = (dataComing: any) => {
       useDispatch()(
         setPaymentData({
-          quantity: dataComing.quantity,
+          quantity: parseInt(dataComing.quantity),
           mealName: meal.value.name,
-          totalPrice: meal.value.price * dataComing.quantity,
           priceUnit: meal.value.price,
           mealId: meal.value.id,
         })
