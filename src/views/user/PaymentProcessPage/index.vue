@@ -1,7 +1,7 @@
 <template>
   <div>
     <CheckoutItems />
-    <CheckoutPayment />
+    <!-- <CheckoutPayment /> -->
   </div>
 </template>
 
@@ -13,7 +13,7 @@ import CheckoutPayment from "./checkoutPayment/index.vue";
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
   name: "PaymentProcessPage",
-  components: { CheckoutItems, CheckoutPayment },
+  components: { CheckoutItems },
   setup() {
     return {};
   },

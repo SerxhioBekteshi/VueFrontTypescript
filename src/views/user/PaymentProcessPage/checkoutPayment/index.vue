@@ -11,13 +11,16 @@ export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
   name: "CheckoutPayment",
   components: {},
-  setup() {
+  props: {
+    totalPrice: { type: Number },
+  },
+  setup(props) {
     const paid = ref<boolean>(false);
     // const CLIENT_ID: any = process.env.VUE_APP_PAYPAL_CLIENT_ID
 
     const loadScriptFunction = () => {
       loadScript({
-        "client-id":
+        clientId:
           "AaNHPbVpjDzdVSwAkCeQ4-nZgFt98dodMZbUzWhWrCxEZ5N6gU8rDOObSRbcjb9oIYfsV02LPsll4OGx",
       }).then((paypal: any) => {
         paypal
@@ -34,24 +37,35 @@ export default defineComponent({
     });
 
     const createOrder = (data: any, actions: any) => {
-      console.log("Creating order...");
       return actions.order.create({
         purchase_units: [
           {
-            // amount: {
-            //   value: cartTotal,
-            // },
+            amount: {
+              value: `${props.totalPrice}`,
+              currency_code: "USD",
+              breakdown: {
+                item_total: {
+                  currency_code: "USD",
+                  value: `${props.totalPrice}`,
+                },
+              },
+            },
           },
         ],
       });
     };
 
     const onApprove = (data: any, actions: any) => {
-      console.log("Order approved...");
-      return actions.order.capture().then(() => {
-        paid.value = true;
-        console.log("Order complete!");
-      });
+      return actions.order
+        .capture()
+        .then((details: any) => {
+          console.log(details, "DETAILS??");
+          paid.value = true;
+          console.log("Order complete!");
+        })
+        .catch((error: any) => {
+          console.error("Error during capture:", error);
+        });
     };
 
     return { paid };
