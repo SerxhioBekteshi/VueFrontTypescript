@@ -1,34 +1,59 @@
 <template>
-  <div v-if="!paid" id="paypal-button-container"></div>
-  <div v-else id="confirmation">Order complete!</div>
+  <div>
+    <div v-if="checkoutLink === ''" id="paypal-button-container"></div>
+    <div v-else>
+      <a
+        :href="checkoutLink"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="p-button font-bold"
+      >
+        Checkout order (see it does not work)
+      </a>
+    </div>
+    <Toast />
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onBeforeMount, ref } from "vue";
 import { loadScript } from "@paypal/paypal-js";
+import Toast from "primevue/toast";
+import { useToast } from "primevue/usetoast";
+import axios from "axios";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
   name: "CheckoutPayment",
-  components: {},
+  components: { Toast },
   props: {
     totalPrice: { type: Number },
+    items: { type: Array as () => any[] },
   },
   setup(props) {
-    const paid = ref<boolean>(false);
-    // const CLIENT_ID: any = process.env.VUE_APP_PAYPAL_CLIENT_ID
+    const toast = useToast();
+    const router = useRouter();
+    const checkoutLink = ref<string>("");
 
     const loadScriptFunction = () => {
       loadScript({
         clientId:
-          "AaNHPbVpjDzdVSwAkCeQ4-nZgFt98dodMZbUzWhWrCxEZ5N6gU8rDOObSRbcjb9oIYfsV02LPsll4OGx",
+          "AbHVdW0U-btSlkwDZC-Iewri7K64mNsK8NQgbSDxXlASer798EGfaqp0LNdyIII1KDxdi-xg02g525eT",
       }).then((paypal: any) => {
         paypal
           .Buttons({
             createOrder: createOrder,
             onApprove: onApprove,
+            onError: handleError,
           })
-          .render("#paypal-button-container");
+          .render("#paypal-button-container")
+          .catch((error: any) => {
+            console.error("failed to render the PayPal Buttons", error);
+          })
+          .catch((error: any) => {
+            console.error("failed to load the PayPal JS SDK script", error);
+          });
       });
     };
 
@@ -36,39 +61,62 @@ export default defineComponent({
       loadScriptFunction();
     });
 
-    const createOrder = (data: any, actions: any) => {
-      return actions.order.create({
-        purchase_units: [
-          {
-            amount: {
-              value: `${props.totalPrice}`,
-              currency_code: "USD",
-              breakdown: {
-                item_total: {
-                  currency_code: "USD",
-                  value: `${props.totalPrice}`,
-                },
-              },
-            },
-          },
-        ],
+    const handleError = (err: any) => {
+      toast.add({
+        life: 3000,
+        detail: err,
+        severity: "error",
+        summary: "HANDLE ERROR METHOD ERROR",
       });
     };
 
-    const onApprove = (data: any, actions: any) => {
-      return actions.order
-        .capture()
-        .then((details: any) => {
-          console.log(details, "DETAILS??");
-          paid.value = true;
-          console.log("Order complete!");
-        })
-        .catch((error: any) => {
-          console.error("Error during capture:", error);
+    const createOrder = async (data: any, actions: any) => {
+      try {
+        const response = await axios.post("payment/create-order", {
+          items: props.items,
         });
+
+        if (response) {
+          return response.data.id;
+        }
+      } catch (error: any) {
+        toast.add({
+          life: 3000,
+          detail: error || error.err || error.message,
+          severity: "error",
+          summary: "On Create",
+        });
+        //here it mighit navigate some customized error page
+      }
     };
 
-    return { paid };
+    const onApprove = async (data: any, actions: any) => {
+      try {
+        const details = await actions.order.capture();
+
+        if (details) {
+          console.log(details);
+          toast.add({
+            life: 3000,
+            detail: `Order submitted successfully to your PayPal account: ${details.id}`,
+            severity: "success",
+            summary: details.status,
+          });
+
+          //here i can store the details to a table
+          checkoutLink.value = details.links[0].href;
+        }
+      } catch (error: any) {
+        toast.add({
+          life: 3000,
+          detail: error || error.err || error.message,
+          severity: "error",
+          summary: "On Approve Order",
+        });
+      }
+    };
+
+    return { checkoutLink };
   },
 });
 </script>
@@ -76,11 +124,9 @@ export default defineComponent({
 #paypal-button-container {
   width: 100%;
   margin: 30px 0;
-}
-
-#confirmation {
-  color: green;
-  margin-top: 1em;
-  font-size: 2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 </style>

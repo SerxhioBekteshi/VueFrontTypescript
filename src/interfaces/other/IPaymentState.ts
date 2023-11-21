@@ -1,6 +1,6 @@
 export interface IPaymentState {
   quantity: number;
-  mealId: number;
-  mealName: string;
+  id: number;
+  name: string;
   priceUnit: number;
 }

@@ -350,7 +350,6 @@ import InlineMessage from "primevue/inlinemessage";
 import Message from "primevue/message";
 import ProgressSpinner from "primevue/progressspinner";
 import GenericToolbar from "../../components/GenericToolbar.vue";
-import { useToast } from "primevue/usetoast";
 import Button from "primevue/button";
 import { eFormMode } from "@/assets/enums/EFormMode";
 import { PrimeIcons } from "primevue/api";
@@ -563,9 +562,9 @@ export default defineComponent({
       useDispatch()(
         setPaymentData({
           quantity: parseInt(dataComing.quantity),
-          mealName: meal.value.name,
-          priceUnit: meal.value.price,
-          mealId: meal.value.id,
+          name: meal.value.name,
+          price: meal.value.price,
+          id: meal.value.id,
         })
       );
       router.push("payments/paypal");

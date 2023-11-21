@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@paypal/paypal-js": "^7.1.0",
+    "@paypal/sdk-client": "^4.0.177",
     "@reduxjs/toolkit": "^1.9.5",
     "@types/yup": "^0.32.0",
     "@vue-stripe/vue-stripe": "^4.5.0",
