@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { PropType, defineComponent, h, ref } from "vue";
+import { defineComponent } from "vue";
 import Button from "primevue/button";
 
 export default defineComponent({
@@ -27,14 +27,9 @@ export default defineComponent({
     additionalData: {
       type: null,
     },
-    showEdit: Boolean,
-    showDelete: Boolean,
     fieldToShowOnModalDelete: {
       type: null,
     },
-    // onEditClick: {
-    //   type: Function,
-    // },
   },
   setup(props, { emit }) {
     const handleIconClick = (icon: any) => {
@@ -53,6 +48,10 @@ export default defineComponent({
             props.additionalData.data[props.fieldToShowOnModalDelete],
             props.additionalData.data.id
           );
+          break;
+
+        case "details":
+          emit("custom-row-bt-clicked", props.additionalData.data.id);
           break;
       }
     };

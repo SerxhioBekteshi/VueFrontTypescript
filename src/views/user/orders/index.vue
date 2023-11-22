@@ -13,18 +13,17 @@
 </template>
 
 <script lang="ts">
+// import Button from "primevue/button"
 import TableData from "@/components/table/TableData.vue";
-import { defineComponent } from "vue";
-import { useRouter } from "vue-router";
+import { defineComponent, ref } from "vue";
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
-  name: "ProviderOrders",
+  name: "Orders",
   components: { TableData },
   setup() {
-    const router = useRouter();
     const onCustomRowBtClick = (rowId: number) => {
-      router.push(`/user/orders/${rowId}`);
+      console.log(rowId, "AWDAWDAD");
     };
     return { onCustomRowBtClick };
   },

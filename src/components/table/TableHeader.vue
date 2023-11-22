@@ -19,6 +19,7 @@ export default defineComponent({
     rowCount: Number,
     showEdit: Boolean,
     showDelete: Boolean,
+    showCustomRowBt: Boolean,
   },
   // setup(props) {
   //   console.log(props.columns?.length, "TABLE HEADER");

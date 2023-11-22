@@ -1,32 +1,36 @@
 <template>
   <div>
     <TableData
-      :controller="'orders'"
+      v-if="orderId"
+      :controller="`orders/${orderId}`"
       ref="tableDataRef"
       :showEdit="false"
       :showAddBt="false"
       :showDelete="false"
       :showExport="false"
-      @custom-row-bt-clicked="onCustomRowBtClick"
     />
   </div>
 </template>
 
 <script lang="ts">
 import TableData from "@/components/table/TableData.vue";
-import { defineComponent } from "vue";
-import { useRouter } from "vue-router";
+import { defineComponent, onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
 
 export default defineComponent({
-  // eslint-disable-next-line vue/multi-word-component-names
   name: "ProviderOrders",
   components: { TableData },
   setup() {
-    const router = useRouter();
-    const onCustomRowBtClick = (rowId: number) => {
-      router.push(`/user/orders/${rowId}`);
-    };
-    return { onCustomRowBtClick };
+    const route = useRoute();
+    const orderId = ref<number>(0);
+
+    onMounted(() => {
+      orderId.value = parseInt(
+        Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
+      );
+    });
+
+    return { orderId };
   },
 });
 </script>

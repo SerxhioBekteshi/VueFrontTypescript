@@ -10,6 +10,8 @@ const enum eDataType {
   Actions = 8,
   Select = 9,
   Tags = 10,
+  image = 11,
+  Status = 12,
 }
 
 export default eDataType;

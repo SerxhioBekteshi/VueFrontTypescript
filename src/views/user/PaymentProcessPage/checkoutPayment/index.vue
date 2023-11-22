@@ -104,6 +104,7 @@ export default defineComponent({
           });
 
           //here i can store the details to a table
+          storeDetailsToDb(details);
           checkoutLink.value = details.links[0].href;
         }
       } catch (error: any) {
@@ -113,6 +114,14 @@ export default defineComponent({
           severity: "error",
           summary: "On Approve Order",
         });
+      }
+    };
+
+    const storeDetailsToDb = async (details: any) => {
+      console.log(details, "DETAILS ");
+      const res: any = await axios.post("/order", details);
+      if (res && res.data) {
+        console.log(res, "ORDER LOG");
       }
     };
 

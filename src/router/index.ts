@@ -19,6 +19,7 @@ import UserMainPage from "../views/user/UserMainPage.vue";
 import MealsConfiguration from "../views/other/MealsConfigurations.vue";
 import PaymentPage from "@/views/user/payments/index.vue";
 import PaymentProcessPage from "@/views/user/PaymentProcessPage/index.vue";
+import OrderDetails from "@/views/provider/OrderDetails.vue";
 
 const routes = [
   {
@@ -118,6 +119,11 @@ const routes = [
         path: "orders",
         name: "UserOrders",
         component: ProviderOrders,
+      },
+      {
+        path: "orders/:id",
+        name: "OrderDetails",
+        component: OrderDetails,
       },
     ],
   },

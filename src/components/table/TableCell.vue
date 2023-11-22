@@ -1,21 +1,30 @@
 <template>
   <div style="border: 0; background-color: inherit; padding: none">
     <div v-if="cellColumn.propertyType === eDataType.DateTime">
-      {{ moment(cellValue).locale("sq").format("DD/MM/YYYY") }}
+      {{
+        cellValue ? moment(cellValue).locale("sq").format("DD/MM/YYYY") : "-"
+      }}
     </div>
-    <div v-else-if="cellColumn.propertyType === eDataType.Decimal">
+    <div
+      v-else-if="
+        cellColumn.propertyType === eDataType.Decimal ||
+        cellColumn.propertyType === eDataType.Number
+      "
+    >
       {{ groupDigital(cellValue) }}
     </div>
-    <div v-else-if="cellColumn.propertyType === eDataType.Number">
-      {{ cellValue }}
+    <div v-else-if="cellColumn.propertyType === eDataType.Status">
+      <Tag :value="cellValue" :severity="getSeverity(cellValue)"></Tag>
     </div>
     <div v-else-if="cellColumn.propertyType === eDataType.Boolean">
-      <div v-if="cellValue">
-        <span><i class="pi pi-check-circle text-green-500"></i></span>
-      </div>
-      <div v-else>
-        <span><i class="pi pi-times-circle text-red-400"></i></span>
-      </div>
+      <span>
+        <i
+          :class="{
+            'pi pi-check-circle text-green-500': cellValue,
+            'pi pi-times-circle text-red-400': !cellValue,
+          }"
+        ></i>
+      </span>
     </div>
     <div v-else-if="cellColumn.propertyType === eDataType.Image">
       <div v-if="cellValue" class="image-wrapper">
@@ -60,20 +69,21 @@
     </div>
   </div>
 </template>
-// v-html="renderCellValue(cellValue, cellColumn)"
 
 <script lang="ts">
-// import eDataType from "@/assets/enums/eDataType";
+import eDataType from "@/assets/enums/eDataType";
 import IColumn from "@/interfaces/table/IColumn";
 import { groupDigital } from "@/utils/functions";
 import moment from "moment";
 import { PropType, defineComponent, h, ref } from "vue";
 import Listbox from "primevue/listbox";
 import InlineMessage from "primevue/inlinemessage";
+import Tag from "primevue/tag";
+import { eOrderStatus } from "@/assets/enums/eOrderStatusType";
 
 export default defineComponent({
   name: "TableCell",
-  components: { Listbox, InlineMessage },
+  components: { Listbox, InlineMessage, Tag },
   props: {
     cellValue: {
       type: null,
@@ -83,7 +93,7 @@ export default defineComponent({
       required: true,
     },
   },
-  setup() {
+  setup(props) {
     const eDataType = {
       Number: 0,
       String: 1,
@@ -97,9 +107,27 @@ export default defineComponent({
       Select: 9,
       Tags: 10,
       Image: 11,
+      Status: 12,
+    };
+
+    const getSeverity = (value: any) => {
+      switch (value) {
+        case eOrderStatus.Completed:
+          return "success";
+
+        case eOrderStatus.Pending:
+          return "warning";
+
+        case eOrderStatus.Rejected:
+          return "danger";
+
+        default:
+          return "";
+      }
     };
 
     return {
+      getSeverity,
       groupDigital,
       moment,
       eDataType,
@@ -122,6 +150,6 @@ export default defineComponent({
 .image-content {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Preserve aspect ratio while filling the container */
+  object-fit: cover;
 }
 </style>

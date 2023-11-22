@@ -1,7 +1,7 @@
 <template>
-  <div v-if="!showAddBt">
+  <!-- <div v-if="!showAddBt">
     <Button icon="pi pi-external-link" label="Add" />
-  </div>
+  </div> -->
   <DataTable
     tableClass="editable-cells-table"
     scrollable
@@ -79,6 +79,7 @@
       :rowCount="totalItems"
       :showEdit="showEdit"
       :showDelete="showDelete"
+      :showCustomRowBt="showCustomRowBt"
     />
 
     <Column
@@ -96,6 +97,7 @@
         <div v-else>
           <TableCell
             :showEdit="showEdit"
+            :showCustomRowBt="showCustomRowBt"
             :showDelete="showDelete"
             :cellValue="slotProps.data[`${column.propertyName}`]"
             :cellColumn="column"
@@ -136,8 +138,7 @@
             @edit-clicked="handleEditClick"
             :fieldToShowOnModalDelete="'name'"
             @delete-clicked="openModalFunction"
-            :showEdit="showEdit"
-            :showDelete="showDelete"
+            @custom-row-bt-clicked="handleCustomRowBtClick"
             :columnIcons="tableColumns[tableColumns.length - 1]"
             :additionalData="slotProps"
           />
@@ -198,7 +199,7 @@ export default defineComponent({
   name: "TableData",
   components: {
     DataTable,
-    Button,
+    // Button,
     Column,
     Message,
     Paginator,
@@ -224,6 +225,7 @@ export default defineComponent({
     showAddBt: { type: Boolean, default: true },
     showDelete: { type: Boolean, default: true },
     showSearch: { type: Boolean, default: true },
+    showCustomRowBt: { type: Boolean, default: false },
     actionButton: { type: Object as () => Action },
     // onEditClick: { type: Function },
   },
@@ -239,6 +241,7 @@ export default defineComponent({
       showEdit,
       showDelete,
       showSearch,
+      showCustomRowBt,
     } = toRefs(props);
 
     const openModalFunction = (field: any, rowId: number) => {
@@ -248,6 +251,10 @@ export default defineComponent({
 
     const handleEditClick = (data: any, rowId: number) => {
       emit("edit-clicked", data, rowId);
+    };
+
+    const handleCustomRowBtClick = (rowId: number) => {
+      emit("custom-row-bt-clicked", rowId);
     };
 
     const handleModalClose = () => {
@@ -328,6 +335,7 @@ export default defineComponent({
           search: searchValue.value,
         });
         if (res !== null) {
+          console.log(res.data.rows, "ROWS??");
           tableData.value = res.data.rows;
           totalItems.value = res.data.totalCount;
           tableColumns.value = res.data.columns;
@@ -348,13 +356,9 @@ export default defineComponent({
       currentPage.value = 1;
     };
 
-    watch([pageSize, currentPage, searchValue], () => {
+    watch([pageSize, currentPage, searchValue, controller], () => {
       fetchData();
     });
-
-    // watchEffect(() => {
-    //   fetchData(); // Fetch data whenever any of the watched dependencies changes
-    // });
 
     onMounted(() => {
       fetchData();
@@ -438,6 +442,7 @@ export default defineComponent({
       onCellEditComplete,
       handleCellEditorInput,
       fetchData,
+      handleCustomRowBtClick,
     };
   },
 });
