@@ -1,22 +1,20 @@
 <template>
   <div style="border: 0; background-color: inherit; padding: none">
-    <div v-if="cellColumn.propertyType === eDataType.DateTime">
+    <div v-if="cellColumn.propertyType === eColumnType.DateTime">
       {{
         cellValue ? moment(cellValue).locale("sq").format("DD/MM/YYYY") : "-"
       }}
     </div>
-    <div
-      v-else-if="
-        cellColumn.propertyType === eDataType.Decimal ||
-        cellColumn.propertyType === eDataType.Number
-      "
-    >
+    <div v-else-if="cellColumn.propertyType === eColumnType.Decimal">
       {{ groupDigital(cellValue) }}
     </div>
-    <div v-else-if="cellColumn.propertyType === eDataType.Status">
+    <div v-else-if="cellColumn.propertyType === eColumnType.Number">
+      {{ cellValue }}
+    </div>
+    <div v-else-if="cellColumn.propertyType === eColumnType.Status">
       <Tag :value="cellValue" :severity="getSeverity(cellValue)"></Tag>
     </div>
-    <div v-else-if="cellColumn.propertyType === eDataType.Boolean">
+    <div v-else-if="cellColumn.propertyType === eColumnType.Boolean">
       <span>
         <i
           :class="{
@@ -26,7 +24,7 @@
         ></i>
       </span>
     </div>
-    <div v-else-if="cellColumn.propertyType === eDataType.Image">
+    <div v-else-if="cellColumn.propertyType === eColumnType.Image">
       <div v-if="cellValue" class="image-wrapper">
         <img
           class="image-content"
@@ -37,7 +35,7 @@
         <InlineMessage severity="warn"> No image </InlineMessage>
       </div>
     </div>
-    <div v-else-if="cellColumn.propertyType === eDataType.Tags">
+    <div v-else-if="cellColumn.propertyType === eColumnType.Tags">
       <Listbox
         v-if="cellValue && cellValue.length !== 0"
         :options="cellValue"
@@ -64,6 +62,30 @@
         No data
       </InlineMessage>
     </div>
+    <div v-else-if="cellColumn.propertyType === eColumnType.Link">
+      <a :href="cellValue" target="_blank" rel="noopener noreferrer"
+        >Paypal Link</a
+      >
+    </div>
+    <div v-else-if="cellColumn.propertyType === eColumnType.Object">
+      <ul>
+        <li v-for="(value, key) in cellValue" :key="key">
+          <NestedObjectDisplay :nestedObject="value" />
+        </li>
+      </ul>
+    </div>
+    <div v-else-if="cellColumn.propertyType === eColumnType.Array">
+      <ul v-for="(obj, index) in cellValue" :key="index">
+        <li v-for="(value, key) in obj" :key="key">
+          <!-- <template v-if="isObject(value)">
+            <NestedObjectDisplay :nestedObject="value" />
+          </template> -->
+          <!-- <template v-else> -->
+          {{ typeof value }}
+          <!-- </template> -->
+        </li>
+      </ul>
+    </div>
     <div v-else>
       {{ cellValue }}
     </div>
@@ -71,11 +93,11 @@
 </template>
 
 <script lang="ts">
-import eDataType from "@/assets/enums/eDataType";
+// import eColumnType from "@/assets/enums/eColumnType";
 import IColumn from "@/interfaces/table/IColumn";
 import { groupDigital } from "@/utils/functions";
 import moment from "moment";
-import { PropType, defineComponent, h, ref } from "vue";
+import { PropType, defineComponent } from "vue";
 import Listbox from "primevue/listbox";
 import InlineMessage from "primevue/inlinemessage";
 import Tag from "primevue/tag";
@@ -83,7 +105,22 @@ import { eOrderStatus } from "@/assets/enums/eOrderStatusType";
 
 export default defineComponent({
   name: "TableCell",
-  components: { Listbox, InlineMessage, Tag },
+  components: {
+    Listbox,
+    InlineMessage,
+    Tag,
+    NestedObjectDisplay: {
+      props: ["nestedObject"],
+      mounted() {
+        console.log(this.nestedObject);
+      },
+      template: `<template><div>
+        test
+        </div>
+        </template>
+      `,
+    },
+  },
   props: {
     cellValue: {
       type: null,
@@ -94,7 +131,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const eDataType = {
+    const eColumnType = {
       Number: 0,
       String: 1,
       DateTime: 2,
@@ -108,6 +145,12 @@ export default defineComponent({
       Tags: 10,
       Image: 11,
       Status: 12,
+      Array: 13,
+      Object: 14,
+    };
+
+    const isObject = (value: any) => {
+      return typeof value === "object" && value !== null;
     };
 
     const getSeverity = (value: any) => {
@@ -129,8 +172,9 @@ export default defineComponent({
     return {
       getSeverity,
       groupDigital,
+      isObject,
       moment,
-      eDataType,
+      eColumnType,
     };
   },
 });
@@ -138,6 +182,13 @@ export default defineComponent({
 <style scoped>
 ::v-deep(.p-listbox) {
   padding: 0;
+}
+
+.truncate-cell-content {
+  max-width: 150px; /* Set your desired max-width */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .image-wrapper {

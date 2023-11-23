@@ -1,32 +1,32 @@
 <template>
-  <div v-if="column.propertyType === eDataType.String">
+  <div v-if="column.propertyType === eColumnType.String">
     <InputText v-model="localValue" @input="updateValue" autofocus />
   </div>
   <div
     v-if="
-      column.propertyType === eDataType.Number ||
-      column.propertyType === eDataType.Decimal
+      column.propertyType === eColumnType.Number ||
+      column.propertyType === eColumnType.Decimal
     "
   >
     <InputNumber
       v-model="numberValue"
       @input="updateValue"
-      :useGrouping="column.propertyType !== eDataType.Number"
+      :useGrouping="column.propertyType !== eColumnType.Number"
       autofocus
     />
   </div>
   <div
     v-if="
-      column.propertyType === eDataType.DateTime ||
-      column.propertyType === eDataType.DateOnly
+      column.propertyType === eColumnType.DateTime ||
+      column.propertyType === eColumnType.DateOnly
     "
   >
     <Calendar v-model="localValue" @input="updateValue" autofocus />
   </div>
-  <div v-if="column.propertyType === eDataType.Tags">
+  <div v-if="column.propertyType === eColumnType.Tags">
     Tags meaning is the array type
   </div>
-  <div v-if="column.propertyType === eDataType.Image"></div>
+  <div v-if="column.propertyType === eColumnType.Image"></div>
   <Toast />
 </template>
 
@@ -36,6 +36,7 @@ import InputText from "primevue/inputtext";
 import InputNumber from "primevue/inputnumber";
 import Calendar from "primevue/calendar";
 import { useToast } from "primevue/usetoast";
+import eColumnType from "@/assets/enums/eColumnType";
 
 export default defineComponent({
   name: "CellEditor",
@@ -63,7 +64,7 @@ export default defineComponent({
     const updateValue = () => {
       emit("input", localValue.value);
     };
-    const eDataType = {
+    const eColumnType = {
       Number: 0,
       String: 1,
       DateTime: 2,
@@ -76,6 +77,9 @@ export default defineComponent({
       Select: 9,
       Tags: 10,
       Image: 11,
+      Status: 12,
+      Array: 13,
+      Object: 14,
     };
 
     const showImageToast = () => {
@@ -95,7 +99,7 @@ export default defineComponent({
     });
 
     return {
-      eDataType,
+      eColumnType,
       localValue,
       updateValue,
       showImageToast,

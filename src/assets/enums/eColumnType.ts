@@ -10,4 +10,10 @@ export enum eColumnType {
   Actions,
   Select,
   Tags,
+  Image,
+  Status,
+  Array,
+  Object,
 }
+
+export default eColumnType;

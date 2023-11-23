@@ -2,7 +2,8 @@
   <div>
     <TableData
       v-if="orderId"
-      :controller="`orders/${orderId}`"
+      :controller="`orderDetails/${orderId}`"
+      :keyWhereFilter="'orderId'"
       ref="tableDataRef"
       :showEdit="false"
       :showAddBt="false"

@@ -3,12 +3,12 @@
     <Button icon="pi pi-external-link" label="Add" />
   </div> -->
   <DataTable
-    tableClass="editable-cells-table"
+    :tableClass="showEdit ? 'editable-cells-table' : ''"
     scrollable
     :stripedRows="true"
     :value="tableData"
     ref="dt"
-    editMode="cell"
+    :editMode="showEdit ? 'cell' : undefined"
     tableStyle="min-width: 50rem"
     @cell-edit-complete="onCellEditComplete"
   >
@@ -25,37 +25,15 @@
       />
     </template>
     <template #footer>
-      <!-- <TablePagination
+      <TablePaginator
         :pageSize="pageSize"
         :totalItems="totalItems"
-        :handlePageChange="handleChangePage"
+        :rowsPerPageOptions="rowsPerPageOptions"
+        :handleChangePage="handleChangePage"
         :handleRowDropdownChange="handleRowDropdownChange"
-        :rowsPerPageOptions="rowsPerPageOptions"
-      /> -->
-      <Paginator
-        :template="{
-          '640px': 'PrevPageLink CurrentPageReport NextPageLink ',
-          '960px':
-            'FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink ', //jumpToPageDropdown
-          '1300px':
-            'FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink ',
-          default:
-            'FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown',
-        }"
-        :rows="pageSize"
-        :totalRecords="totalItems"
-        :rowsPerPageOptions="rowsPerPageOptions"
-        :rowPerPageDropdown="{ class: 'custom-dropdown-style' }"
-        @page="handleChangePage"
-        @update:rows="handleRowDropdownChange"
-        :pt="{
-          pageButton: ({ props, state, context }) => ({
-            class: context.active ? 'bg-primary' : undefined,
-          }),
-        }"
-      >
-      </Paginator>
-      <div style="display: flex; justify-content: center; gap: 1">
+      />
+
+      <div style="display: flex; justify-content: center; margin-top: 1.5rem">
         In total there are {{ totalItems ? totalItems : 0 }} rows.
       </div>
     </template>
@@ -87,25 +65,20 @@
       :key="index"
       :field="column.propertyName"
       :header="column.title"
-      style="width: 25%"
       sortable
     >
       <template #body="slotProps">
         <div v-if="dataLoading">
           <Skeleton width="80%" height="1.5rem" />
         </div>
-        <div v-else>
+        <div v-else class="truncate-cell-content">
           <TableCell
-            :showEdit="showEdit"
-            :showCustomRowBt="showCustomRowBt"
-            :showDelete="showDelete"
             :cellValue="slotProps.data[`${column.propertyName}`]"
             :cellColumn="column"
           />
         </div>
       </template>
-      <template #editor="{ data, field }">
-        <!-- {{ field }} -->
+      <template v-if="showEdit" #editor="{ data, field }">
         <CellEditor
           v-model="data[field]"
           :data="data"
@@ -113,18 +86,6 @@
           :column="column"
           @input="handleCellEditorInput"
         />
-        <!-- <template v-if="field !== 'price'">
-          <InputText v-model="data[field]" autofocus />
-        </template>
-        <template v-else>
-          <InputNumber
-            v-model="data[field]"
-            mode="currency"
-            currency="USD"
-            locale="en-US"
-            autofocus
-          />
-        </template> -->
       </template>
     </Column>
 
@@ -179,7 +140,6 @@ import {
 } from "vue";
 import axios from "axios";
 import Message from "primevue/message";
-import Paginator from "primevue/paginator";
 import Modal from "@/components/Modal.vue";
 import IColumn from "@/interfaces/table/IColumn";
 import GenericToolbar from "@/components/GenericToolbar.vue";
@@ -189,6 +149,8 @@ import TableCellActions from "./TableCellActions.vue";
 import { useToast } from "primevue/usetoast";
 import ProgressSpinner from "primevue/progressspinner";
 import CellEditor from "@/components/table/CellEditor.vue";
+import { eFilterOperator } from "@/assets/enums/eFilterOperator";
+import TablePaginator from "./TablePaginator.vue";
 
 interface Action {
   component: any;
@@ -199,10 +161,8 @@ export default defineComponent({
   name: "TableData",
   components: {
     DataTable,
-    // Button,
     Column,
     Message,
-    Paginator,
     Modal,
     GenericToolbar,
     TableHeader,
@@ -212,9 +172,10 @@ export default defineComponent({
     Skeleton,
     ProgressSpinner,
     CellEditor,
+    TablePaginator,
   },
   props: {
-    controller: String,
+    controller: { type: String },
     checkbox: { type: Boolean, default: false },
     actions: {
       type: [Array, Object, String, Number, Boolean, Function],
@@ -227,6 +188,7 @@ export default defineComponent({
     showSearch: { type: Boolean, default: true },
     showCustomRowBt: { type: Boolean, default: false },
     actionButton: { type: Object as () => Action },
+    keyWhereFilter: { type: String, default: "" },
     // onEditClick: { type: Function },
   },
   setup(props, { emit }) {
@@ -329,11 +291,21 @@ export default defineComponent({
     const fetchData = async () => {
       dataLoading.value = true;
       try {
-        const res = await axios.post(`/table/${controller.value}`, {
-          page: currentPage.value,
-          pageSize: pageSize.value,
-          search: searchValue.value,
-        });
+        const res = await axios.post(
+          `/table/${props.controller?.split("/")[0]}`,
+          {
+            page: currentPage.value,
+            pageSize: pageSize.value,
+            search: searchValue.value,
+            filters: [
+              {
+                columnName: props.keyWhereFilter,
+                operation: eFilterOperator.Equal,
+                value: props.controller?.split("/")[1],
+              },
+            ],
+          }
+        );
         if (res !== null) {
           console.log(res.data.rows, "ROWS??");
           tableData.value = res.data.rows;
@@ -447,9 +419,16 @@ export default defineComponent({
   },
 });
 </script>
-<style>
+<style scoped>
 ::v-deep(.editable-cells-table td.p-cell-editing) {
   padding-top: 0;
   padding-bottom: 0;
 }
+
+/* .truncate-cell-content {
+  max-width: 30%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+} */
 </style>

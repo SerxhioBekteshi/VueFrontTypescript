@@ -21,9 +21,17 @@ export default defineComponent({
     showDelete: Boolean,
     showCustomRowBt: Boolean,
   },
-  // setup(props) {
-  //   console.log(props.columns?.length, "TABLE HEADER");
-  // },
+  setup(props) {
+    const calculateColumnWidth = (headerContent: any) => {
+      const minWidth = 10;
+
+      const dynamicWidth = Math.max(headerContent.length * 8, minWidth) + 20;
+
+      return `${dynamicWidth}px`;
+    };
+
+    return { calculateColumnWidth };
+  },
 });
 </script>
 <style></style>
