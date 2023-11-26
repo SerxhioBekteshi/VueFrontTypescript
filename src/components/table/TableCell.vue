@@ -68,23 +68,24 @@
       >
     </div>
     <div v-else-if="cellColumn.propertyType === eColumnType.Object">
-      <ul>
-        <li v-for="(value, key) in cellValue" :key="key">
-          <NestedObjectDisplay :nestedObject="value" />
-        </li>
-      </ul>
+      <ScrollPanel v-tooltip="'Scroll to see more'" style="height: 50px">
+        <ul>
+          <li v-for="(value, key) in cellValue" :key="key">
+            {{ key }}:
+            <CellNestedObject :nestedObject="value" />
+          </li>
+        </ul>
+      </ScrollPanel>
     </div>
     <div v-else-if="cellColumn.propertyType === eColumnType.Array">
-      <ul v-for="(obj, index) in cellValue" :key="index">
-        <li v-for="(value, key) in obj" :key="key">
-          <!-- <template v-if="isObject(value)">
-            <NestedObjectDisplay :nestedObject="value" />
-          </template> -->
-          <!-- <template v-else> -->
-          {{ typeof value }}
-          <!-- </template> -->
-        </li>
-      </ul>
+      <ScrollPanel v-tooltip="'Scroll to see more'" style="height: 50px">
+        <ul v-toolt v-for="(obj, index) in cellValue" :key="index">
+          <li v-for="(value, key) in obj" :key="key">
+            <!-- {{ key }}:
+          <CellNestedObject :nestedObject="value" /> -->
+          </li>
+        </ul>
+      </ScrollPanel>
     </div>
     <div v-else>
       {{ cellValue }}
@@ -102,6 +103,8 @@ import Listbox from "primevue/listbox";
 import InlineMessage from "primevue/inlinemessage";
 import Tag from "primevue/tag";
 import { eOrderStatus } from "@/assets/enums/eOrderStatusType";
+import CellNestedObject from "./CellNestedObject.vue";
+import ScrollPanel from "primevue/scrollpanel";
 
 export default defineComponent({
   name: "TableCell",
@@ -109,17 +112,8 @@ export default defineComponent({
     Listbox,
     InlineMessage,
     Tag,
-    NestedObjectDisplay: {
-      props: ["nestedObject"],
-      mounted() {
-        console.log(this.nestedObject);
-      },
-      template: `<template><div>
-        test
-        </div>
-        </template>
-      `,
-    },
+    CellNestedObject,
+    ScrollPanel,
   },
   props: {
     cellValue: {
