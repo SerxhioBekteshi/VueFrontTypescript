@@ -1,7 +1,7 @@
 <template>
   <Column
     v-for="(column, index) in columns"
-    :key="index"
+    :key="column.field + '_' + index"
     :field="column.propertyName"
     :header="column.title"
   ></Column>
@@ -22,15 +22,15 @@ export default defineComponent({
     showCustomRowBt: Boolean,
   },
   setup(props) {
-    const calculateColumnWidth = (headerContent: any) => {
-      const minWidth = 10;
+    // const calculateColumnWidth = (headerContent: any) => {
+    //   const minWidth = 10;
 
-      const dynamicWidth = Math.max(headerContent.length * 8, minWidth) + 20;
+    //   const dynamicWidth = Math.max(headerContent.length * 8, minWidth) + 20;
 
-      return `${dynamicWidth}px`;
-    };
+    //   return `${dynamicWidth}px`;
+    // };
 
-    return { calculateColumnWidth };
+    return {};
   },
 });
 </script>

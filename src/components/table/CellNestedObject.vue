@@ -11,16 +11,23 @@
 </template>
 
 <script lang="ts">
-export default {
+import { computed, defineComponent } from "vue";
+
+export default defineComponent({
   props: {
-    nestedObject: {},
-  },
-  computed: {
-    isObject() {
-      return (
-        typeof this.nestedObject === "object" && this.nestedObject !== null
-      );
+    nestedObject: {
+      type: Object,
+      default: () => ({}),
     },
   },
-};
+  setup(props) {
+    const isObject = computed(() => {
+      return (
+        typeof props.nestedObject === "object" && props.nestedObject !== null
+      );
+    });
+
+    return { isObject };
+  },
+});
 </script>

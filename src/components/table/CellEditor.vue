@@ -57,29 +57,15 @@ export default defineComponent({
     //   >,
     // },
   },
+  enums: {
+    eColumnType,
+  },
   setup(props, { emit }) {
     const localValue = ref(props.data[props.field]);
     const toast = useToast();
 
     const updateValue = () => {
       emit("input", localValue.value);
-    };
-    const eColumnType = {
-      Number: 0,
-      String: 1,
-      DateTime: 2,
-      Decimal: 3,
-      Boolean: 4,
-      Icons: 5,
-      Link: 6,
-      DateOnly: 7,
-      Actions: 8,
-      Select: 9,
-      Tags: 10,
-      Image: 11,
-      Status: 12,
-      Array: 13,
-      Object: 14,
     };
 
     const showImageToast = () => {

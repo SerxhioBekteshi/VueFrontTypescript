@@ -62,6 +62,16 @@
         No data
       </InlineMessage>
     </div>
+    <div v-else-if="cellColumn.propertyType === eColumnType.Icons">
+      <TableCellActions
+        @edit-clicked="handleEditClick"
+        :fieldToShowOnModalDelete="fieldToShowOnModalDelete"
+        @delete-clicked="handleDeleteClick"
+        @custom-row-bt-clicked="handleCustomRowBtClick"
+        :columnIcons="cellValue"
+        :additionalData="additionalData"
+      />
+    </div>
     <div v-else-if="cellColumn.propertyType === eColumnType.Link">
       <a :href="cellValue" target="_blank" rel="noopener noreferrer"
         >Paypal Link</a
@@ -94,7 +104,7 @@
 </template>
 
 <script lang="ts">
-// import eColumnType from "@/assets/enums/eColumnType";
+import eColumnType from "@/assets/enums/eColumnType";
 import IColumn from "@/interfaces/table/IColumn";
 import { groupDigital } from "@/utils/functions";
 import moment from "moment";
@@ -105,6 +115,7 @@ import Tag from "primevue/tag";
 import { eOrderStatus } from "@/assets/enums/eOrderStatusType";
 import CellNestedObject from "./CellNestedObject.vue";
 import ScrollPanel from "primevue/scrollpanel";
+import TableCellActions from "./TableCellActions.vue";
 
 export default defineComponent({
   name: "TableCell",
@@ -114,6 +125,7 @@ export default defineComponent({
     Tag,
     CellNestedObject,
     ScrollPanel,
+    TableCellActions,
   },
   props: {
     cellValue: {
@@ -123,26 +135,17 @@ export default defineComponent({
       type: Object as PropType<IColumn>,
       required: true,
     },
+    additionalData: {
+      type: null,
+    },
+    fieldToShowOnModalDelete: {
+      type: String,
+    },
   },
-  setup(props) {
-    const eColumnType = {
-      Number: 0,
-      String: 1,
-      DateTime: 2,
-      Decimal: 3,
-      Boolean: 4,
-      Icons: 5,
-      Link: 6,
-      DateOnly: 7,
-      Actions: 8,
-      Select: 9,
-      Tags: 10,
-      Image: 11,
-      Status: 12,
-      Array: 13,
-      Object: 14,
-    };
-
+  enums: {
+    eColumnType,
+  },
+  setup(props, { emit }) {
     const isObject = (value: any) => {
       return typeof value === "object" && value !== null;
     };
@@ -163,10 +166,25 @@ export default defineComponent({
       }
     };
 
+    const handleEditClick = (data: any, rowId: number) => {
+      emit("edit-clicked", data, rowId);
+    };
+
+    const handleCustomRowBtClick = (rowId: number) => {
+      emit("custom-row-bt-clicked", rowId);
+    };
+
+    const handleDeleteClick = (field: any, rowId: number) => {
+      emit("delete-clicked", field, rowId);
+    };
+
     return {
       getSeverity,
       groupDigital,
       isObject,
+      handleEditClick,
+      handleCustomRowBtClick,
+      handleDeleteClick,
       moment,
       eColumnType,
     };

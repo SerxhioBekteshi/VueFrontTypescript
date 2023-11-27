@@ -4,6 +4,16 @@
       showAddBt ? 'between' : 'end'
     } flex-wrap gap-3 w-full`"
   >
+    <div vstyle="text-align: left">
+      <MultiSelect
+        :modelValue="selectedColumns"
+        :options="tableColumns"
+        optionLabel="title"
+        @update:modelValue="onToggle"
+        display="chip"
+        placeholder="Select Columns"
+      />
+    </div>
     <div v-if="showAddBt">
       <div>
         <component
@@ -13,6 +23,7 @@
         ></component>
       </div>
     </div>
+
     <div class="flex flex-wrap gap-3">
       <div v-if="showSearch">
         <div class="p-inputgroup flex-1">
@@ -37,10 +48,12 @@
 </template>
 
 <script lang="ts">
+import IColumn from "@/interfaces/table/IColumn";
 import Button from "primevue/button";
 import DataViewLayoutOptions from "primevue/dataviewlayoutoptions";
 import InputPV from "primevue/inputtext";
-import { defineComponent } from "vue";
+import MultiSelect from "primevue/multiselect";
+import { PropType, defineComponent, ref, watch } from "vue";
 
 interface Action {
   component: any;
@@ -54,9 +67,9 @@ interface Layout {
 
 export default defineComponent({
   name: "GenericToolbar",
-  components: { Button, InputPV, DataViewLayoutOptions },
+  components: { Button, InputPV, DataViewLayoutOptions, MultiSelect },
   props: {
-    tableColumns: Array,
+    tableColumns: { type: Array as PropType<IColumn[]>, required: true },
     controller: String,
     showExport: Boolean,
     onChange: Function,
@@ -66,8 +79,20 @@ export default defineComponent({
     customComponent: { type: Object as () => Layout },
     actionButton: { type: Object as () => Action },
   },
-  setup(props) {
-    return {};
+  setup(props, { emit }) {
+    const selectedColumns = ref<IColumn[]>(props.tableColumns);
+
+    const onToggle = (val: any) => {
+      selectedColumns.value = props.tableColumns?.filter((col: any) =>
+        val.includes(col)
+      );
+      emit("columns-updated", selectedColumns.value);
+    };
+
+    // watch(selectedColumns, (newStuff) => {
+    // });
+
+    return { onToggle, selectedColumns };
   },
 });
 </script>

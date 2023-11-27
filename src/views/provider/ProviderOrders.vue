@@ -7,6 +7,8 @@
       :showAddBt="false"
       :showDelete="false"
       :showExport="false"
+      :showCustomRowBt="true"
+      :selectableRows="false"
       @custom-row-bt-clicked="onCustomRowBtClick"
     />
   </div>

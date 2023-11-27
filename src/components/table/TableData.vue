@@ -3,6 +3,7 @@
     <Button icon="pi pi-external-link" label="Add" />
   </div> -->
   <DataTable
+    removableSort
     :tableClass="showEdit ? 'editable-cells-table' : ''"
     scrollable
     :stripedRows="true"
@@ -18,6 +19,7 @@
         :tableColumns="tableColumns"
         :controller="controller"
         @change="handleSearchValue"
+        @columns-updated="handleColumnsToShow"
         :value="searchValue"
         :showExport="showExport"
         :showSearch="showSearch"
@@ -29,7 +31,7 @@
         :pageSize="pageSize"
         :totalItems="totalItems"
         :rowsPerPageOptions="rowsPerPageOptions"
-        :handleChangePage="handleChangePage"
+        :handleChangePage="(event: any) => currentPage = event.page + 1"
         :handleRowDropdownChange="handleRowDropdownChange"
       />
 
@@ -61,7 +63,13 @@
     />
 
     <Column
-      v-for="(column, index) in filteredNotIncludedColumns"
+      v-if="selectableRows"
+      selectionMode="multiple"
+      headerStyle="width: 3rem"
+    ></Column>
+
+    <Column
+      v-for="(column, index) in tableColumns"
       :key="index"
       :field="column.propertyName"
       :header="column.title"
@@ -71,14 +79,23 @@
         <div v-if="dataLoading">
           <Skeleton width="80%" height="1.5rem" />
         </div>
-        <div v-else class="truncate-cell-content">
+        <div v-else>
           <TableCell
-            :cellValue="slotProps.data[`${column.propertyName}`]"
+            :cellValue="
+              slotProps.data[`${column.propertyName}`]
+                ? slotProps.data[`${column.propertyName}`]
+                : tableColumns[tableColumns.length - 1]
+            "
             :cellColumn="column"
+            :additionalData="slotProps"
+            :fieldToShowOnModalDelete="'name'"
+            @custom-row-bt-clicked="handleCustomRowBtClick"
+            @edit-clicked="handleEditClick"
+            @delete-clicked="openModalFunction"
           />
         </div>
       </template>
-      <template v-if="showEdit" #editor="{ data, field }">
+      <!-- <template v-if="showEdit" #editor="{ data, field }">
         <CellEditor
           v-model="data[field]"
           :data="data"
@@ -86,31 +103,13 @@
           :column="column"
           @input="handleCellEditorInput"
         />
-      </template>
-    </Column>
-
-    <Column field="" header="" frozen alignFrozen="right">
-      <template #body="slotProps">
-        <div v-if="dataLoading">
-          <Skeleton width="80%" height="1rem" />
-        </div>
-        <div v-else>
-          <TableCellActions
-            @edit-clicked="handleEditClick"
-            :fieldToShowOnModalDelete="'name'"
-            @delete-clicked="openModalFunction"
-            @custom-row-bt-clicked="handleCustomRowBtClick"
-            :columnIcons="tableColumns[tableColumns.length - 1]"
-            :additionalData="slotProps"
-          />
-        </div>
-      </template>
+      </template> -->
     </Column>
   </DataTable>
 
   <Modal
     v-model:openModal="openModal"
-    @handleClose="handleModalClose"
+    @handleClose="() => (openModal = false)"
     :title="'Delete meal'"
     :actions="modalActions"
   >
@@ -133,10 +132,9 @@ import {
   defineComponent,
   onMounted,
   ref,
-  toRef,
+  shallowRef,
   toRefs,
   watch,
-  watchEffect,
 } from "vue";
 import axios from "axios";
 import Message from "primevue/message";
@@ -145,7 +143,6 @@ import IColumn from "@/interfaces/table/IColumn";
 import GenericToolbar from "@/components/GenericToolbar.vue";
 import TableHeader from "./TableHeader.vue";
 import TableCell from "./TableCell.vue";
-import TableCellActions from "./TableCellActions.vue";
 import { useToast } from "primevue/usetoast";
 import ProgressSpinner from "primevue/progressspinner";
 import CellEditor from "@/components/table/CellEditor.vue";
@@ -167,11 +164,10 @@ export default defineComponent({
     GenericToolbar,
     TableHeader,
     TableCell,
-    TableCellActions,
     Toast,
     Skeleton,
     ProgressSpinner,
-    CellEditor,
+    // CellEditor,
     TablePaginator,
   },
   props: {
@@ -187,9 +183,9 @@ export default defineComponent({
     showDelete: { type: Boolean, default: true },
     showSearch: { type: Boolean, default: true },
     showCustomRowBt: { type: Boolean, default: false },
-    actionButton: { type: Object as () => Action },
+    actionButton: { type: Object as () => Action, default: null },
     keyWhereFilter: { type: String, default: "" },
-    // onEditClick: { type: Function },
+    selectableRows: { type: Boolean, default: true },
   },
   setup(props, { emit }) {
     const toast = useToast();
@@ -204,6 +200,8 @@ export default defineComponent({
       showDelete,
       showSearch,
       showCustomRowBt,
+      keyWhereFilter,
+      selectableRows,
     } = toRefs(props);
 
     const openModalFunction = (field: any, rowId: number) => {
@@ -219,15 +217,11 @@ export default defineComponent({
       emit("custom-row-bt-clicked", rowId);
     };
 
-    const handleModalClose = () => {
-      openModal.value = false;
-    };
-
     const handleCellEditorInput = (newCellValue: any) => {
       cellValue.value = newCellValue;
     };
 
-    const filteredNotIncludedColumns = computed(() =>
+    const filteredColumnsNotIconsIncluded = computed(() =>
       tableColumns.value.slice(0, -1)
     );
 
@@ -252,7 +246,7 @@ export default defineComponent({
       }
     };
 
-    const modalActions = ref<any[]>([
+    const modalActions = shallowRef<any[]>([
       {
         component: Button,
         props: {
@@ -269,7 +263,7 @@ export default defineComponent({
           label: "Cancel",
           icon: "pi pi-check",
           severity: "info",
-          onclick: handleModalClose,
+          onclick: () => (openModal.value = false),
         },
       },
     ]);
@@ -307,20 +301,14 @@ export default defineComponent({
           }
         );
         if (res !== null) {
-          console.log(res.data.rows, "ROWS??");
           tableData.value = res.data.rows;
           totalItems.value = res.data.totalCount;
           tableColumns.value = res.data.columns;
-          // we will
         }
       } catch (err: any) {
         console.error(err);
       }
       dataLoading.value = false;
-    };
-    const handleChangePage = (event: any) => {
-      currentPage.value = event.page + 1;
-      // currentPage.value = newPage;
     };
 
     const handleRowDropdownChange = (rowsPerPage: any) => {
@@ -343,11 +331,9 @@ export default defineComponent({
       }, 100);
     };
 
-    // const isEditing = ref(false);
-    // const fieldToEdit = ref("");
-    // const handleCellClick = () => {
-    //   console.log("click", "AA");
-    // };
+    const handleColumnsToShow = (columns: any) => {
+      tableColumns.value = columns;
+    };
 
     const onCellEditComplete = async (event: any) => {
       let { data, field, newValue } = event;
@@ -404,17 +390,16 @@ export default defineComponent({
       totalItems,
       tableColumns,
       fieldModalToShow,
-      filteredNotIncludedColumns,
+      filteredColumnsNotIconsIncluded,
       openModalFunction,
       handleEditClick,
-      handleModalClose,
-      handleChangePage,
       handleRowDropdownChange,
       handleSearchValue,
       onCellEditComplete,
       handleCellEditorInput,
       fetchData,
       handleCustomRowBtClick,
+      handleColumnsToShow,
     };
   },
 });
@@ -424,11 +409,4 @@ export default defineComponent({
   padding-top: 0;
   padding-bottom: 0;
 }
-
-/* .truncate-cell-content {
-  max-width: 30%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-} */
 </style>

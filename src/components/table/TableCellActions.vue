@@ -1,5 +1,8 @@
 <template>
-  <div style="display: flex; justify-content: end">
+  <div
+    v-if="columnIcons && columnIcons.length !== 0"
+    style="display: flex; justify-content: end"
+  >
     <div v-for="(icon, index) in columnIcons.icons" :key="index">
       <Button
         @click="handleIconClick(icon)"
