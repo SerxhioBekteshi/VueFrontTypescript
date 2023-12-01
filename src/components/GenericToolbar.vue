@@ -89,9 +89,6 @@ export default defineComponent({
       emit("columns-updated", selectedColumns.value);
     };
 
-    // watch(selectedColumns, (newStuff) => {
-    // });
-
     return { onToggle, selectedColumns };
   },
 });

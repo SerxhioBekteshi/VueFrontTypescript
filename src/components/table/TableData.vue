@@ -9,6 +9,8 @@
     :stripedRows="true"
     :value="tableData"
     ref="dt"
+    dataKey="id"
+    v-model:selection="selectedRows"
     :editMode="showEdit ? 'cell' : undefined"
     tableStyle="min-width: 50rem"
     @cell-edit-complete="onCellEditComplete"
@@ -16,7 +18,7 @@
     <template #header>
       <GenericToolbar
         :actionButton="actionButton"
-        :tableColumns="tableColumns"
+        :tableColumns="columnsShowingModified"
         :controller="controller"
         @change="handleSearchValue"
         @columns-updated="handleColumnsToShow"
@@ -27,13 +29,34 @@
       />
     </template>
     <template #footer>
-      <TablePaginator
-        :pageSize="pageSize"
-        :totalItems="totalItems"
-        :rowsPerPageOptions="rowsPerPageOptions"
-        :handleChangePage="(event: any) => currentPage = event.page + 1"
-        :handleRowDropdownChange="handleRowDropdownChange"
-      />
+      <div
+        style="
+          display: flex;
+          justify-content: sstart;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 2rem;
+        "
+      >
+        <Button
+          @click="() => (openModal = true)"
+          icon="pi pi-trash"
+          severity="danger"
+          rounded
+          outlined
+          size="small"
+          aria-label="Cancel"
+          v-if="selectedRows.length !== 0"
+        />
+
+        <TablePaginator
+          :pageSize="pageSize"
+          :totalItems="totalItems"
+          :rowsPerPageOptions="rowsPerPageOptions"
+          :handleChangePage="(event: any) => currentPage = event.page + 1"
+          :handleRowDropdownChange="handleRowDropdownChange"
+        />
+      </div>
 
       <div style="display: flex; justify-content: center; margin-top: 1.5rem">
         In total there are {{ totalItems ? totalItems : 0 }} rows.
@@ -64,7 +87,7 @@
 
     <Column
       v-if="selectableRows"
-      selectionMode="multiple"
+      :selectionMode="showDelete ? 'multiple' : undefined"
       headerStyle="width: 3rem"
     ></Column>
 
@@ -114,9 +137,10 @@
     :actions="modalActions"
   >
     Are you sure you want to delete
-    <span style="font-weight: bold">
+    <span v-if="fieldModalToShow" style="font-weight: bold">
       {{ fieldModalToShow.name }}
     </span>
+    ?
   </Modal>
   <Toast />
 </template>
@@ -168,6 +192,7 @@ export default defineComponent({
     Skeleton,
     ProgressSpinner,
     // CellEditor,
+    Button,
     TablePaginator,
   },
   props: {
@@ -225,6 +250,16 @@ export default defineComponent({
       tableColumns.value.slice(0, -1)
     );
 
+    const columnsShowingModified = computed(() => {
+      if (Array.isArray(tableColumns.value) && tableColumns.value.length > 0) {
+        // Use slice to create a shallow copy of the array
+        return tableColumns.value.slice(1);
+      } else {
+        // Return an empty array or handle the case when tableColumns.value is undefined or empty
+        return [];
+      }
+    });
+
     const handleDeleteButtonModal = async () => {
       try {
         const res: any = await axios.delete(
@@ -246,6 +281,33 @@ export default defineComponent({
       }
     };
 
+    const handleMultipleDelete = async () => {
+      const selectedIds = selectedRows.value.map((row: any) =>
+        parseInt(row.id)
+      );
+
+      try {
+        const res: any = await axios.post(`/table/delete/${controller.value}`, {
+          ids: selectedIds,
+        });
+
+        if (res !== null) {
+          openModal.value = false;
+          fetchData();
+          toast.add({
+            life: 3000,
+            detail: res.data.message,
+            severity: "success",
+            summary: "info",
+          });
+          selectedRows.value = [];
+        }
+      } catch (err) {
+        console.log(err, "err multiple delete");
+      }
+    };
+
+    const selectedRows = ref<any>([]);
     const modalActions = shallowRef<any[]>([
       {
         component: Button,
@@ -254,7 +316,11 @@ export default defineComponent({
           icon: "pi pi-times",
           label: "Delete",
           severity: "danger",
-          onclick: handleDeleteButtonModal,
+          onclick: () => {
+            selectedRows.value.length !== 0
+              ? handleMultipleDelete()
+              : handleDeleteButtonModal();
+          },
         },
       },
       {
@@ -391,6 +457,9 @@ export default defineComponent({
       tableColumns,
       fieldModalToShow,
       filteredColumnsNotIconsIncluded,
+      selectedRows,
+      columnsShowingModified,
+      handleMultipleDelete,
       openModalFunction,
       handleEditClick,
       handleRowDropdownChange,
