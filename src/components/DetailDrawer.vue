@@ -37,6 +37,7 @@ export default defineComponent({
     controller: { type: String, required: true },
     validationSchema: { type: Object, required: true },
     fetchDataAfterSubmit: { type: Function, required: true },
+    showSubmitButton: { type: Boolean, default: true },
     additionalDataToSubmit: { type: Object },
   },
   setup(props) {
@@ -106,6 +107,7 @@ export default defineComponent({
           label: "Submit",
           severity: "primary",
           onClick: handleSubmit(handleFormSubmit),
+          disabled: !props.showSubmitButton,
         },
       },
       {

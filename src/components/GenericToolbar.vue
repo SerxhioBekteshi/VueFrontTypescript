@@ -1,21 +1,28 @@
 <template>
   <div
-    :class="`flex justify-content-${
-      showAddBt ? 'between' : 'end'
-    } flex-wrap gap-3 w-full`"
+    style="
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    "
   >
-    <div vstyle="text-align: left">
-      <MultiSelect
-        :modelValue="selectedColumns"
-        :options="tableColumns"
-        optionLabel="title"
-        @update:modelValue="onToggle"
-        display="chip"
-        placeholder="Select Columns"
-      />
-    </div>
-    <div v-if="showAddBt">
-      <div>
+    <div
+      style="display: flex; justify-content: start; flex-wrap: wrap; gap: 1rem"
+    >
+      <div v-if="toggleColumnsVisibility">
+        <MultiSelect
+          :modelValue="selectedColumns"
+          :options="selectColumns?.columns"
+          optionLabel="title"
+          @update:modelValue="onToggle"
+          display="chip"
+          placeholder="Select Columns"
+          panel-style=""
+          emptyMessage="No results found"
+        />
+      </div>
+      <div v-if="showAddBt">
         <component
           v-if="actionButton"
           :is="actionButton.component"
@@ -48,12 +55,13 @@
 </template>
 
 <script lang="ts">
+import ISelectColumn from "@/interfaces/database/ISelectColumn";
 import IColumn from "@/interfaces/table/IColumn";
 import Button from "primevue/button";
 import DataViewLayoutOptions from "primevue/dataviewlayoutoptions";
 import InputPV from "primevue/inputtext";
 import MultiSelect from "primevue/multiselect";
-import { PropType, defineComponent, ref, watch } from "vue";
+import { defineComponent, ref } from "vue";
 
 interface Action {
   component: any;
@@ -69,22 +77,23 @@ export default defineComponent({
   name: "GenericToolbar",
   components: { Button, InputPV, DataViewLayoutOptions, MultiSelect },
   props: {
-    tableColumns: { type: Array as PropType<IColumn[]>, required: true },
+    selectColumns: { type: Object as () => ISelectColumn },
     controller: String,
     showExport: Boolean,
     onChange: Function,
     value: String,
     showSearch: Boolean,
     showAddBt: Boolean,
+    toggleColumnsVisibility: Boolean,
     customComponent: { type: Object as () => Layout },
     actionButton: { type: Object as () => Action },
   },
   setup(props, { emit }) {
-    const selectedColumns = ref<IColumn[]>(props.tableColumns);
+    const selectedColumns = ref<IColumn[]>(props.selectColumns?.columns ?? []);
 
     const onToggle = (val: any) => {
-      selectedColumns.value = props.tableColumns?.filter((col: any) =>
-        val.includes(col)
+      selectedColumns.value = (props.selectColumns?.columns ?? [])?.filter(
+        (col: any) => val.includes(col)
       );
       emit("columns-updated", selectedColumns.value);
     };
@@ -93,4 +102,10 @@ export default defineComponent({
   },
 });
 </script>
-<style scoped></style>
+<style scoped>
+::v-deep(.p-multiselect-label) {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.5rem !important;
+}
+</style>

@@ -17,8 +17,9 @@
   >
     <template #header>
       <GenericToolbar
+        v-if="tableColumns.length !== 0"
         :actionButton="actionButton"
-        :tableColumns="columnsShowingModified"
+        :selectColumns="selectColumns"
         :controller="controller"
         @change="handleSearchValue"
         @columns-updated="handleColumnsToShow"
@@ -26,6 +27,7 @@
         :showExport="showExport"
         :showSearch="showSearch"
         :showAddBt="showAddBt"
+        :toggleColumnsVisibility="toggleColumnsVisibility"
       />
     </template>
     <template #footer>
@@ -172,6 +174,7 @@ import ProgressSpinner from "primevue/progressspinner";
 import CellEditor from "@/components/table/CellEditor.vue";
 import { eFilterOperator } from "@/assets/enums/eFilterOperator";
 import TablePaginator from "./TablePaginator.vue";
+import ISelectColumn from "@/interfaces/database/ISelectColumn";
 
 interface Action {
   component: any;
@@ -211,6 +214,7 @@ export default defineComponent({
     actionButton: { type: Object as () => Action, default: null },
     keyWhereFilter: { type: String, default: "" },
     selectableRows: { type: Boolean, default: true },
+    toggleColumnsVisibility: {type: Boolean, default: true}
   },
   setup(props, { emit }) {
     const toast = useToast();
@@ -227,6 +231,7 @@ export default defineComponent({
       showCustomRowBt,
       keyWhereFilter,
       selectableRows,
+      toggleColumnsVisibility
     } = toRefs(props);
 
     const openModalFunction = (field: any, rowId: number) => {
@@ -245,20 +250,6 @@ export default defineComponent({
     const handleCellEditorInput = (newCellValue: any) => {
       cellValue.value = newCellValue;
     };
-
-    const filteredColumnsNotIconsIncluded = computed(() =>
-      tableColumns.value.slice(0, -1)
-    );
-
-    const columnsShowingModified = computed(() => {
-      if (Array.isArray(tableColumns.value) && tableColumns.value.length > 0) {
-        // Use slice to create a shallow copy of the array
-        return tableColumns.value.slice(1);
-      } else {
-        // Return an empty array or handle the case when tableColumns.value is undefined or empty
-        return [];
-      }
-    });
 
     const handleDeleteButtonModal = async () => {
       try {
@@ -338,6 +329,7 @@ export default defineComponent({
     const pageSize = ref<any>(3);
     const totalItems = ref<number>(0);
     const rowsPerPageOptions = ref<any>([3, 5, 10]);
+    const selectColumns = ref<ISelectColumn>({ columns: [], firstColumn: {} });
     const tableColumns = ref<IColumn[]>([]);
     const searchValue = ref<string>("");
     const tableData = ref<any>();
@@ -370,6 +362,8 @@ export default defineComponent({
           tableData.value = res.data.rows;
           totalItems.value = res.data.totalCount;
           tableColumns.value = res.data.columns;
+          selectColumns.value.columns = res.data.columns.slice(1);
+          selectColumns.value.firstColumn = res.data.columns[0];
         }
       } catch (err: any) {
         console.error(err);
@@ -398,7 +392,7 @@ export default defineComponent({
     };
 
     const handleColumnsToShow = (columns: any) => {
-      tableColumns.value = columns;
+      tableColumns.value = [selectColumns.value.firstColumn, ...columns];
     };
 
     const onCellEditComplete = async (event: any) => {
@@ -455,10 +449,9 @@ export default defineComponent({
       openModal,
       totalItems,
       tableColumns,
+      selectColumns,
       fieldModalToShow,
-      filteredColumnsNotIconsIncluded,
       selectedRows,
-      columnsShowingModified,
       handleMultipleDelete,
       openModalFunction,
       handleEditClick,
