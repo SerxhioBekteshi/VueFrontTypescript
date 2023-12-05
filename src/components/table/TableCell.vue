@@ -89,7 +89,7 @@
     </div>
     <div v-else-if="cellColumn.propertyType === eColumnType.Array">
       <ScrollPanel v-tooltip="'Scroll to see more'" style="height: 50px">
-        <ul v-toolt v-for="(obj, index) in cellValue" :key="index">
+        <ul v-tooltip v-for="(obj, index) in cellValue" :key="index">
           <li v-for="(value, key) in obj" :key="key">
             <!-- {{ key }}:
           <CellNestedObject :nestedObject="value" /> -->

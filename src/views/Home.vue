@@ -25,7 +25,7 @@
 // import Button from "primevue/button"
 import Button from "primevue/button";
 import TableData from "@/components/table/TableData.vue";
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, shallowRef } from "vue";
 import { PrimeIcons } from "primevue/api";
 import { eFormMode } from "@/assets/enums/EFormMode";
 import DetailDrawer from "@/components/DetailDrawer.vue";
@@ -52,7 +52,7 @@ export default defineComponent({
       modeDrawer.value = eFormMode.Add;
     };
 
-    const actionButton = ref<any>({
+    const actionButton = shallowRef<any>({
       component: Button,
       props: {
         icon: PrimeIcons.PLUS,

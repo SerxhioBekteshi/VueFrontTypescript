@@ -214,8 +214,9 @@ export default defineComponent({
     actionButton: { type: Object as () => Action, default: null },
     keyWhereFilter: { type: String, default: "" },
     selectableRows: { type: Boolean, default: true },
-    toggleColumnsVisibility: {type: Boolean, default: true}
+    toggleColumnsVisibility: { type: Boolean, default: true },
   },
+  emits: ["edit-clicked", "custom-row-bt-clicked"],
   setup(props, { emit }) {
     const toast = useToast();
 
@@ -231,7 +232,7 @@ export default defineComponent({
       showCustomRowBt,
       keyWhereFilter,
       selectableRows,
-      toggleColumnsVisibility
+      toggleColumnsVisibility,
     } = toRefs(props);
 
     const openModalFunction = (field: any, rowId: number) => {

@@ -61,7 +61,7 @@ import Button from "primevue/button";
 import DataViewLayoutOptions from "primevue/dataviewlayoutoptions";
 import InputPV from "primevue/inputtext";
 import MultiSelect from "primevue/multiselect";
-import { defineComponent, ref } from "vue";
+import { defineComponent, markRaw, ref } from "vue";
 
 interface Action {
   component: any;
@@ -97,6 +97,8 @@ export default defineComponent({
       );
       emit("columns-updated", selectedColumns.value);
     };
+
+    // const actionButton = markRaw(props.actionButton)
 
     return { onToggle, selectedColumns };
   },
