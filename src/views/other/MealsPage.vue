@@ -217,6 +217,17 @@
                       :severity="getSeverity(slotProps.data)"
                       >HSTOCK</Tag
                     >
+                    <Button
+                      icon="pi pi-upload"
+                      severity="warning"
+                      rounded
+                      outlined
+                      size="small"
+                      @click="
+                        () =>
+                          onUploadClick(slotProps.data.id, slotProps.data.image)
+                      "
+                    />
                   </div>
                 </div>
 
@@ -305,8 +316,14 @@
       :controller="'meals'"
       :validationSchema="schema"
       :fetchDataAfterSubmit="fetchMeals"
+      :showSubmitButton="false"
     >
-      <MealForm />
+      <div v-if="formDrawerMode !== 'upload'">
+        <ImageForm :controller="'meals'" :imageData="formData || {}" />
+      </div>
+      <div v-else>
+        <MealForm />
+      </div>
     </DetailDrawer>
   </div>
 
@@ -369,6 +386,7 @@ import DataViewLayoutOptions from "primevue/dataviewlayoutoptions";
 import MealsSkeleton from "./MealsSkeleton.vue";
 import { useRouter } from "vue-router";
 import { setPaymentData } from "@/store/stores/payment.store";
+import ImageForm from "@/components/formController/ImageForm.vue";
 
 export default defineComponent({
   name: "MealsPage",
@@ -384,6 +402,7 @@ export default defineComponent({
     DetailDrawer,
     DetailModal,
     MealForm,
+    ImageForm,
     Button,
     TablePaginator,
     InlineMessage,
@@ -431,6 +450,10 @@ export default defineComponent({
     const onEditClick = (data: IMeal) => {
       formDrawerMode.value = eFormMode.Edit;
       formData.value = data;
+    };
+
+    const onUploadClick = (id: any, image: any) => {
+      formData.value = { id, image };
     };
 
     const invalidateState = () => {
@@ -620,6 +643,7 @@ export default defineComponent({
       fetchMeals,
       handleSearchValue,
       onEditClick,
+      onUploadClick,
       openModalFunction,
       handleCheckout,
     };

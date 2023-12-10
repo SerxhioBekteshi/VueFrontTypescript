@@ -3,6 +3,8 @@
     :title="
       modeDrawer === eFormMode.Add.toString()
         ? `Add ${controller}`
+        : modeDrawer === eFormMode.Upload.toString()
+        ? 'Upload image'
         : `Edit ${controller}`
     "
     v-model:openDrawer="openDrawer"
@@ -39,6 +41,9 @@ export default defineComponent({
     fetchDataAfterSubmit: { type: Function, required: true },
     showSubmitButton: { type: Boolean, default: true },
     additionalDataToSubmit: { type: Object },
+  },
+  enums: {
+    eFormMode,
   },
   setup(props) {
     const openDrawer = ref<boolean>(false);
