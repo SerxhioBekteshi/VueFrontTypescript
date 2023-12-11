@@ -314,7 +314,7 @@
       :modeDrawer="formDrawerMode"
       :formData="formData"
       :controller="'meals'"
-      :validationSchema="schema"
+      :validationSchema="mealSchema"
       :fetchDataAfterSubmit="fetchMeals"
       :showSubmitButton="false"
     >
@@ -332,7 +332,7 @@
       <DetailModal
         :customTitle="'Proceed with payment'"
         :onClose="invalidateState"
-        :validationSchema="modalSchema"
+        :validationSchema="modalOrderSchema"
         @customSubmitAction="handleCheckout"
       >
         <OrderSystemMealForm :price="meal.price" />
@@ -387,6 +387,7 @@ import MealsSkeleton from "./MealsSkeleton.vue";
 import { useRouter } from "vue-router";
 import { setPaymentData } from "@/store/stores/payment.store";
 import ImageForm from "@/components/formController/ImageForm.vue";
+import { mealSchema, modalOrderSchema } from "@/utils/validationSchemas";
 
 export default defineComponent({
   name: "MealsPage",
@@ -510,47 +511,6 @@ export default defineComponent({
       else fetchMeals();
     });
 
-    const schema = yup.object().shape({
-      ingredients: yup
-        .array()
-        .of(
-          yup.object().shape({
-            name: yup
-              .string()
-              .required("Ingredient name is required")
-              .label("Name"),
-            portion: yup
-              .number()
-              .required("Ingredient portion is required")
-              .label("Portion"),
-          })
-        )
-        .strict(),
-      name: yup.string().required("Name is required").label("Name"),
-      price: yup.number().required("Price is required").label("Price"),
-      cousine: yup.string().required("Cousine is required").label("Cousine"),
-      carbonFootprint: yup
-        .number()
-        .required("Carbon footprint is required")
-        .label("Carbon footprint"),
-      dietCategory: yup
-        .string()
-        .required("Diet category is required")
-        .label("Diet category"),
-      calories: yup
-        .number()
-        .required("Calories are required")
-        .label("Calories"),
-      achievement: yup
-        .string()
-        .required("Health goal is required")
-        .label("Health goal"),
-    });
-
-    const modalSchema = yup.object().shape({
-      quantity: yup.number().required("Quantity is required").label("Quantity"),
-    });
-
     const actionButton = shallowRef<any>({
       component: Button,
       props: {
@@ -625,12 +585,12 @@ export default defineComponent({
       handleChangePage,
       handleRowDropdownChange,
       meal,
+      modalOrderSchema,
+      mealSchema,
       isLoading,
       layout,
       searchValue,
       formDrawerMode,
-      schema,
-      modalSchema,
       formData,
       actionButton,
       rate,

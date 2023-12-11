@@ -92,15 +92,15 @@ class AuthManager {
       response = {
         accessToken: data.access_token,
         // refreshToken: data.refreshToken,
-        user: userInfo.user,
+        user: userInfo?.user,
       };
     }
-    if ((response.user && response.accessToken) || response.refreshToken) {
+    if ((response?.user && response?.accessToken) || response?.refreshToken) {
       JwtManager.setAccessToken(response.accessToken);
       // JwtManager.setRefreshToken(response.refreshToken);
       // dispatch(setUser(response.user));
       // dispatch(setUser(response.user));
-      useDispatch()(setUser(response.user));
+      useDispatch()(setUser(response?.user));
       if (response.user.roleId === eRoleType.Admin) {
         router.push("/admin");
       } else if (response.user.roleId === eRoleType.Provider) {

@@ -21,12 +21,12 @@ const handleResponseMessage = (
   notificationType: any,
   useToast: any
 ) => {
+  console.log(response, "awdawdawd");
   const $toast = useToast();
   if (response === "jwt expired") {
     clearSession();
     return;
   }
-  console.log(response, "RESPONSE");
   switch (notificationType) {
     case eNotificationType.Success:
       $toast.open({
@@ -67,6 +67,7 @@ const axiosInit = async (useToast: any) => {
     if (originalRequest._noAuth) {
       throw error.response;
     }
+    console.log(error.response, "awdawd");
     if (error.response) {
       // if (
       //   error.response.status === eHttpResponse.Unauthorized &&
