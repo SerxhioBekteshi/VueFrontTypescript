@@ -90,7 +90,9 @@ export default defineComponent({
   setup() {
     // const user = useGetUser();
     const route = useRoute();
-    const token = route.query.confirm;
+    const token = route.query.token;
+
+    console.log(route, "awawd");
 
     const router = useRouter();
     // const store = useStore();
@@ -119,12 +121,12 @@ export default defineComponent({
             });
             if (res.data) {
               setTimeout(() => {
-                // AuthManager.loginWithToken(
-                //   res.data.user,
-                //   res.data.access_token,
-                //   res.data.refresh_token,
-                //   dispatch
-                // );
+                AuthManager.loginWithToken(
+                  res.data.user,
+                  res.data.access_token
+                  // res.data.refresh_token,
+                  // dispatch
+                );
               }, 3000);
               validToken.value = true;
             }

@@ -78,24 +78,26 @@ class AuthManager {
 
   static loginWithToken(
     user: any,
-    accessToken: string,
-    refreshToken: string,
-    dispatch?: any
+    accessToken: string
+    // refreshToken: string,
+    // dispatch?: any
   ) {
     if (user) {
       JwtManager.setAccessToken(accessToken);
-      JwtManager.setRefreshToken(refreshToken);
+      // JwtManager.setRefreshToken(refreshToken);
 
       // user && dispatch && dispatch(setUser(user));
+      user && useDispatch()(setUser(user));
 
       // if (user.firstLogin) {
       //   user && dispatch && dispatch(navigateTo(`/${user.role}/changePassword`));
       // }
 
-      if (user.shouldVerify) {
-        user && dispatch && dispatch(navigateTo("/confirm"));
-      }
-      user && dispatch && dispatch(navigateTo(`/${user.role}/home`));
+      // if (user.shouldVerify) {
+      //   user && dispatch && dispatch(navigateTo("/confirm"));
+      // }
+
+      user && useDispatch()(navigateTo(`/${user.role}/quiz`));
     }
   }
 
@@ -120,7 +122,6 @@ class AuthManager {
       JwtManager.setAccessToken(response.accessToken);
       // JwtManager.setRefreshToken(response.refreshToken);
       // dispatch(setUser(response.user));
-      // dispatch(setUser(response.user));
       useDispatch()(setUser(response?.user));
       if (response.user.roleId === eRoleType.Admin) {
         router.push("/admin");
@@ -133,12 +134,12 @@ class AuthManager {
     }
   }
 
-  static async googleLogin(payload: any, dispatch: any) {
-    const res = await axios.post("authentication/googlelogin", payload);
-    const { user, access_token, refresh_token } = res?.data;
-    if (!access_token) return;
-    this.loginWithToken(user, access_token, refresh_token, dispatch);
-  }
+  // static async googleLogin(payload: any, dispatch: any) {
+  //   const res = await axios.post("authentication/googlelogin", payload);
+  //   const { user, access_token, refresh_token } = res?.data;
+  //   if (!access_token) return;
+  //   this.loginWithToken(user, access_token, refresh_token, dispatch);
+  // }
 
   static async register(user: any): Promise<any> {
     const { data } = await axios.post("/auth/client/signup", user);
