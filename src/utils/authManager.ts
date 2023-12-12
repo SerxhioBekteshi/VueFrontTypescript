@@ -1,9 +1,7 @@
 import JwtManager from "./jwtManager";
 import axios from "axios";
 import { setUser } from "../store/stores/user.store";
-// import eRoleType from "../assets/enums/eRoleType";
 import { navigateTo } from "../store/stores/navigation.store";
-import { useRouter } from "vue-router";
 import eRoleType from "@/assets/enums/eRoleType";
 import { eRoles } from "@/assets/enums/eRoles";
 import { useDispatch } from "@/store/redux/helpers";
@@ -78,6 +76,29 @@ class AuthManager {
     return null;
   }
 
+  static loginWithToken(
+    user: any,
+    accessToken: string,
+    refreshToken: string,
+    dispatch?: any
+  ) {
+    if (user) {
+      JwtManager.setAccessToken(accessToken);
+      JwtManager.setRefreshToken(refreshToken);
+
+      // user && dispatch && dispatch(setUser(user));
+
+      // if (user.firstLogin) {
+      //   user && dispatch && dispatch(navigateTo(`/${user.role}/changePassword`));
+      // }
+
+      if (user.shouldVerify) {
+        user && dispatch && dispatch(navigateTo("/confirm"));
+      }
+      user && dispatch && dispatch(navigateTo(`/${user.role}/home`));
+    }
+  }
+
   static async login(
     credentials: any,
     // dispatch: any,
@@ -110,6 +131,13 @@ class AuthManager {
         else router.push("/user");
       }
     }
+  }
+
+  static async googleLogin(payload: any, dispatch: any) {
+    const res = await axios.post("authentication/googlelogin", payload);
+    const { user, access_token, refresh_token } = res?.data;
+    if (!access_token) return;
+    this.loginWithToken(user, access_token, refresh_token, dispatch);
   }
 
   static async register(user: any): Promise<any> {

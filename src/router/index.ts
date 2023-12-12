@@ -20,6 +20,7 @@ import MealsConfiguration from "../views/other/MealsConfigurations.vue";
 import PaymentPage from "@/views/user/payments/index.vue";
 import PaymentProcessPage from "@/views/user/PaymentProcessPage/index.vue";
 import OrderDetails from "@/views/provider/OrderDetails.vue";
+import ConfirmEmailView from "@/views/user/confirm/index.vue";
 
 const routes = [
   {
@@ -146,6 +147,11 @@ const routes = [
     path: "/login",
     name: "LoginView",
     component: LoginView,
+  },
+  {
+    path: "/confirm",
+    name: "ConfirmEmailView",
+    component: ConfirmEmailView,
   },
   // {
   //   path: "/user/:type",
