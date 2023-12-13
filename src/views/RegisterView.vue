@@ -260,6 +260,7 @@ import InputSelect from "@/components/formElements/InputSelect.vue";
 
 import { ICheckPassword } from "@/interfaces/other/ICheckPassword";
 import ePaymentMethod from "@/assets/enums/ePaymentMethod";
+import AuthManager from "@/utils/authManager";
 
 export default defineComponent({
   name: "RegisterView",
@@ -352,26 +353,37 @@ export default defineComponent({
 
     const handleRegister = async (values: any) => {
       try {
-        const res = await axios.post(
-          `http://localhost:1112/api/user/${
-            currentRoutePath.value !== "/registerProvider"
-              ? "register"
-              : "registerProvider"
-          }`,
-          values
-        );
-        if (res != null && res.data) {
+        const res = await AuthManager.register(values);
+        console.log(res, "RES??");
+
+        if (res) {
           toast.add({
             life: 10000,
-            detail: `Contact: ${res.data.contact},
-            Email: ${res.data.email}`,
+            detail: `An email has been sent your email for verification`,
             severity: "success",
-            summary: res.data.message,
+            summary: "Email verification ",
           });
-
-          // if (currentRoutePath.value === "register")
-          //   router.push({ name: "LoginView" });
         }
+        // const res = await axios.post(
+        //   `http://localhost:1112/api/user/${
+        //     currentRoutePath.value !== "/registerProvider"
+        //       ? "register"
+        //       : "registerProvider"
+        //   }`,
+        //   values
+        // );
+        // if (res && res.data) {
+        //   toast.add({
+        //     life: 10000,
+        //     detail: `Contact: ${res.data.contact},
+        //     Email: ${res.data.email}`,
+        //     severity: "success",
+        //     summary: res.data.message,
+        //   });
+
+        // if (currentRoutePath.value === "register")
+        //   router.push({ name: "LoginView" });
+        // }
       } catch (err) {
         console.log(err, "ERR");
       }

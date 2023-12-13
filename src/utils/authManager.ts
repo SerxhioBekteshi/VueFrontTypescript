@@ -78,24 +78,25 @@ class AuthManager {
 
   static loginWithToken(
     user: any,
-    accessToken: string,
-    refreshToken: string,
-    dispatch?: any
+    accessToken: string
+    // refreshToken: string,
+    // dispatch?: any
   ) {
     if (user) {
       JwtManager.setAccessToken(accessToken);
-      JwtManager.setRefreshToken(refreshToken);
+      // JwtManager.setRefreshToken(refreshToken);
 
-      // user && dispatch && dispatch(setUser(user));
+      user && useDispatch()(setUser(user));
 
       // if (user.firstLogin) {
       //   user && dispatch && dispatch(navigateTo(`/${user.role}/changePassword`));
       // }
 
-      if (user.shouldVerify) {
-        user && dispatch && dispatch(navigateTo("/confirm"));
-      }
-      user && dispatch && dispatch(navigateTo(`/${user.role}/home`));
+      // if (user.shouldVerify) {
+      //   user && useDispatch()(navigateTo("/confirm"));
+      // }
+
+      user && useDispatch()(navigateTo(`/${user.role.toLowerCase()}/quiz`));
     }
   }
 
@@ -133,18 +134,17 @@ class AuthManager {
     }
   }
 
-  static async googleLogin(payload: any, dispatch: any) {
-    const res = await axios.post("authentication/googlelogin", payload);
-    const { user, access_token, refresh_token } = res?.data;
-    if (!access_token) return;
-    this.loginWithToken(user, access_token, refresh_token, dispatch);
-  }
+  // static async googleLogin(payload: any, dispatch: any) {
+  //   const res = await axios.post("authentication/googlelogin", payload);
+  //   const { user, access_token, refresh_token } = res?.data;
+  //   if (!access_token) return;
+  //   this.loginWithToken(user, access_token, refresh_token, dispatch);
+  // }
 
   static async register(user: any): Promise<any> {
-    const { data } = await axios.post("/auth/client/signup", user);
-    if (data?.result) {
-      //ka qene access token
-      return data.jtwToken;
+    const { data } = await axios.post("/user/register", user);
+    if (data && data?.access_token) {
+      return data.access_token;
     }
     return null;
   }
