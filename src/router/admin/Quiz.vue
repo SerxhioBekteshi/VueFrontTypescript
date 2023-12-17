@@ -258,7 +258,7 @@ import { eFormMode } from "@/assets/enums/EFormMode";
 import QuizForm from "../../components/formController/QuizForm.vue";
 import SelectButton from "primevue/selectbutton";
 import draggable from "vuedraggable";
-
+import { questionValidationSchema } from "@/utils/validationSchemas";
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Quiz",
@@ -275,6 +275,9 @@ export default defineComponent({
     draggable,
   },
   props: {},
+  // enums: {
+  //   eFormMode
+  // },
   setup() {
     const toast = useToast();
     const dragging = ref<boolean>(false);
@@ -298,27 +301,6 @@ export default defineComponent({
     const onDragEnd = (event: any) => {
       console.log("Drag ended. New item order:", quizQuestion.value);
     };
-
-    const questionValidationSchema = yup.object().shape({
-      question: yup.string().required("Question is required").label("question"),
-      order: yup.number().required("Order is required").label("Order"),
-      fieldName: yup
-        .string()
-        .required("Field name is required")
-        .label("Field Name"),
-      questionOptions: yup
-        .array()
-        .of(
-          yup.object().shape({
-            label: yup
-              .string()
-              .required("Label for question is required")
-              .label("Label"),
-            value: yup.string().required("Value required").label("Value"),
-          })
-        )
-        .strict(),
-    });
 
     const handleRemoveQuestionQuiz = async () => {
       try {
@@ -413,6 +395,7 @@ export default defineComponent({
       questionType,
       menuItems,
       menuRef,
+      // eFormMode,
       invalidateState,
       getQuiz,
       toggleMenuPopup,

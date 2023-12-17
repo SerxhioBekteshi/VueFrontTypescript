@@ -61,7 +61,6 @@ const axiosInit = async (useToast: any) => {
     return request;
   });
 
-  //undefined ka qene null
   axios.interceptors.response.use(null, async (error) => {
     const originalRequest: IAxiosRequestConfigRetry = error.config;
     if (originalRequest._noAuth) {

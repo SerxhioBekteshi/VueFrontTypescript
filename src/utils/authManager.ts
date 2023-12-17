@@ -7,7 +7,7 @@ import { eRoles } from "@/assets/enums/eRoles";
 import { useDispatch } from "@/store/redux/helpers";
 
 export interface IUserInfo {
-  user: any;
+  user?: any;
   accessToken: string;
   refreshToken: string;
 }
@@ -16,7 +16,7 @@ class AuthManager {
     return JwtManager.accessToken;
   }
 
-  private static parseJwt(token: string) {
+  static parseJwt(token: string) {
     if (!token) {
       return;
     }
@@ -30,55 +30,40 @@ class AuthManager {
       const userInfo = AuthManager.parseJwt(JwtManager.accessToken);
       const user = userInfo.user;
 
+      const baseLoggedData = {
+        email: user.email,
+        id: user.id,
+        role: user.role,
+        name: user.name,
+        lastName: user.lastName,
+        photo: user.photo,
+        state: user.state,
+        address: user.address,
+      };
+
       if (user.role === eRoles.Provider) {
         return {
-          email: user.email,
-          id: user.id,
-          role: user.role,
-          name: user.name,
-          lastName: user.lastName,
+          ...baseLoggedData,
           termsAgreed: user.termsAgreed,
           nipt: user.nipt,
-          photo: user.photo,
-          gender: user.gender,
-          birthDate: user.birthDate,
-          state: user.state,
-          address: user.address,
         };
       } else if (user.role === eRoles.User)
         return {
-          email: user.email,
-          id: user.id,
-          role: user.role,
-          name: user.name,
-          lastName: user.lastName,
-          nipt: user.nipt,
+          ...baseLoggedData,
+          gender: user.gender,
+          birthDate: user.birthDate,
           accountSubmitted: user.accountSubmitted,
-          photo: user.photo,
           quizFulfilled: user.quizFulfilled,
-          birthDate: user.birthDate,
-          state: user.state,
-          address: user.address,
         };
-      else
-        return {
-          email: user.email,
-          id: user.id,
-          role: user.role,
-          name: user.name,
-          lastName: user.lastName,
-          photo: user.photo,
-          birthDate: user.birthDate,
-          state: user.state,
-          address: user.address,
-        };
+      else return baseLoggedData;
     }
     return null;
   }
 
   static loginWithToken(
     user: any,
-    accessToken: string
+    accessToken: string,
+    router?: any
     // refreshToken: string,
     // dispatch?: any
   ) {
@@ -96,7 +81,7 @@ class AuthManager {
       //   user && useDispatch()(navigateTo("/confirm"));
       // }
 
-      user && useDispatch()(navigateTo(`/${user.role.toLowerCase()}/quiz`));
+      user && useDispatch()(router.push(`/${user.role.toLowerCase()}/quiz`));
     }
   }
 
@@ -148,33 +133,36 @@ class AuthManager {
     return null;
   }
 
-  // static async refreshToken(
-  //   accessToken: string,
-  //   refreshToken: string
-  // ): Promise<IUserInfo> {
-  //   const { data } = await axios.post("authentication/refresh", {
-  //     accessToken,
-  //     refreshToken,
-  //   });
-  //   let responseLogin: IUserInfo = null;
-  //   if (data?.accessToken && data?.refreshToken) {
-  //     const userInfo = AuthManager.parseJwt(data.accessToken);
-  //     responseLogin = {
-  //       accessToken: data.accessToken,
-  //       refreshToken: data.refreshToken,
-  //       user: {
-  //         email: userInfo.Email,
-  //         id: userInfo.Id,
-  //         role: userInfo.role,
-  //         firstName: userInfo.FirstName,
-  //         lastName: userInfo.LastName,
-  //       },
-  //     };
-  //     JwtManager.setAccessToken(data.accessToken);
-  //     JwtManager.setRefreshToken(data.refreshToken);
-  //   }
-  //   return responseLogin;
-  // }
+  static async refreshToken(
+    accessToken: string,
+    refreshToken: string
+  ): Promise<any> {
+    const { data } = await axios.post("authentication/refresh", {
+      accessToken,
+      refreshToken,
+    });
+    let responseLogin: any = null;
+    if (data?.accessToken && data?.refreshToken) {
+      const userInfo = AuthManager.parseJwt(data.accessToken);
+      responseLogin = {
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+        user: {
+          email: userInfo.email,
+          id: userInfo.id,
+          role: userInfo.role,
+          name: userInfo.name,
+          lastName: userInfo.lastName,
+          photo: userInfo.photo,
+          state: userInfo.state,
+          address: userInfo.address,
+        },
+      };
+      JwtManager.setAccessToken(data.accessToken);
+      JwtManager.setRefreshToken(data.refreshToken);
+    }
+    return responseLogin;
+  }
 
   static logout(dispatch: any) {
     JwtManager.clearToken();

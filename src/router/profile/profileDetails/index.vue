@@ -111,11 +111,11 @@
 <script lang="ts">
 import { useReduxSelector } from "@/store/redux/helpers";
 import { defineComponent, provide } from "vue";
-import InputText from "../components/formElements/InputText.vue";
+import InputText from "@/components/formElements/InputText.vue";
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import InputSelect from "../components/formElements/InputSelect.vue";
-import InputDate from "../components/formElements/InputDate.vue";
+import InputSelect from "@/components/formElements/InputSelect.vue";
+import InputDate from "@/components/formElements/InputDate.vue";
 import Button from "primevue/button";
 import axios from "axios";
 import { useToast } from "primevue/usetoast";

@@ -1,15 +1,14 @@
-import AppStorageManager from './appStorageManager';
+import AppStorageManager from "./appStorageManager";
 
 class JwtManager {
-  private static access_token = 'access_token';
-  private static refresh_token = 'refresh_token';
+  private static access_token = "access_token";
+  private static refresh_token = "refresh_token";
   public static get accessToken(): string | null {
     return AppStorageManager.getItem(JwtManager.access_token);
   }
   public static get refreshToken(): string | null {
     return AppStorageManager.getItem(JwtManager.refresh_token);
   }
-
 
   static setAccessToken(t: string | null): void {
     if (t) {
@@ -29,9 +28,7 @@ class JwtManager {
   static clearToken() {
     AppStorageManager.removeItem(JwtManager.access_token);
     AppStorageManager.removeItem(JwtManager.refresh_token);
-
   }
-
 }
 
 export default JwtManager;

@@ -186,7 +186,7 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import OverlayPanel from "primevue/overlaypanel";
 import { ICheckPassword } from "@/interfaces/other/ICheckPassword";
-import InputPassword from "../components/formElements/InputPassword.vue";
+import InputPassword from "@/components/formElements/InputPassword.vue";
 import axios from "axios";
 import { provide } from "vue";
 

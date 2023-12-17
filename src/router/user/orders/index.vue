@@ -19,7 +19,7 @@ import { defineComponent, ref } from "vue";
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
-  name: "Orders",
+  name: "UserOrders",
   components: { TableData },
   setup() {
     const onCustomRowBtClick = (rowId: number) => {

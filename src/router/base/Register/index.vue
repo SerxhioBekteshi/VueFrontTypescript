@@ -288,7 +288,7 @@ export default defineComponent({
       specialCharCheck: false,
     });
 
-    const schemaToValidate = yup.object().shape({
+    const registrationSchema = yup.object().shape({
       email: yup.string().email().required("Email is required"),
       name: yup.string().required("First Name is required"),
       lastName: yup.string().required("Last Name is required"),
@@ -330,7 +330,7 @@ export default defineComponent({
     });
 
     const { handleSubmit, resetForm } = useForm({
-      validationSchema: schemaToValidate,
+      validationSchema: registrationSchema,
       initialValues: {
         name: "",
         lastName: "",

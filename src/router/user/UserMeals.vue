@@ -1,15 +1,15 @@
 <template>
   <div class="card">
-    <MealsPage :shouldCrud="true" :shouldRate="false" />
+    <MealsPage :shouldCrud="false" :shouldRate="true" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import MealsPage from "../other/MealsPage.vue";
+import MealsPage from "@/views/other/MealsPage.vue";
 
 export default defineComponent({
-  name: "ProviderMeals",
+  name: "UserMeals",
   components: { MealsPage },
   props: {},
   setup() {

@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import MealsPage from "../other/MealsPage.vue";
+import MealsPage from "@/views/other/MealsPage.vue";
 
 export default defineComponent({
   name: "UserMainPage",

@@ -66,7 +66,7 @@
       <Button
         @click="logoutAndNavigate"
         class="btn btn-primary"
-        style="{ width: '241px', height: '56px' }"
+        style="{ width: 241px, height: 56px }"
       >
         Go to login page
       </Button>
@@ -122,7 +122,8 @@ export default defineComponent({
               setTimeout(() => {
                 AuthManager.loginWithToken(
                   res.data.user,
-                  res.data.access_token
+                  res.data.access_token,
+                  router
                   // res.data.refresh_token,
                   // dispatch
                 );
