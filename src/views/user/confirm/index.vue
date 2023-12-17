@@ -92,8 +92,6 @@ export default defineComponent({
     const route = useRoute();
     const token = route.query.token;
 
-    console.log(route, "awawd");
-
     const router = useRouter();
     // const store = useStore();
     const disableResend = ref<boolean>();
@@ -119,6 +117,7 @@ export default defineComponent({
             const res = await axios.post("authentication/confirm", null, {
               headers: { Authorization: `Bearer ${token}` },
             });
+
             if (res.data) {
               setTimeout(() => {
                 AuthManager.loginWithToken(

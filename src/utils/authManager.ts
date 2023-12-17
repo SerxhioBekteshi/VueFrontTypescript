@@ -86,7 +86,6 @@ class AuthManager {
       JwtManager.setAccessToken(accessToken);
       // JwtManager.setRefreshToken(refreshToken);
 
-      // user && dispatch && dispatch(setUser(user));
       user && useDispatch()(setUser(user));
 
       // if (user.firstLogin) {
@@ -94,10 +93,10 @@ class AuthManager {
       // }
 
       // if (user.shouldVerify) {
-      //   user && dispatch && dispatch(navigateTo("/confirm"));
+      //   user && useDispatch()(navigateTo("/confirm"));
       // }
 
-      user && useDispatch()(navigateTo(`/${user.role}/quiz`));
+      user && useDispatch()(navigateTo(`/${user.role.toLowerCase()}/quiz`));
     }
   }
 
@@ -142,10 +141,9 @@ class AuthManager {
   // }
 
   static async register(user: any): Promise<any> {
-    const { data } = await axios.post("/auth/client/signup", user);
-    if (data?.result) {
-      //ka qene access token
-      return data.jtwToken;
+    const { data } = await axios.post("/user/register", user);
+    if (data && data?.access_token) {
+      return data.access_token;
     }
     return null;
   }
