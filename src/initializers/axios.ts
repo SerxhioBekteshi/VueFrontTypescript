@@ -64,44 +64,45 @@ const axiosInit = async (useToast: any) => {
   axios.interceptors.response.use(null, async (error) => {
     const originalRequest: IAxiosRequestConfigRetry = error.config;
     if (originalRequest._noAuth) {
-      throw error.response;
+      throw error.response.data;
     }
-    console.log(error.response, "awdawd");
     if (error.response) {
-      // if (
-      //   error.response.status === eHttpResponse.Unauthorized &&
-      //   !originalRequest._retry
-      // ) {
-      //   originalRequest._retry = true;
-      //   try {
-      // const res = await AuthManager.refreshToken(
-      //   JwtManager.accessToken,
-      //   JwtManager.refreshToken
-      // );
-      // if (res && res.accessToken && res.refreshToken) {
-      //   originalRequest.headers.Authorization = `Bearer ${res.accessToken}`;
-      //   return axios(originalRequest);
-      // }
-      // clearSession();
-      //   } catch {
-      //     clearSession();
-      //   }
-      // }
-
       if (
-        (error.response && error.response?.data?.message) ||
-        error.response.status !== 200 ||
-        error.response.status !== 201
+        error.response.status === eHttpResponse.Unauthorized &&
+        !originalRequest._retry
       ) {
+        originalRequest._retry = true;
+        try {
+          const accessToken = JwtManager.accessToken;
+          const refreshToken = JwtManager.refreshToken;
+
+          if (accessToken !== null && refreshToken !== null) {
+            const res = await AuthManager.refreshToken(
+              accessToken,
+              refreshToken
+            );
+
+            if (res && res.accessToken && res.refreshToken) {
+              originalRequest.headers = originalRequest.headers ?? {};
+              originalRequest.headers.Authorization = `Bearer ${res.accessToken}`;
+              return axios(originalRequest);
+            }
+          }
+          clearSession();
+        } catch {
+          clearSession();
+        }
+      }
+      if (error.response && error.response?.data?.message) {
         handleResponseMessage(
           error.response,
           eNotificationType.Error,
           useToast
         );
       }
-      if (error.response.status === eHttpResponse.NotFound) {
-        Error("axiosInit: action not found");
-      }
+      // if (error.response.status === eHttpResponse.NotFound) {
+      //   Error("axiosInit: action not found");
+      // }
     }
   });
 };

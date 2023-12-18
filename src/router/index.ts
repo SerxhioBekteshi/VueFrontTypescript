@@ -5,6 +5,7 @@ import providerRoutes from "./provider";
 import profileRoutes from "./profile";
 import userRoutes from "./user";
 import baseRoutes from "./base";
+import JwtManager from "@/utils/jwtManager";
 
 const routes = [
   ...adminRoutes,
@@ -21,11 +22,12 @@ const router = createRouter({
 
 // router.beforeEach((to, from, next) => {
 //   const token: any = JwtManager.accessToken;
+//   console.log(to, "TO");
 
-//   if (to.meta.requiresAuth && !token) {
-//     next({ name: "Home" });
+//   if (!token) {
+//     next({ name: "Login" });
 //   } else {
-//     next({ name: "LoginView" });
+//     next({ name: "Home" });
 //   }
 // });
 

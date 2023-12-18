@@ -94,18 +94,18 @@ class AuthManager {
     const res = await axios.post("user/login", credentials);
     const data = res?.data;
     let response: any = null;
-    if (data?.access_token || data?.refreshToken) {
+    if (data?.access_token || data?.refresh_token) {
       const userInfo = AuthManager.parseJwt(data.access_token);
       response = {
         accessToken: data.access_token,
-        // refreshToken: data.refreshToken,
+        refreshToken: data.refresh_token,
         user: userInfo?.user,
       };
     }
     if ((response?.user && response?.accessToken) || response?.refreshToken) {
       JwtManager.setAccessToken(response.accessToken);
-      // JwtManager.setRefreshToken(response.refreshToken);
-      // dispatch(setUser(response.user));
+      JwtManager.setRefreshToken(response.refreshToken);
+
       useDispatch()(setUser(response?.user));
       if (response.user.roleId === eRoleType.Admin) {
         router.push("/admin");
@@ -166,7 +166,6 @@ class AuthManager {
 
   static logout(dispatch: any) {
     JwtManager.clearToken();
-    // dispatch(navigateTo("/"));
     useDispatch()(setUser(null));
     // dispatch(setUser(null));
   }

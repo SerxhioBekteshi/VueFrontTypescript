@@ -1,4 +1,6 @@
 import AppStorageManager from "./appStorageManager";
+// import AuthManager from "./authManager";
+// import jwtDecode, { JwtPayload } from "jwt-decode";
 
 class JwtManager {
   private static access_token = "access_token";
@@ -17,6 +19,31 @@ class JwtManager {
       AppStorageManager.removeItem(JwtManager.access_token);
     }
   }
+
+  // static async getValidToken(): Promise<string | null> {
+  //   const { accessToken: token, refreshToken } = JwtManager;
+  //   try {
+  //     const decoded = jwtDecode<JwtPayload>(token);
+  //     if (decoded) {
+  //       const curretDate = new Date().getTime();
+  //       const timeExp = decoded.exp * 1000;
+  //       if (curretDate < timeExp) {
+  //         return token;
+  //       }
+  //       const res = await AuthManager.refreshToken(
+  //         token ?? "",
+  //         refreshToken ?? ""
+  //       );
+  //       if (res && res.accessToken) {
+  //         return res.accessToken;
+  //       }
+  //     }
+  //   } catch (e) {
+  //     console.log("JwtManager.getValidToken", e);
+  //   }
+  //   return null;
+  // }
+
   static setRefreshToken(t: string | null): void {
     if (t) {
       AppStorageManager.setItem(JwtManager.refresh_token, t);
