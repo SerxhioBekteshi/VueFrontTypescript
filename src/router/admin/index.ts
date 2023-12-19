@@ -3,6 +3,8 @@ import AppLayout from "@/layout/AppLayout.vue";
 import Quiz from "./Quiz.vue";
 import ProvidersRegistration from "./ProvidersRegistration.vue";
 import MealsConfiguration from "@/views/other/MealsConfigurations.vue";
+import Permissions from "./permissions/index.vue";
+import ProviderEmail from "./providerEmails/index.vue";
 
 const adminRoutes = [
   {
@@ -34,6 +36,22 @@ const adminRoutes = [
         path: "mealsConfigurations",
         name: "mealsConfigurations",
         component: MealsConfiguration,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: "provider/emails",
+        name: "Send email",
+        component: ProviderEmail,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: "permissions",
+        name: "Permissions",
+        component: Permissions,
         meta: {
           requiresAuth: true,
         },

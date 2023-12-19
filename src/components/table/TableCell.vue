@@ -15,14 +15,15 @@
       <Tag :value="cellValue" :severity="getSeverity(cellValue)"></Tag>
     </div>
     <div v-else-if="cellColumn.propertyType === eColumnType.Boolean">
-      <span>
+      <InputSwitch :value="cellValue" disabled />
+      <!-- <span>
         <i
           :class="{
             'pi pi-check-circle text-green-500': cellValue,
             'pi pi-times-circle text-red-400': !cellValue,
           }"
         ></i>
-      </span>
+      </span> -->
     </div>
     <div v-else-if="cellColumn.propertyType === eColumnType.Image">
       <div v-if="cellValue" class="image-wrapper">
@@ -97,8 +98,9 @@
         </ul>
       </ScrollPanel>
     </div>
+
     <div v-else>
-      {{ cellValue }}
+      {{ cellValue ? cellValue : "-" }}
     </div>
   </div>
 </template>
@@ -116,6 +118,7 @@ import { eOrderStatus } from "@/assets/enums/eOrderStatusType";
 import CellNestedObject from "./CellNestedObject.vue";
 import ScrollPanel from "primevue/scrollpanel";
 import TableCellActions from "./TableCellActions.vue";
+import InputSwitch from "primevue/inputswitch";
 
 export default defineComponent({
   name: "TableCell",
@@ -126,6 +129,7 @@ export default defineComponent({
     CellNestedObject,
     ScrollPanel,
     TableCellActions,
+    InputSwitch,
   },
   props: {
     cellValue: {

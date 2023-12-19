@@ -23,6 +23,7 @@
         :controller="controller"
         @change="handleSearchValue"
         @columns-updated="handleColumnsToShow"
+        @insert-clicked="$emit('insert-clicked')"
         :value="searchValue"
         :showExport="showExport"
         :showSearch="showSearch"
@@ -216,7 +217,7 @@ export default defineComponent({
     selectableRows: { type: Boolean, default: true },
     toggleColumnsVisibility: { type: Boolean, default: true },
   },
-  emits: ["edit-clicked", "custom-row-bt-clicked"],
+  emits: ["edit-clicked", "custom-row-bt-clicked", "insert-clicked"],
   setup(props, { emit }) {
     const toast = useToast();
 

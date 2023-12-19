@@ -130,3 +130,11 @@ export const registrationSchema = yup.object().shape({
       }
     ),
 });
+
+export const permissionSchema = yup.object().shape({
+  name: yup.string().required("Name is required").label("Name"),
+  action: yup.string().required("Action is required").label("Action"),
+  description: yup.string().label("Description"),
+  isActive: yup.boolean().label("Active permission"),
+  subject: yup.number().label("Subject"),
+});

@@ -51,11 +51,12 @@ export default defineComponent({
     optionValue: { type: String, default: "value" },
     showError: { type: Boolean, default: true },
     controller: { type: String },
+    includeEmptyOption: { type: Boolean, default: false },
   },
   setup(props) {
     const { value, errorMessage, meta } = useField(() => props.name, undefined);
     const toast = useToast();
-    const selectOptions = ref<any>(props.options);
+    const selectOptions = ref<any[]>(props.options);
     const isLoading = ref<boolean>(props.controller ? true : false);
     // const selectedValue = ref();
 
@@ -65,9 +66,25 @@ export default defineComponent({
           const res: any = await axios.get(`${props.controller}`);
 
           if (res && res.data) {
-            selectOptions.value = res.data.filter(
-              (option: any) => option.fieldName === props.name
-            )[0].questionOptions;
+            selectOptions.value = res.data.map((option: any) => {
+              return { value: option.id, label: option.label };
+            });
+
+            if (!selectOptions.value) {
+              selectOptions.value = res.data.filter(
+                (option: any) => option.fieldName === props.name
+              )[0].questionOptions;
+            }
+
+            if (props.includeEmptyOption) {
+              selectOptions.value = [
+                ...selectOptions.value,
+                {
+                  [props.optionValue]: null,
+                  [props.optionLabel]: "",
+                },
+              ];
+            }
             isLoading.value = false;
             // selectedValue.value = selectOptions.value.find((opt: any) => {
             //   opt[`${props.optionValue}`] === value.value;
@@ -76,11 +93,15 @@ export default defineComponent({
         } catch (err) {
           toast.add({
             life: 3000,
-            detail: "Something went wrong on options data getter",
+            detail: err,
             severity: "error",
-            summary: "info",
+            summary: "Error",
           });
         }
+      }
+
+      if (props.includeEmptyOption) {
+        selectOptions.value.push({ value: "", label: "" });
       }
       // if (props.options)
       //   selectedValue.value = props.options.find(

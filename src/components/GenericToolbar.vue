@@ -22,12 +22,22 @@
           emptyMessage="No results found"
         />
       </div>
+
       <div v-if="showAddBt">
-        <component
-          v-if="actionButton"
-          :is="actionButton.component"
-          v-bind="actionButton.props"
-        ></component>
+        <div v-if="actionButton">
+          <component
+            :is="actionButton.component"
+            v-bind="actionButton.props"
+          ></component>
+        </div>
+        <div v-else>
+          <Button
+            icon="pi pi-plus"
+            label="Insert"
+            severity="primary"
+            @click="$emit('insert-clicked')"
+          />
+        </div>
       </div>
     </div>
 
@@ -88,6 +98,7 @@ export default defineComponent({
     customComponent: { type: Object as () => Layout },
     actionButton: { type: Object as () => Action },
   },
+  emits: ["insert-clicked", "columns-updated", "update:modelValue", "change"],
   setup(props, { emit }) {
     const selectedColumns = ref<IColumn[]>(props.selectColumns?.columns ?? []);
 
