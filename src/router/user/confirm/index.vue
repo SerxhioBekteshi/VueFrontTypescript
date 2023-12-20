@@ -123,6 +123,7 @@ export default defineComponent({
                 AuthManager.loginWithToken(
                   res.data.user,
                   res.data.access_token,
+                  res.data.refresh_token,
                   router
                   // res.data.refresh_token,
                   // dispatch

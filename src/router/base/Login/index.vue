@@ -60,6 +60,12 @@
           @click.prevent="handleLoginSubmit"
         />
         <Button
+          icon="pi pi-check"
+          type="submit"
+          label="Login via google"
+          @click.prevent="handleLoginSubmit"
+        />
+        <Button
           icon="pi pi-user"
           label="Register"
           link

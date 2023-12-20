@@ -63,8 +63,8 @@ class AuthManager {
   static loginWithToken(
     user: any,
     accessToken: string,
+    refreshToken?: string,
     router?: any
-    // refreshToken: string,
     // dispatch?: any
   ) {
     if (user) {
@@ -118,12 +118,12 @@ class AuthManager {
     }
   }
 
-  // static async googleLogin(payload: any, dispatch: any) {
-  //   const res = await axios.post("authentication/googlelogin", payload);
-  //   const { user, access_token, refresh_token } = res?.data;
-  //   if (!access_token) return;
-  //   this.loginWithToken(user, access_token, refresh_token, dispatch);
-  // }
+  static async googleLogin(payload: any, router: any) {
+    const res = await axios.post("authentication/googlelogin", payload);
+    const { user, access_token, refresh_token } = res?.data;
+    if (!access_token) return;
+    this.loginWithToken(user, access_token, refresh_token, router);
+  }
 
   static async register(user: any, role?: eRoles): Promise<any> {
     const { data } = await axios.post(
