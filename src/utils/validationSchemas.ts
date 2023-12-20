@@ -101,12 +101,35 @@ export const registrationSchema = yup.object().shape({
   email: yup.string().email().required("Email is required"),
   name: yup.string().required("First Name is required"),
   lastName: yup.string().required("Last Name is required"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(8, "Password must be at least 8 characters long")
+    .matches(/[a-z]/, "Password must contain at least one lowercase letter.")
+    .matches(/[A-Z]/, "Password must contain at least one uppercase letter.")
+    .matches(
+      /[!@#$%^&*()_+{}|:<>?~]/,
+      "Password must contain at least one special character."
+    )
+    .matches(/[0-9]/, "Password must contain at least one number"),
+  passwordConfirm: yup
+    .string()
+    .required("Confirm New Password is required")
+    .min(8, "Confirm New Password must be at least 8 characters long")
+    .test(
+      "passwords-match",
+      "Confirm new password must match with new password",
+      function (value) {
+        return value === this.parent.password;
+      }
+    ),
+});
+
+export const registrationProviderSchema = yup.object().shape({
+  email: yup.string().email().required("Email is required"),
+  name: yup.string().required("First Name is required"),
+  lastName: yup.string().required("Last Name is required"),
   nipt: yup.string(),
-  // .when(["currentRoutePath"], (currentRoutePath, schema) => {
-  //   return isNiptRequired.value
-  //     ? schema.required("NIPT is required")
-  //     : schema;
-  // }),
   password: yup
     .string()
     .required("Password is required")

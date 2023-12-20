@@ -1,7 +1,9 @@
 import LandingPage from "./LandingPage/index.vue";
 import RegisterView from "./Register/index.vue";
+import RegisterProviderView from "./RegisterProvider/index.vue";
 import LoginView from "./Login/index.vue";
 import ConfirmEmailView from "../user/confirm/index.vue";
+import NotFoundRoutePage from "./404pageError.vue";
 
 const baseRoutes = [
   {
@@ -17,7 +19,7 @@ const baseRoutes = [
   {
     path: "/registerProvider",
     name: "RegisterProviderView",
-    component: RegisterView,
+    component: RegisterProviderView,
   },
   {
     path: "/login",
@@ -28,6 +30,11 @@ const baseRoutes = [
     path: "/confirm",
     name: "ConfirmEmailView",
     component: ConfirmEmailView,
+  },
+  {
+    path: "/404NotFound",
+    name: "404NotFound",
+    component: NotFoundRoutePage,
   },
 ];
 

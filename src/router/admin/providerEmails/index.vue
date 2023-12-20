@@ -9,7 +9,7 @@
       platform
     </template>
     <template #content>
-      <InputText v-model="email" type="text" size="large" placeholder="Large" />
+      <InputText v-model="email" type="text" size="large" placeholder="Email" />
     </template>
     <template #footer>
       <Button icon="pi pi-check" label="Send" @click="handleEmailSend" />
@@ -40,7 +40,7 @@ export default defineComponent({
         const res: any = await axios.post(
           "/authentication/sendEmailTemplateToRegister",
           {
-            email,
+            email: email.value,
           }
         );
 

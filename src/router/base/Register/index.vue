@@ -84,19 +84,6 @@
                 :iconPosition="'right'"
               />
             </div>
-
-            <div
-              class="col-12"
-              style="padding: 0.75rem"
-              v-if="currentRoutePath === '/registerProvider'"
-            >
-              <InputText
-                :name="'nipt'"
-                :label="'Nipt'"
-                :id="'nipt'"
-                placeholder="Nipt"
-              />
-            </div>
           </div>
         </form>
       </template>
@@ -241,20 +228,17 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
+import { defineComponent, ref } from "vue";
 import { useRoute } from "vue-router";
 import { useForm } from "vee-validate";
-import axios from "axios";
-
+import { registrationSchema } from "@/utils/validationSchemas";
 import Card from "primevue/card";
 import Button from "primevue/button";
 import Toast from "primevue/toast";
 import OverlayPanel from "primevue/overlaypanel";
 import { useToast } from "primevue/usetoast";
 
-import * as yup from "yup";
 import InputText from "@/components/formElements/InputText.vue";
-
 import InputPassword from "@/components/formElements/InputPassword.vue";
 import InputSelect from "@/components/formElements/InputSelect.vue";
 
@@ -274,11 +258,12 @@ export default defineComponent({
     InputSelect,
   },
   props: {},
+  enums: {
+    ePaymentMethod,
+  },
   setup() {
     const toast = useToast();
     const route = useRoute();
-    const currentRoutePath = computed(() => route.path);
-    const isNiptRequired = ref(currentRoutePath.value === "/registerProvider");
 
     const passwordChecks = ref<ICheckPassword>({
       capsLetterCheck: false,
@@ -286,47 +271,6 @@ export default defineComponent({
       numberCheck: false,
       pwdLengthCheck: false,
       specialCharCheck: false,
-    });
-
-    const registrationSchema = yup.object().shape({
-      email: yup.string().email().required("Email is required"),
-      name: yup.string().required("First Name is required"),
-      lastName: yup.string().required("Last Name is required"),
-      nipt: yup
-        .string()
-        .when(["currentRoutePath"], (currentRoutePath, schema) => {
-          return isNiptRequired.value
-            ? schema.required("NIPT is required")
-            : schema;
-        }),
-      password: yup
-        .string()
-        .required("Password is required")
-        .min(8, "Password must be at least 8 characters long")
-        .matches(
-          /[a-z]/,
-          "Password must contain at least one lowercase letter."
-        )
-        .matches(
-          /[A-Z]/,
-          "Password must contain at least one uppercase letter."
-        )
-        .matches(
-          /[!@#$%^&*()_+{}|:<>?~]/,
-          "Password must contain at least one special character."
-        )
-        .matches(/[0-9]/, "Password must contain at least one number"),
-      passwordConfirm: yup
-        .string()
-        .required("Confirm New Password is required")
-        .min(8, "Confirm New Password must be at least 8 characters long")
-        .test(
-          "passwords-match",
-          "Confirm new password must match with new password",
-          function (value) {
-            return value === this.parent.password;
-          }
-        ),
     });
 
     const { handleSubmit, resetForm } = useForm({
@@ -337,7 +281,6 @@ export default defineComponent({
         email: "",
         password: "",
         passwordConfirm: "",
-        nipt: "",
         paymentMethod: "",
         address: "",
       },
@@ -346,7 +289,6 @@ export default defineComponent({
     // const { value: name } = useField<string>("name");
     // const { value: lastName } = useField<string>("lastName");
     // const { value: email } = useField<string>("email");
-    // const { value: nipt } = useField<string>("nipt");
     // const { value: password } = useField<string>("password");
     // const { value: passwordConfirm } = useField<string>("passwordConfirm");
     // const { value: paymentMethod } = useField<string>("paymentMethod");
@@ -354,9 +296,8 @@ export default defineComponent({
     const handleRegister = async (values: any) => {
       try {
         const res = await AuthManager.register(values);
-        console.log(res, "RES??");
 
-        if (res) {
+        if (res && res.data !== null) {
           toast.add({
             life: 10000,
             detail: `An email has been sent your email for verification`,
@@ -364,26 +305,6 @@ export default defineComponent({
             summary: "Email verification ",
           });
         }
-        // const res = await axios.post(
-        //   `http://localhost:1112/api/user/${
-        //     currentRoutePath.value !== "/registerProvider"
-        //       ? "register"
-        //       : "registerProvider"
-        //   }`,
-        //   values
-        // );
-        // if (res && res.data) {
-        //   toast.add({
-        //     life: 10000,
-        //     detail: `Contact: ${res.data.contact},
-        //     Email: ${res.data.email}`,
-        //     severity: "success",
-        //     summary: res.data.message,
-        //   });
-
-        // if (currentRoutePath.value === "register")
-        //   router.push({ name: "LoginView" });
-        // }
       } catch (err) {
         console.log(err, "ERR");
       }
@@ -414,12 +335,11 @@ export default defineComponent({
       handleRegister,
       handlePrevention,
       handleOnKeyUp,
+      resetForm,
       passwordChecks,
       handleSubmit,
-      currentRoutePath,
-      name,
+      registrationSchema,
       ePaymentMethod,
-      resetForm,
     };
   },
 });

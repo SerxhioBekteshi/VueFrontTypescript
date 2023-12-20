@@ -125,8 +125,11 @@ class AuthManager {
   //   this.loginWithToken(user, access_token, refresh_token, dispatch);
   // }
 
-  static async register(user: any): Promise<any> {
-    const { data } = await axios.post("/user/register", user);
+  static async register(user: any, role?: eRoles): Promise<any> {
+    const { data } = await axios.post(
+      `/user/register${role === eRoles.Provider ? "Provider" : ""}`,
+      user
+    );
     if (data && data?.access_token) {
       return data.access_token;
     }
