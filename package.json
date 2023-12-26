@@ -28,6 +28,7 @@
     "primeicons": "^6.0.1",
     "primevue": "^3.29.2",
     "redux": "^4.2.1",
+    "socket.io-client": "^4.7.2",
     "vee-validate": "^4.10.7",
     "vue": "^3.3.4",
     "vue-router": "^4.2.2",

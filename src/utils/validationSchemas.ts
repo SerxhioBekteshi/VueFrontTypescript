@@ -156,9 +156,9 @@ export const registrationProviderSchema = yup.object().shape({
 
 export const permissionSchema = yup.object().shape({
   name: yup.string().required("Name is required").label("Name"),
-  action: yup.array().of(yup.number().required("Role is required")),
-  role: yup.string().required("Action is required").label("Action"),
+  roles: yup.array().of(yup.string()),
+  action: yup.string().required("Action is required").label("Action"),
   description: yup.string().label("Description"),
   isActive: yup.boolean().label("Active permission"),
-  subject: yup.number().label("Subject"),
+  subjectId: yup.number().label("Subject"),
 });
