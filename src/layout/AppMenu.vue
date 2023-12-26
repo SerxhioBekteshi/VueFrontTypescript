@@ -20,6 +20,7 @@ export default defineComponent({
     async function getMeals() {
       try {
         const res = await axios.get("/menu/get-all");
+        console.log(res, "RES");
         if (res.data) model.value[0].items = res.data;
       } catch (err) {
         console.log(err, "ERR MENU");

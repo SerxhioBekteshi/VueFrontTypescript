@@ -52,6 +52,21 @@
           :controller="'menu/get-all'"
         />
       </div>
+
+      <div class="gapper">
+        <InputMultiSelect
+          :name="'roles'"
+          :label="'roles'"
+          :id="'roles'"
+          :placeholder="'Roles'"
+          :options="
+            Object.entries(eRoles).map(([key, value]) => ({
+              value,
+              label: key,
+            }))
+          "
+        />
+      </div>
     </form>
   </div>
 </template>
@@ -61,23 +76,28 @@ import { defineComponent } from "vue";
 import InputText from "@/components/formElements/InputText.vue";
 import { inject } from "vue";
 import InputSelect from "@/components/formElements/InputSelect.vue";
+import InputMultiSelect from "@/components/formElements/InputMultiSelect.vue";
 import { eActionMode } from "@/assets/enums/eActionMode";
 import InputBoolean from "@/components/formElements/InputBoolean.vue";
+import { eRoles } from "@/assets/enums/eRoles";
 
 export default defineComponent({
   name: "MealForm",
-  components: { InputText, InputSelect, InputBoolean },
+  components: { InputText, InputSelect, InputBoolean, InputMultiSelect },
   enums: {
     eActionMode,
+    eRoles,
   },
   setup() {
     const veeValidateForm: any = inject("veeValidateForm");
 
     const { value: name } = veeValidateForm.useField("name");
     const { value: action } = veeValidateForm.useField("action");
+    const { value: role } = veeValidateForm.useField("role");
 
     return {
       eActionMode,
+      eRoles,
       name,
       action,
     };

@@ -290,15 +290,17 @@ export default defineComponent({
     const handleRegister = async (values: any) => {
       try {
         const res = await AuthManager.register(values, eRoles.Provider);
-
-        if (res && res.data) {
+        if (res) {
           toast.add({
             life: 10000,
-            detail: `Contact: ${res.data.contact},
-            Email: ${res.data.email}`,
+            detail: `Contact: ${res.contact},
+            Email: ${res.email}`,
             severity: "success",
-            summary: res.data.message,
+            summary: res.message,
           });
+          setTimeout(() => {
+            window.close();
+          }, 10000);
         }
       } catch (err) {
         console.log(err, "ERR");

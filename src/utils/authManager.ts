@@ -126,12 +126,14 @@ class AuthManager {
   }
 
   static async register(user: any, role?: eRoles): Promise<any> {
-    const { data } = await axios.post(
+    const res = await axios.post(
       `/user/register${role === eRoles.Provider ? "Provider" : ""}`,
       user
     );
-    if (data && data?.access_token) {
-      return data.access_token;
+
+    console.log(res);
+    if (res && res?.data) {
+      return res.data;
     }
     return null;
   }
