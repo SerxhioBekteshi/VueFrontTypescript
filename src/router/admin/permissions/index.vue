@@ -18,7 +18,7 @@
         :validationSchema="permissionSchema"
         :fetchDataAfterSubmit="fetchDataAfterSubmit"
       >
-        <PermissionsForm />
+        <PermissionsForm :modeDrawer="modeDrawer" />
       </DetailDrawer>
     </div>
   </div>
@@ -31,6 +31,7 @@ import { eFormMode } from "@/assets/enums/EFormMode";
 import { permissionSchema } from "@/utils/validationSchemas";
 import DetailDrawer from "@/components/DetailDrawer.vue";
 import PermissionsForm from "@/components/formController/PermissionsForm.vue";
+import axios from "axios";
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
@@ -45,7 +46,13 @@ export default defineComponent({
       modeDrawer.value = eFormMode.Add;
     };
 
-    const onEditClick = (data: any, rowId: number) => {
+    const onEditClick = async (data: any, rowId: number) => {
+      try {
+        const res: any = await axios.get(`permissions/${data.id}`);
+        console.log(res, "RES IN FRONT");
+      } catch (err) {
+        console.log(err, "ERR");
+      }
       modeDrawer.value = eFormMode.Edit;
       formData.value = data;
     };

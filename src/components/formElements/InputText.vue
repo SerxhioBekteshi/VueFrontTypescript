@@ -13,6 +13,7 @@
       }"
       :inputId="name"
       @blur="handleBlur"
+      :disabled="disabled"
     />
     <label
       :for="name"
@@ -37,6 +38,7 @@ const props = defineProps({
   label: { type: String },
   feedback: { type: Boolean },
   id: { type: String },
+  disabled: { type: Boolean, default: false },
 });
 
 const { handleChange, value, handleBlur, errorMessage, meta } = useField(

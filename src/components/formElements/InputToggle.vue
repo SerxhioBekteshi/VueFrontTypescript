@@ -1,11 +1,30 @@
 <template>
-  <ToggleButton
-    :onLabel="labelOn"
-    :offLabel="labelOff"
-    onIcon="pi pi-check"
-    offIcon="pi pi-times"
-    class="w-9rem"
-  />
+  <div v-if="options.length !== 0" style="display: flex; gap: 1rem">
+    <div v-for="(option, index) in options" :key="index">
+      <ToggleButton
+        :modelValue="toggleStates[index]"
+        @update:modelValue="handleOptionsValues(index)"
+        :onLabel="option.label"
+        :offLabel="option.label"
+        onIcon="pi pi-check"
+        offIcon="pi pi-times"
+        class="w-9rem"
+      />
+    </div>
+    <!--         @input="(value: any) => toggleStates[index] = value"
+ -->
+  </div>
+  <div v-else>
+    <ToggleButton
+      :modelValue="(value as boolean)"
+      @update:modelValue="handleChange"
+      :onLabel="labelOn"
+      :offLabel="labelOff"
+      onIcon="pi pi-check"
+      offIcon="pi pi-times"
+      class="w-9rem"
+    />
+  </div>
 
   <ValidationError v-if="errorMessage">{{ errorMessage }}</ValidationError>
 </template>
@@ -13,8 +32,13 @@
 <script lang="ts">
 import { useField } from "vee-validate";
 import ValidationError from "../ValidationError.vue";
-import { defineComponent } from "vue";
+import { defineComponent, ref, watch } from "vue";
 import ToggleButton from "primevue/togglebutton";
+
+interface IOption {
+  label: string;
+  value: string;
+}
 
 export default defineComponent({
   name: "InputSelect",
@@ -22,14 +46,43 @@ export default defineComponent({
   props: {
     id: { type: String },
     name: { type: String, required: true },
-    labelOn: { type: String, required: true },
-    labelOff: { type: String, required: true },
-    options: { type: Array, default: () => [] },
+    labelOn: { type: String, default: "Disactive" },
+    labelOff: { type: String, default: "Active" },
+    options: { type: Array as () => IOption[], default: () => [] },
   },
   setup(props) {
-    const { value, errorMessage, meta } = useField(() => props.name, undefined);
+    const { value, errorMessage, meta, handleChange } = useField(
+      () => props.name,
+      undefined
+    );
 
-    return { value, errorMessage, meta };
+    const labelValue = ref<string[]>([]);
+
+    const handleOptionsValues = (index: number) => {
+      toggleStates.value[index] = !toggleStates.value[index];
+
+      props.options.map((option: any, i: number) => {
+        if (i === index && toggleStates.value[index])
+          labelValue.value.push(option.label);
+        else if (i === index && !toggleStates.value[index])
+          labelValue.value = labelValue.value.filter(
+            (label) => label !== option.label
+          );
+      });
+
+      handleChange(labelValue.value);
+    };
+
+    const toggleStates = ref(Array(props.options.length).fill(false));
+
+    return {
+      value,
+      handleChange,
+      handleOptionsValues,
+      errorMessage,
+      meta,
+      toggleStates,
+    };
   },
 });
 </script>

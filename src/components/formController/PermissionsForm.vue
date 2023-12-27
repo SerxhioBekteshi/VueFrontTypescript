@@ -30,12 +30,13 @@
 
       <div class="gapper">
         <InputSelect
+          :disabled="modeDrawer === eFormMode.Edit"
           :options="[
             { label: eActionMode.Read, value: eActionMode.Read },
             { label: eActionMode.Edit, value: eActionMode.Edit },
             { label: eActionMode.Delete, value: eActionMode.Delete },
+            { label: eActionMode.Add, value: eActionMode.Add },
           ]"
-          :includeEmptyOption="true"
           :name="'action'"
           :label="'Permission Action'"
           :id="'action'"
@@ -45,25 +46,35 @@
 
       <div class="gapper">
         <InputSelect
+          :disabled="modeDrawer === eFormMode.Edit"
           :name="'subjectId'"
           :label="'Subject'"
           :id="'subjectId'"
           :placeholder="'Subject'"
-          :controller="'menu/get-all'"
+          :controller="'menu/no-role-get-all'"
         />
       </div>
 
-      <div class="gapper" style="display: flex; gap: 1rem">
-        <div v-for="(role, index) in enumRoles" :key="index">
+      <div class="gapper">
+        <!-- <div v-for="(role, index) in enumRoles" :key="index">
           <ToggleButton
             v-model="toggleStates[index]"
             :onLabel="role.label"
             :offLabel="role.label"
             onIcon="pi pi-check"
             offIcon="pi pi-times"
+            @input="(value: any) => toggleStates[index] = value"
             class="w-9rem"
           />
-        </div>
+        </div> -->
+        <InputToggle
+          :id="'switcher'"
+          :name="'roles'"
+          :options="enumRoles"
+          class="w-9rem"
+        />
+
+        <!-- <InputToggle :id="'switcher'" :name="'role'" class="w-9rem" /> -->
         <!-- <InputMultiSelect
           :name="'roles'"
           :label="'roles'"
@@ -90,7 +101,10 @@ import InputMultiSelect from "@/components/formElements/InputMultiSelect.vue";
 import { eActionMode } from "@/assets/enums/eActionMode";
 import InputBoolean from "@/components/formElements/InputBoolean.vue";
 import { eRoles } from "@/assets/enums/eRoles";
-import ToggleButton from "primevue/togglebutton";
+// import ToggleButton from "primevue/togglebutton";
+import { eFormMode } from "@/assets/enums/EFormMode";
+import { useField } from "vee-validate";
+import InputToggle from "@/components/formElements/InputToggle.vue";
 
 export default defineComponent({
   name: "MealForm",
@@ -98,14 +112,21 @@ export default defineComponent({
     InputText,
     InputSelect,
     InputBoolean,
-    ToggleButton,
+    // ToggleButton,
+    InputToggle,
   },
   enums: {
     eActionMode,
     eRoles,
+    eFormMode,
+  },
+  props: {
+    modeDrawer: {
+      type: String as () => keyof typeof eFormMode,
+    },
   },
   setup() {
-    const veeValidateForm: any = inject("veeValidateForm");
+    // const veeValidateForm: any = inject("veeValidateForm");
 
     const enumRoles = ref<any[]>(
       Object.entries(eRoles)
@@ -120,12 +141,12 @@ export default defineComponent({
 
     // const { value: name } = veeValidateForm.useField("name");
     // const { value: action } = veeValidateForm.useField("action");
-    const { value: roles } = veeValidateForm.useField("roles");
 
     return {
       eActionMode,
       eRoles,
       enumRoles,
+      eFormMode,
       // name,
       // action,
       toggleStates,

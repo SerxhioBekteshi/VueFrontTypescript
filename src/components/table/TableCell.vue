@@ -15,7 +15,7 @@
       <Tag :value="cellValue" :severity="getSeverity(cellValue)"></Tag>
     </div>
     <div v-else-if="cellColumn.propertyType === eColumnType.Boolean">
-      <InputSwitch :value="cellValue" disabled />
+      <InputSwitch :modelValue="cellValue" disabled />
       <!-- <span>
         <i
           :class="{
@@ -35,33 +35,6 @@
       <div v-else>
         <InlineMessage severity="warn"> No image </InlineMessage>
       </div>
-    </div>
-    <div v-else-if="cellColumn.propertyType === eColumnType.Tags">
-      <Listbox
-        v-if="cellValue && cellValue.length !== 0"
-        :options="cellValue"
-        optionLabel="name"
-        class="w-full md:w-14rem"
-        listStyle="max-height:250px"
-      >
-        <template #option="slotProps">
-          <div class="flex align-items-center">
-            <div class="flex flex-column">
-              <div>
-                <span style="font-weight: bold"> Ingredient: </span>
-                {{ slotProps.option.name }}
-              </div>
-              <div>
-                <span style="font-weight: bold"> Portion: </span>
-                {{ slotProps.option.portion }}
-              </div>
-            </div>
-          </div>
-        </template>
-      </Listbox>
-      <InlineMessage v-if="!cellValue" severity="error">
-        No data
-      </InlineMessage>
     </div>
     <div v-else-if="cellColumn.propertyType === eColumnType.Icons">
       <TableCellActions
@@ -111,7 +84,6 @@ import IColumn from "@/interfaces/table/IColumn";
 import { groupDigital } from "@/utils/functions";
 import moment from "moment";
 import { PropType, defineComponent } from "vue";
-import Listbox from "primevue/listbox";
 import InlineMessage from "primevue/inlinemessage";
 import Tag from "primevue/tag";
 import { eOrderStatus } from "@/assets/enums/eOrderStatusType";
@@ -123,7 +95,6 @@ import InputSwitch from "primevue/inputswitch";
 export default defineComponent({
   name: "TableCell",
   components: {
-    Listbox,
     InlineMessage,
     Tag,
     CellNestedObject,

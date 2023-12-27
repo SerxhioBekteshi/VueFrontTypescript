@@ -15,6 +15,7 @@
       :inputId="name"
       :optionValue="optionValue"
       v-model="value"
+      :disabled="disabled"
     />
     <label :for="name" :style="{ color: errorMessage ? 'red' : '' }">
       {{ label }}</label
@@ -51,6 +52,7 @@ export default defineComponent({
     optionValue: { type: String, default: "value" },
     showError: { type: Boolean, default: true },
     controller: { type: String },
+    disabled: { type: Boolean, default: false },
     includeEmptyOption: { type: Boolean, default: false },
   },
   setup(props) {
@@ -77,13 +79,10 @@ export default defineComponent({
             }
 
             if (props.includeEmptyOption) {
-              selectOptions.value = [
-                ...selectOptions.value,
-                {
-                  [props.optionValue]: null,
-                  [props.optionLabel]: "",
-                },
-              ];
+              selectOptions.value = selectOptions.value.splice(0, 0, {
+                [props.optionValue]: null,
+                [props.optionLabel]: "",
+              });
             }
             isLoading.value = false;
             // selectedValue.value = selectOptions.value.find((opt: any) => {

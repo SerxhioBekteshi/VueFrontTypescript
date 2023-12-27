@@ -1,5 +1,6 @@
 export enum eActionMode {
   Read = "Read",
-  Delete = "Delete",
+  Add = "Add",
   Edit = "Edit",
+  Delete = "Delete",
 }
