@@ -115,8 +115,12 @@
             :cellColumn="column"
             :additionalData="slotProps"
             :fieldToShowOnModalDelete="'name'"
-            @custom-row-bt-clicked="handleCustomRowBtClick"
-            @edit-clicked="handleEditClick"
+            @custom-row-bt-clicked="
+              $emit('custom-row-bt-clicked', slotProps.data.id)
+            "
+            @edit-clicked="
+              $emit('edit-clicked', slotProps.data, slotProps.data.id)
+            "
             @delete-clicked="openModalFunction"
           />
         </div>
@@ -239,14 +243,6 @@ export default defineComponent({
     const openModalFunction = (field: any, rowId: number) => {
       fieldModalToShow.value = { name: field, id: rowId };
       openModal.value = true;
-    };
-
-    const handleEditClick = (data: any, rowId: number) => {
-      emit("edit-clicked", data, rowId);
-    };
-
-    const handleCustomRowBtClick = (rowId: number) => {
-      emit("custom-row-bt-clicked", rowId);
     };
 
     const handleCellEditorInput = (newCellValue: any) => {
@@ -456,13 +452,11 @@ export default defineComponent({
       selectedRows,
       handleMultipleDelete,
       openModalFunction,
-      handleEditClick,
       handleRowDropdownChange,
       handleSearchValue,
       onCellEditComplete,
       handleCellEditorInput,
       fetchData,
-      handleCustomRowBtClick,
       handleColumnsToShow,
     };
   },

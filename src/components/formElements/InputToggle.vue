@@ -32,7 +32,7 @@
 <script lang="ts">
 import { useField } from "vee-validate";
 import ValidationError from "../ValidationError.vue";
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent, onMounted, ref, watch } from "vue";
 import ToggleButton from "primevue/togglebutton";
 
 interface IOption {
@@ -49,6 +49,7 @@ export default defineComponent({
     labelOn: { type: String, default: "Disactive" },
     labelOff: { type: String, default: "Active" },
     options: { type: Array as () => IOption[], default: () => [] },
+    class: { type: String },
   },
   setup(props) {
     const { value, errorMessage, meta, handleChange } = useField(
@@ -56,11 +57,25 @@ export default defineComponent({
       undefined
     );
 
+    const toggleStates = ref(Array(props.options.length).fill(false));
     const labelValue = ref<string[]>([]);
+
+    onMounted(() => {
+      if (Array.isArray(value.value)) {
+        labelValue.value = value.value;
+        value.value.forEach((val: any) => {
+          const index = props.options.findIndex(
+            (option) => option.value === val
+          );
+          if (index !== -1) {
+            toggleStates.value[index] = true;
+          }
+        });
+      }
+    });
 
     const handleOptionsValues = (index: number) => {
       toggleStates.value[index] = !toggleStates.value[index];
-
       props.options.map((option: any, i: number) => {
         if (i === index && toggleStates.value[index])
           labelValue.value.push(option.label);
@@ -72,8 +87,6 @@ export default defineComponent({
 
       handleChange(labelValue.value);
     };
-
-    const toggleStates = ref(Array(props.options.length).fill(false));
 
     return {
       value,

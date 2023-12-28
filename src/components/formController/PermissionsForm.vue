@@ -67,12 +67,7 @@
             class="w-9rem"
           />
         </div> -->
-        <InputToggle
-          :id="'switcher'"
-          :name="'roles'"
-          :options="enumRoles"
-          class="w-9rem"
-        />
+        <InputToggle :id="'switcher'" :name="'roles'" :options="enumRoles" />
 
         <!-- <InputToggle :id="'switcher'" :name="'role'" class="w-9rem" /> -->
         <!-- <InputMultiSelect
@@ -97,7 +92,6 @@ import { defineComponent, ref } from "vue";
 import InputText from "@/components/formElements/InputText.vue";
 import { inject } from "vue";
 import InputSelect from "@/components/formElements/InputSelect.vue";
-import InputMultiSelect from "@/components/formElements/InputMultiSelect.vue";
 import { eActionMode } from "@/assets/enums/eActionMode";
 import InputBoolean from "@/components/formElements/InputBoolean.vue";
 import { eRoles } from "@/assets/enums/eRoles";

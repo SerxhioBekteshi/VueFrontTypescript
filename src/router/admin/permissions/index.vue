@@ -49,12 +49,12 @@ export default defineComponent({
     const onEditClick = async (data: any, rowId: number) => {
       try {
         const res: any = await axios.get(`permissions/${data.id}`);
-        console.log(res, "RES IN FRONT");
+        if (res && res.data) formData.value = res.data;
       } catch (err) {
         console.log(err, "ERR");
       }
       modeDrawer.value = eFormMode.Edit;
-      formData.value = data;
+      // formData.value = data;
     };
 
     const fetchDataAfterSubmit = () => {
