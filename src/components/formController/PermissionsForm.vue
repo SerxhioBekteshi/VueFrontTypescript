@@ -123,12 +123,11 @@ export default defineComponent({
     // const veeValidateForm: any = inject("veeValidateForm");
 
     const enumRoles = ref<any[]>(
-      Object.entries(eRoles)
-        .map(([key, value]) => ({
-          value,
-          label: key,
-        }))
-        .filter((role: any) => role.value !== eRoles.Admin)
+      Object.entries(eRoles).map(([key, value]) => ({
+        value,
+        label: key,
+      }))
+      // .filter((role: any) => role.value !== eRoles.Admin)
     );
 
     const toggleStates = ref(Array(enumRoles.value.length).fill(false));
