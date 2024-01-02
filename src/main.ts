@@ -13,10 +13,12 @@ import Tooltip from "primevue/tooltip";
 import ToastService from "primevue/toastservice";
 import { createRedux } from "./store/redux/storePlugin";
 import initApp from "./utils/functions";
+import io from "socket.io-client";
 
 (async () => {
   const appStore = await initApp();
   const reduxStore = createRedux(appStore);
+  const socket = io("http://localhost:1112");
 
   createApp(App)
     .use(reduxStore)
@@ -26,5 +28,6 @@ import initApp from "./utils/functions";
     .use(ToastService)
     // .use(VueDraggable)
     .directive("tooltip", Tooltip)
+    .provide("$socket", socket)
     .mount("#app");
 })();
