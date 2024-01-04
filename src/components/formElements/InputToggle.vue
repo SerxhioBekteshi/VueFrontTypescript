@@ -1,5 +1,8 @@
 <template>
-  <div v-if="options.length !== 0" style="display: flex; gap: 1rem">
+  <div
+    v-if="options.length !== 0"
+    style="display: flex; flex-wrap: wrap; gap: 1rem"
+  >
     <div v-for="(option, index) in options" :key="index">
       <ToggleButton
         :modelValue="toggleStates[index]"
