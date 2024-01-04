@@ -12,10 +12,11 @@ import Menu from "primevue/menu";
 import JwtManager from "../utils/jwtManager";
 import { useDispatch } from "@/store/redux/helpers";
 import AuthManager from "@/utils/authManager";
+import NotificationIcon from "@/components/NotificationIcon.vue";
 
 export default defineComponent({
   name: "AppTopbar",
-  components: { Menu },
+  components: { Menu, NotificationIcon },
   props: {},
   setup() {
     const { layoutConfig, onMenuToggle } = useLayout();
@@ -143,6 +144,7 @@ export default defineComponent({
     </button>
 
     <div class="layout-topbar-menu" :class="topbarMenuClasses">
+      <NotificationIcon :icon="'pi pi-circle'" />
       <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
         <i class="pi pi-calendar"></i>
         <span>Calendar</span>
