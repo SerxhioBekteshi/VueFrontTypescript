@@ -1,14 +1,14 @@
 <template>
   <div
     :class="`notification-item ${
-      item.seen === false
+      item?.seen === false
         ? 'bg-light-success bg-opacity-50 cursor-pointer unread'
         : ''
     }`"
   >
     <div
       className="flex align-items-start gap-3 cursor-pointer"
-      @Click="() => handleClick(item.id)"
+      @Click="() => handleClick(item?.id)"
     >
       <div
         class="circle-box md-box flex-shrink-0"
@@ -16,15 +16,18 @@
       ></div>
       <div className="col-9 notification-item-date">
         <div className="flex justify-content-between">
-          <h5 className="mb-0 fs-6 fw-bold text-black">
-            {{ item?.name }} {{ item?.lastName }}
+          <h5 className="mb-0 fw-bold text-black">
+            {{ item?.sender.username }}
           </h5>
           <h5 className="mb-0 fs-6 fw-bold text-black">
-            {{ moment(createdAt).fromNow() }}
+            {{ moment(item?.createdAt).fromNow() }}
           </h5>
         </div>
         <div className="flex flex-column">
-          <span className="fs-7 text-truncate d-block">{{ message }}</span>
+          <span className="d-block">
+            {{ item?.message }}
+            s
+          </span>
         </div>
       </div>
     </div>
@@ -34,23 +37,13 @@
 <script lang="ts">
 import { PropType, defineComponent } from "vue";
 import moment from "moment";
-
-interface NotificationItem {
-  _id: any;
-  id: number;
-  message: any;
-  route: string;
-  seen: boolean;
-  createdAt: Date;
-  sender: any;
-  user: any;
-}
+import { INotificationItem } from "@/interfaces/other/INotificationItem";
 
 export default defineComponent({
   name: "NotificationSocket",
   components: {},
   props: {
-    item: { type: Object as PropType<NotificationItem> },
+    item: { type: Object as PropType<INotificationItem> },
   },
   setup(props, { emit }) {
     const handleClick = async (id: any) => {

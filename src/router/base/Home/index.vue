@@ -6,6 +6,7 @@
       @edit-clicked="onEditClick"
       ref="tableDataRef"
     />
+
     <div v-if="modeDrawer || formData">
       <DetailDrawer
         :onClose="invalidateState"

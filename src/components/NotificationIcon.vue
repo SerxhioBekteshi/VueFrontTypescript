@@ -1,21 +1,26 @@
 <template>
   <div>
-    <!-- <Button
-      :icon="icon"
-      @click="toggle"
-      size="small"
-      class="p-link layout-topbar-button"
-      aria-haspopup="true"
-      aria-controls="overlay_menu"
-    /> -->
     <button @click="toggle" class="p-link layout-topbar-button">
       <i :class="icon"></i>
       <span>Notification</span>
     </button>
 
-    <Menu ref="menu" id="overlay_menu" :model="items" :popup="true">
-      <template #item="{ item }">
-        <NotificationSocket :item="item" />
+    <Menu ref="menu" id="overlay_menu" :model="notifications" :popup="true">
+      <template #start>
+        <div class="flex align-items-center g-1 flex-wrap">
+          <Button
+            icon="pi pi-sync"
+            severity="danger"
+            text
+            rounded
+            aria-label="Mark as read"
+            @click="markAllRead"
+          />
+          <p>Mark all as read</p>
+        </div>
+      </template>
+      <template #item="{ item: { msg } }">
+        <NotificationSocket :item="msg" />
       </template>
     </Menu>
   </div>
@@ -27,21 +32,25 @@ import axios from "axios";
 import Button from "primevue/button";
 import Menu from "primevue/menu";
 import { defineComponent, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import NotificationSocket from "./NotificationSocket.vue";
+import {
+  IExtendedMenuItem,
+  INotificationItem,
+} from "@/interfaces/other/INotificationItem";
+import { not } from "@vuelidate/validators";
 
 export default defineComponent({
   name: "NotificationIcon",
-  components: { Menu },
+  components: { Menu, NotificationSocket, Button },
   props: {
     icon: { type: String, required: false, default: "pi pi-ellipsis-v" },
   },
   setup(props) {
-    const notifications = ref<any>([]);
+    const notifications = ref<IExtendedMenuItem[]>([]);
     const socket = useWebSocket();
     const menu = ref<any>();
-    const items = ref<any>([]);
 
     const toggle = (event: any) => {
-      console.log(menu.value);
       menu.value.toggle(event);
     };
 
@@ -50,9 +59,13 @@ export default defineComponent({
         const res = await axios.post("/table/notifications", {
           pageNumber: 1,
           pageSize: 10,
+          search: "",
+          filters: [],
         });
-        if (res) {
-          notifications.value = res.data.rows;
+        if (res && res.data) {
+          notifications.value = res.data.rows.map((element: any) => ({
+            msg: element,
+          }));
         }
       } catch (error) {
         console.log(error, "error in notification componenet");
@@ -79,12 +92,24 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      // getAllNotifications();
+      getAllNotifications();
     });
 
     onMounted(() => {
       handleSocketAppNotification();
     });
+
+    const markAllRead = async () => {
+      const res = await axios.post("/notification/markAllRead");
+      if (res && res.data > 0) {
+        const copyNotifications = [...notifications.value];
+        copyNotifications.forEach((notification) => {
+          if (notification.seen === false) {
+            notification.seen = true;
+          }
+        });
+      }
+    };
 
     // onBeforeUnmount(() => {
     //   if (socket.value !== null && socket.value.active) {
@@ -99,7 +124,7 @@ export default defineComponent({
       }
     );
 
-    return { toggle, items, menu };
+    return { toggle, markAllRead, menu, notifications };
   },
 });
 </script>

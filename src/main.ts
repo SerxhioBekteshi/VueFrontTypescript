@@ -22,7 +22,7 @@ import { WebsocketProvider } from "@/hooks/userWebSocket/index";
   createApp(App)
     .use(reduxStore)
     .use(router)
-    .use(WebsocketProvider)
+    // .use(WebsocketProvider)
     .use(ToastPlugin, { position: "top" })
     .use(PrimeVue, { ripple: true })
     .use(ToastService)
