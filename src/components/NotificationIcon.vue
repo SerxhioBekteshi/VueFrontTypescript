@@ -57,7 +57,7 @@ export default defineComponent({
     const getAllNotifications = async () => {
       try {
         const res = await axios.post("/table/notifications", {
-          pageNumber: 1,
+          page: 1,
           pageSize: 10,
           search: "",
           filters: [],

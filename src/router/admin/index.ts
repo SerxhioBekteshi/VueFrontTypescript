@@ -5,6 +5,7 @@ import ProvidersRegistration from "./ProvidersRegistration.vue";
 import MealsConfiguration from "@/views/other/MealsConfigurations.vue";
 import Permissions from "./permissions/index.vue";
 import ProviderEmail from "./providerEmails/index.vue";
+import AdminOrders from "./Orders.vue";
 
 const adminRoutes = [
   {
@@ -15,6 +16,11 @@ const adminRoutes = [
         path: "",
         name: "Home",
         component: Home,
+      },
+      {
+        path: "orders",
+        name: "Admin Orders",
+        component: AdminOrders,
       },
       {
         path: "quiz",
