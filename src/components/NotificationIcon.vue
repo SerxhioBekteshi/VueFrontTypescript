@@ -5,9 +5,15 @@
       <span>Notification</span>
     </button>
 
-    <Menu ref="menu" id="overlay_menu" :model="notifications" :popup="true">
+    <Menu
+      ref="menu"
+      id="overlay_menu"
+      :model="notifications"
+      :popup="true"
+      style="width: 300px; height: fit-content"
+    >
       <template #start>
-        <div class="flex align-items-center g-1 flex-wrap">
+        <div class="flex align-items-center g-1 pb-2 flex-wrap">
           <Button
             icon="pi pi-sync"
             severity="danger"
@@ -33,11 +39,7 @@ import Button from "primevue/button";
 import Menu from "primevue/menu";
 import { defineComponent, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import NotificationSocket from "./NotificationSocket.vue";
-import {
-  IExtendedMenuItem,
-  INotificationItem,
-} from "@/interfaces/other/INotificationItem";
-import { not } from "@vuelidate/validators";
+import { INotificationItem } from "@/interfaces/other/INotificationItem";
 
 export default defineComponent({
   name: "NotificationIcon",
@@ -46,8 +48,9 @@ export default defineComponent({
     icon: { type: String, required: false, default: "pi pi-ellipsis-v" },
   },
   setup(props) {
-    const notifications = ref<IExtendedMenuItem[]>([]);
+    const notifications = ref<INotificationItem[]>([]);
     const socket = useWebSocket();
+    console.log(socket, "SOCKET");
     const menu = ref<any>();
 
     const toggle = (event: any) => {

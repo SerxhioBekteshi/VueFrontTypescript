@@ -18,10 +18,10 @@ const WebsocketContextKey = Symbol();
 
 // Define the WebSocketProvider component
 const installWebSocket = (app: App) => {
-  app.component("WebSocketProvider", {
+  app.config.globalProperties.$WebSocketProvider = {
     name: "WebSocketProvider",
     props: {},
-    setup(slots) {
+    setup(slots: any) {
       console.log("WebSocketProvider component setup");
 
       const user = useReduxSelector((state) => state.user);
@@ -81,7 +81,7 @@ const installWebSocket = (app: App) => {
       // Render slots (children components)
       return () => slots.default && slots.default();
     },
-  });
+  };
 };
 
 // Define the useWebSocket composable function for accessing the WebSocket instance

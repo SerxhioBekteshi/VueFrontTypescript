@@ -13,7 +13,7 @@ import Tooltip from "primevue/tooltip";
 import ToastService from "primevue/toastservice";
 import { createRedux } from "./store/redux/storePlugin";
 import initApp from "./utils/functions";
-import { WebsocketProvider } from "@/hooks/userWebSocket/index";
+import { WebSocketProvider } from "@/hooks/userWebSocket/test";
 
 (async () => {
   const appStore = await initApp();
@@ -22,7 +22,7 @@ import { WebsocketProvider } from "@/hooks/userWebSocket/index";
   createApp(App)
     .use(reduxStore)
     .use(router)
-    // .use(WebsocketProvider)
+    .use(WebSocketProvider)
     .use(ToastPlugin, { position: "top" })
     .use(PrimeVue, { ripple: true })
     .use(ToastService)

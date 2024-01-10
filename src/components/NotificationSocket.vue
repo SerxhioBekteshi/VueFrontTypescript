@@ -1,32 +1,35 @@
 <template>
   <div
-    :class="`notification-item ${
-      item?.seen === false
-        ? 'bg-light-success bg-opacity-50 cursor-pointer unread'
-        : ''
+    :class="`notification-item border-2 border-green-400 border-round ${
+      item?.seen === false ? 'bg-green-100 cursor-pointer unread m-1 ' : ''
     }`"
   >
     <div
-      className="flex align-items-start gap-3 cursor-pointer"
-      @Click="() => handleClick(item?.id)"
+      @click="
+        () => {
+          $emit('on-notification-click', item?.id);
+          console.log(item);
+        }
+      "
     >
-      <div
+      <!-- <div
         class="circle-box md-box flex-shrink-0"
         style="width: 20px, height: 20px"
-      ></div>
-      <div className="col-9 notification-item-date">
+      ></div> -->
+      <div className="col-12 notification-item-date	">
         <div className="flex justify-content-between">
-          <h5 className="mb-0 fw-bold text-black">
-            {{ item?.sender.username }}
+          <h5 className="mb-0 font-bold text-900	">
+            {{ item?.sender.name }} {{ item?.sender.lastName }}
           </h5>
-          <h5 className="mb-0 fs-6 fw-bold text-black">
-            {{ moment(item?.createdAt).fromNow() }}
+          <h5 className="mb-0 text-lg font-bold text-900">
+            {{ moment(item?.createdAt).fromNow() }} here will be the date the
+            notification
           </h5>
         </div>
         <div className="flex flex-column">
           <span className="d-block">
             {{ item?.message }}
-            s
+            Here will be the message of the notification
           </span>
         </div>
       </div>
@@ -46,19 +49,11 @@ export default defineComponent({
     item: { type: Object as PropType<INotificationItem> },
   },
   setup(props, { emit }) {
-    const handleClick = async (id: any) => {
-      emit("on-notification-click", id);
-    };
-
-    return { handleClick, moment };
+    return { moment };
   },
 });
 </script>
 <style scoped>
-.notifications-dropdown {
-  background-color: var(--bs-dropdown-bg) !important;
-}
-
 .notifications-header {
   position: sticky;
   top: 0;
@@ -76,16 +71,11 @@ export default defineComponent({
     }
   } */
 }
-.list-group-item {
-  background-color: unset !important;
-}
+
 .notification-item-date {
-  width: 85% !important;
+  width: 100% !important;
 }
 .notification-item-title {
   width: 30%;
-}
-.avatars-hidden-list {
-  width: 200px;
 }
 </style>
