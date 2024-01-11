@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { useWebSocket } from "@/hooks/userWebSocket";
+import { useWebSocket } from "@/hooks/userWebSocket/test";
 import axios from "axios";
 import Button from "primevue/button";
 import Menu from "primevue/menu";

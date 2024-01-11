@@ -5,18 +5,13 @@ import {
   onBeforeUnmount,
   provide,
   inject,
-  watch,
   Ref,
 } from "vue";
-
-// Import the required Vue 3 plugin for your WebSocket logic
 import { io, Socket } from "socket.io-client";
 import { useReduxSelector } from "@/store/redux/helpers";
 
-// Define your WebSocketContext key for providing and injecting the WebSocket instance
 const WebsocketContextKey = Symbol();
 
-// Define the WebSocketProvider component
 const installWebSocket = (app: App) => {
   app.component("WebSocketProvider", {
     name: "WebSocketProvider",
@@ -69,24 +64,18 @@ const installWebSocket = (app: App) => {
 
       onMounted(() => {
         startSocket();
+        console.log("MOUNTED");
         provide(WebsocketContextKey, connection.value);
       });
 
-      // Render slots (children components)
       return () => slots.default && slots.default();
     },
   });
 };
 
-// Define the useWebSocket composable function for accessing the WebSocket instance
 const useWebSocket = () => {
-  // Inject the WebSocket instance
   const ctx = inject<Ref<Socket | null>>(WebsocketContextKey);
-  console.log(ctx, "CONNECTION");
-
-  // Return the WebSocket instance
   return ctx?.value || null;
 };
 
-// Export the WebSocketProvider and useWebSocket
 export { installWebSocket as WebSocketProvider, useWebSocket };
