@@ -14,7 +14,8 @@ import ToastService from "primevue/toastservice";
 import { createRedux } from "./store/redux/storePlugin";
 import initApp from "./utils/functions";
 // import { WebSocketProvider } from "@/hooks/userWebSocket/test";
-import WebSocketPlugin from "./hooks/userWebSocket/test3";
+// import WebSocketPlugin from "./hooks/userWebSocket/test3";
+import socketPlugin from "@/hooks/userWebSocket/socketPlugin";
 
 (async () => {
   const appStore = await initApp();
@@ -23,8 +24,9 @@ import WebSocketPlugin from "./hooks/userWebSocket/test3";
   createApp(App)
     .use(reduxStore)
     .use(router)
-    .use(WebSocketPlugin)
     .use(ToastPlugin, { position: "top" })
+    // .use(WebSocketPlugin)
+    // .use(socketPlugin)
     .use(PrimeVue, { ripple: true })
     .use(ToastService)
     // .use(VueDraggable)

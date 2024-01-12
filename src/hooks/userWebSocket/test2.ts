@@ -40,7 +40,7 @@ const installWebSocket = (app: App) => {
               socket.connect();
               connection.value = socket;
             } catch (error) {
-              console.log("WebsocketProvider.start", error);
+              console.log("WebsocketProvider.start.error", error);
             }
           }
 

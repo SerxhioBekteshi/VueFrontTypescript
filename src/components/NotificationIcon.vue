@@ -33,13 +33,21 @@
 </template>
 
 <script lang="ts">
-import { useWebSocket } from "@/hooks/userWebSocket/test";
+import { useWebSocket } from "@/hooks/userWebSocket/test2";
 import axios from "axios";
 import Button from "primevue/button";
 import Menu from "primevue/menu";
-import { defineComponent, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import {
+  defineComponent,
+  inject,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  watch,
+} from "vue";
 import NotificationSocket from "./NotificationSocket.vue";
 import { INotificationItem } from "@/interfaces/other/INotificationItem";
+import { useToast } from "primevue/usetoast";
 
 export default defineComponent({
   name: "NotificationIcon",
@@ -49,8 +57,13 @@ export default defineComponent({
   },
   setup(props) {
     const notifications = ref<INotificationItem[]>([]);
-    const socket = useWebSocket();
-    console.log(socket, "SOCKET");
+    // const socket = useWebSocket();
+
+    const socket: any = inject("socket");
+    console.log(socket, "AWDAWd");
+
+    const toast = useToast();
+
     const menu = ref<any>();
 
     const toggle = (event: any) => {
@@ -73,6 +86,18 @@ export default defineComponent({
       } catch (error) {
         console.log(error, "error in notification componenet");
       }
+    };
+
+    const handleSocket = () => {
+      socket.on("AppNotification", (notification: any) => {
+        console.log(notification, "WHAT???");
+        toast.add({
+          life: 3000,
+          detail: notification.message,
+          severity: "info",
+          summary: "New notification",
+        });
+      });
     };
 
     const handleSocketAppNotification = () => {
@@ -99,7 +124,8 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      handleSocketAppNotification();
+      // handleSocket();
+      // handleSocketAppNotification();
     });
 
     const markAllRead = async () => {
