@@ -19,26 +19,15 @@ import { WebsocketMixin } from "./hooks/userWebSocket/socketPlugin";
   const appStore = await initApp();
   const reduxStore = createRedux(appStore);
 
-  const app = createApp(App);
-  app.use(reduxStore);
-  app.use(router);
-  app.use(ToastPlugin, { position: "top" });
-  app.use(PrimeVue, { ripple: true });
-  app.use(ToastService);
-  app.directive("tooltip", Tooltip);
-  app.mount("#app");
-
-  WebsocketMixin.install(app);
-
-  // createApp(App)
-  //   .use(reduxStore)
-  //   .use(router)
-  //   .use(ToastPlugin, { position: "top" })
-  //   .use(WebsocketMixin)
-  //   .use(PrimeVue, { ripple: true })
-  //   .use(ToastService)
-  //   // .use(VueDraggable)
-  //   .directive("tooltip", Tooltip)
-  //   // .provide("$socket", socket)
-  //   .mount("#app")
+  createApp(App)
+    .use(reduxStore)
+    .use(router)
+    .use(ToastPlugin, { position: "top" })
+    .use(WebsocketMixin)
+    .use(PrimeVue, { ripple: true })
+    .use(ToastService)
+    // .use(VueDraggable)
+    .directive("tooltip", Tooltip)
+    // .provide("$socket", socket)
+    .mount("#app");
 })();
