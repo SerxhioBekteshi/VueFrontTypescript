@@ -10,7 +10,7 @@
       id="overlay_menu"
       :model="notifications"
       :popup="true"
-      style="width: 300px; height: fit-content"
+      style="width: 300px; max-height: 200px"
     >
       <template #start>
         <div class="flex align-items-center g-1 pb-2 flex-wrap">
@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts">
-import { useWebSocket } from "@/hooks/userWebSocket/socketPlugin";
+import { useWebSocket } from "@/hooks/userWebSocket/index";
 import axios from "axios";
 import Button from "primevue/button";
 import Menu from "primevue/menu";
@@ -64,7 +64,7 @@ export default defineComponent({
       try {
         const res = await axios.post("/table/notifications", {
           page: 1,
-          pageSize: 10,
+          pageSize: 5,
           search: "",
           filters: [],
         });
@@ -92,11 +92,11 @@ export default defineComponent({
 
     onMounted(() => {
       if (socket && socket.active) {
-        const handleAppNotification = (message: any) => {
-          notifications.value = [message, ...notifications.value];
+        const handleAppNotification = (notification: any) => {
+          notifications.value = [...notifications.value, notification];
           toast.add({
             life: 3000,
-            detail: message.message,
+            detail: notification.message,
             severity: "info",
             summary: "New registration",
           });

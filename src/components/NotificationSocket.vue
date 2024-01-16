@@ -13,13 +13,19 @@
       "
     >
       <div class="flex flex-column p-3">
-        <h5 className="mb-0 font-bold text-900	notification-item-title">
-          {{ item?.title }}
-        </h5>
+        <div class="flex justify-content-between align-items-center">
+          <h5 className="mb-0 font-bold text-900	">
+            {{ item?.title }}
+          </h5>
+          <div class="flex flex-end">
+            <span style="color: red" class="pi pi-trash"></span>
+          </div>
+        </div>
+
         <h5 className="mb-0 text-lg font-bold text-900">
           {{ item?.user.name }} {{ item?.user.lastName }}
         </h5>
-        <div class="flex gap-3">
+        <div class="flex gap-3 align-items-center">
           <span className="d-block">
             {{ item?.message }}
           </span>

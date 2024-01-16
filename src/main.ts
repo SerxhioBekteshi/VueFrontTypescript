@@ -23,7 +23,7 @@ import { WebsocketMixin } from "./hooks/userWebSocket/socketPlugin";
     .use(reduxStore)
     .use(router)
     .use(ToastPlugin, { position: "top" })
-    .use(WebsocketMixin)
+    // .use(WebsocketMixin)
     .use(PrimeVue, { ripple: true })
     .use(ToastService)
     // .use(VueDraggable)

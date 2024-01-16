@@ -1,92 +1,100 @@
-import {
-  App,
-  ref,
-  onMounted,
-  onBeforeUnmount,
-  provide,
-  inject,
-  watch,
-  Ref,
-} from "vue";
+// import {
+//   App,
+//   ref,
+//   onMounted,
+//   onBeforeUnmount,
+//   provide,
+//   inject,
+//   watch,
+//   Ref,
+// } from "vue";
 
-// Import the required Vue 3 plugin for your WebSocket logic
-import { io, Socket } from "socket.io-client";
-import { useReduxSelector } from "@/store/redux/helpers";
+import { Socket } from "socket.io-client";
+import { Ref, inject } from "vue";
 
-// Define your WebSocketContext key for providing and injecting the WebSocket instance
-const WebsocketContextKey = Symbol();
+// // Import the required Vue 3 plugin for your WebSocket logic
+// import { io, Socket } from "socket.io-client";
+// import { useReduxSelector } from "@/store/redux/helpers";
 
-// Define the WebSocketProvider component
-const installWebSocket = (app: App) => {
-  app.component("WebSocketProvider", {
-    name: "WebSocketProvider",
-    props: {},
-    setup(slots) {
-      console.log("WebSocketProvider component setup");
+// // Define your WebSocketContext key for providing and injecting the WebSocket instance
+// const WebsocketContextKey = Symbol();
 
-      const user = useReduxSelector((state) => state.user);
-      const connection = ref<Socket | null>(null);
+// // Define the WebSocketProvider component
+// const installWebSocket = (app: App) => {
+//   app.component("WebSocketProvider", {
+//     name: "WebSocketProvider",
+//     props: {},
+//     setup(slots) {
+//       console.log("WebSocketProvider component setup");
 
-      const initializeSocket = () => {
-        let socket: Socket | null = null;
-        if (user.value?.role) {
-          socket = io("http://localhost:1112", {
-            autoConnect: false,
-            transports: ["websocket", "polling"],
-            query: {
-              userObjectId: user.value._id,
-              userId: user.value.id,
-              role: user.value.role,
-            },
-          });
+//       const user = useReduxSelector((state) => state.user);
+//       const connection = ref<Socket | null>(null);
 
-          if (!socket.active) {
-            try {
-              socket.connect();
-              connection.value = socket;
-            } catch (error) {
-              console.log("WebsocketProvider.start", error);
-            }
-          }
+//       const initializeSocket = () => {
+//         let socket: Socket | null = null;
+//         if (user.value?.role) {
+//           socket = io("http://localhost:1112", {
+//             autoConnect: false,
+//             transports: ["websocket", "polling"],
+//             query: {
+//               userObjectId: user.value._id,
+//               userId: user.value.id,
+//               role: user.value.role,
+//             },
+//           });
 
-          return socket;
-        }
-      };
+//           if (!socket.active) {
+//             try {
+//               socket.connect();
+//               connection.value = socket;
+//             } catch (error) {
+//               console.log("WebsocketProvider.start", error);
+//             }
+//           }
 
-      const startSocket = () => {
-        const socket = initializeSocket();
+//           return socket;
+//         }
+//       };
 
-        onBeforeUnmount(() => {
-          if (socket && socket.active) {
-            try {
-              socket.disconnect();
-            } catch (error) {
-              console.log("WebsocketProvider.disconnect", error);
-            }
-          }
-        });
-      };
+//       const startSocket = () => {
+//         const socket = initializeSocket();
 
-      onMounted(() => {
-        startSocket();
-        provide(WebsocketContextKey, connection.value);
-      });
+//         onBeforeUnmount(() => {
+//           if (socket && socket.active) {
+//             try {
+//               socket.disconnect();
+//             } catch (error) {
+//               console.log("WebsocketProvider.disconnect", error);
+//             }
+//           }
+//         });
+//       };
 
-      // Render slots (children components)
-      return () => slots.default && slots.default();
-    },
-  });
+//       onMounted(() => {
+//         startSocket();
+//         provide(WebsocketContextKey, connection.value);
+//       });
+
+//       // Render slots (children components)
+//       return () => slots.default && slots.default();
+//     },
+//   });
+// };
+
+// // Define the useWebSocket composable function for accessing the WebSocket instance
+// const useWebSocket = () => {
+//   // Inject the WebSocket instance
+//   const ctx = inject<Ref<Socket | null>>(WebsocketContextKey);
+//   console.log(ctx, "CONNECTION");
+
+//   // Return the WebSocket instance
+//   return ctx?.value || null;
+// };
+
+// // Export the WebSocketProvider and useWebSocket
+// export { installWebSocket as WebSocketProvider, useWebSocket };
+
+export const useWebSocket = () => {
+  const ctx = inject<Ref<Socket | null>>("WebSocketProvider");
+  return ctx || null;
 };
-
-// Define the useWebSocket composable function for accessing the WebSocket instance
-const useWebSocket = () => {
-  // Inject the WebSocket instance
-  const ctx = inject<Ref<Socket | null>>(WebsocketContextKey);
-  console.log(ctx, "CONNECTION");
-
-  // Return the WebSocket instance
-  return ctx?.value || null;
-};
-
-// Export the WebSocketProvider and useWebSocket
-export { installWebSocket as WebSocketProvider, useWebSocket };
