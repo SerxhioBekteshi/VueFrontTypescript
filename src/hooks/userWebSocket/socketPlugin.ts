@@ -1,39 +1,61 @@
+import { ref, onMounted, onUnmounted, provide, App, inject, Ref } from "vue";
+import { io, Socket } from "socket.io-client";
 import { useReduxSelector } from "@/store/redux/helpers";
-import { io } from "socket.io-client";
-import { App } from "vue";
 
-const socketPlugin = {
+const WebsocketContextKey = Symbol();
+
+const WebsocketMixin = {
+  // installed: false,
   install: (app: App) => {
-    // Set up WebSocket connection
+    // if (WebsocketMixin.installed) {
+    //   return;
+    // }
+    // WebsocketMixin.installed = true;
+    const connection = ref<any>(null);
+    let socket: Socket | null = null;
 
-    const user = useReduxSelector((state) => state.user);
+    app.mixin({
+      mounted() {
+        const user = useReduxSelector((state) => state.user);
+        if (user.value?.role) {
+          socket = io("http://localhost:1112", {
+            autoConnect: false,
+            transports: ["websocket", "polling"],
+            query: {
+              userId: user.value.id,
+              adminId: user.value.id,
+              role: user.value.role,
+            },
+          });
 
-    const socket = io("http://localhost:1112", {
-      //   autoConnect: false,
-      transports: ["websocket", "polling"],
-      query: {
-        //   userObjectId: user.value._id,
-        userId: 1,
-        //   role: user.value.role,
+          if (!socket.active) {
+            try {
+              socket.connect();
+              connection.value = socket;
+              console.log("connection.value");
+              provide(WebsocketContextKey, connection.value);
+            } catch (error) {
+              console.error("WebsocketProvider.start", error);
+            }
+          }
+        }
+      },
+
+      unmounted() {
+        if (socket && socket.active) {
+          try {
+            socket.disconnect();
+          } catch (error) {
+            console.error("WebsocketProvider.disconnect", error);
+          }
+        }
       },
     });
-    // Adjust the server URL
-
-    console.log(user, "USER");
-    // Handle incoming notifications
-    socket.on("AppNotification", (notification: any) => {
-      app.config.globalProperties.toast({
-        title: "Notification",
-        message: notification.message,
-        position: "top-right",
-        duration: 5000,
-        type: "info",
-      });
-    });
-
-    // Add the socket instance to the app for easy access in components
-    app.config.globalProperties.socket = socket;
   },
 };
 
-export default socketPlugin;
+const useWebSocket = () => {
+  const ctx = inject<Ref<Socket | null>>(WebsocketContextKey);
+  return ctx || null;
+};
+export { WebsocketMixin, useWebSocket };

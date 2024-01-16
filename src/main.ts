@@ -13,24 +13,32 @@ import Tooltip from "primevue/tooltip";
 import ToastService from "primevue/toastservice";
 import { createRedux } from "./store/redux/storePlugin";
 import initApp from "./utils/functions";
-// import { WebSocketProvider } from "@/hooks/userWebSocket/test";
-// import WebSocketPlugin from "./hooks/userWebSocket/test3";
-import socketPlugin from "@/hooks/userWebSocket/socketPlugin";
+import { WebsocketMixin } from "./hooks/userWebSocket/socketPlugin";
 
 (async () => {
   const appStore = await initApp();
   const reduxStore = createRedux(appStore);
 
-  createApp(App)
-    .use(reduxStore)
-    .use(router)
-    .use(ToastPlugin, { position: "top" })
-    // .use(WebSocketPlugin)
-    // .use(socketPlugin)
-    .use(PrimeVue, { ripple: true })
-    .use(ToastService)
-    // .use(VueDraggable)
-    .directive("tooltip", Tooltip)
-    // .provide("$socket", socket)
-    .mount("#app");
+  const app = createApp(App);
+  app.use(reduxStore);
+  app.use(router);
+  app.use(ToastPlugin, { position: "top" });
+  app.use(PrimeVue, { ripple: true });
+  app.use(ToastService);
+  app.directive("tooltip", Tooltip);
+  app.mount("#app");
+
+  WebsocketMixin.install(app);
+
+  // createApp(App)
+  //   .use(reduxStore)
+  //   .use(router)
+  //   .use(ToastPlugin, { position: "top" })
+  //   .use(WebsocketMixin)
+  //   .use(PrimeVue, { ripple: true })
+  //   .use(ToastService)
+  //   // .use(VueDraggable)
+  //   .directive("tooltip", Tooltip)
+  //   // .provide("$socket", socket)
+  //   .mount("#app")
 })();

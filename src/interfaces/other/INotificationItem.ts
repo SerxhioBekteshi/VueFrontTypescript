@@ -9,6 +9,7 @@ export interface INotificationItem {
   createdAt: Date;
   sender: any;
   user: any;
+  title: any;
 }
 
 export interface IExtendedMenuItem extends MenuItem {

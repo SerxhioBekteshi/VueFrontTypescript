@@ -30,21 +30,15 @@
       </template>
     </Menu>
   </div>
+  <Toast />
 </template>
 
 <script lang="ts">
-import { useWebSocket } from "@/hooks/userWebSocket/test2";
+import { useWebSocket } from "@/hooks/userWebSocket/socketPlugin";
 import axios from "axios";
 import Button from "primevue/button";
 import Menu from "primevue/menu";
-import {
-  defineComponent,
-  inject,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  watch,
-} from "vue";
+import { defineComponent, onMounted, onUnmounted, ref } from "vue";
 import NotificationSocket from "./NotificationSocket.vue";
 import { INotificationItem } from "@/interfaces/other/INotificationItem";
 import { useToast } from "primevue/usetoast";
@@ -57,13 +51,9 @@ export default defineComponent({
   },
   setup(props) {
     const notifications = ref<INotificationItem[]>([]);
-    // const socket = useWebSocket();
-
-    const socket: any = inject("socket");
-    console.log(socket, "AWDAWd");
+    const socket: any = useWebSocket();
 
     const toast = useToast();
-
     const menu = ref<any>();
 
     const toggle = (event: any) => {
@@ -79,6 +69,7 @@ export default defineComponent({
           filters: [],
         });
         if (res && res.data) {
+          console.log(res.data);
           notifications.value = res.data.rows.map((element: any) => ({
             msg: element,
           }));
@@ -88,35 +79,11 @@ export default defineComponent({
       }
     };
 
-    const handleSocket = () => {
-      socket.on("AppNotification", (notification: any) => {
-        console.log(notification, "WHAT???");
-        toast.add({
-          life: 3000,
-          detail: notification.message,
-          severity: "info",
-          summary: "New notification",
-        });
-      });
-    };
-
-    const handleSocketAppNotification = () => {
-      //   if (socket?.value && socket?.value.active) {
-      //     const handleAppNotification = (message) => {
-      //       notifications.value = [message, ...notifications.value];
-      // Assuming dispatch is a method in your component
-      // toast.add
-      //   dispatch({
-      //     type: 'createNotification',
-      //     timeout: 3000,
-      //     message: message.message,
-      //     clickable: !!message.route,
-      //     route: `/${user.role}/${message.route}`,
-      //     id: message._id,
-      //   });
-      // };
-      // socket.value.on("AppNotification", handleAppNotification);
-      //   }
+    const markAllRead = async () => {
+      const res = await axios.post("/notification/markAllRead");
+      if (res && res.data > 0) {
+        getAllNotifications();
+      }
     };
 
     onMounted(() => {
@@ -124,34 +91,26 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      // handleSocket();
-      // handleSocketAppNotification();
-    });
+      if (socket && socket.active) {
+        const handleAppNotification = (message: any) => {
+          notifications.value = [message, ...notifications.value];
+          toast.add({
+            life: 3000,
+            detail: message.message,
+            severity: "info",
+            summary: "New registration",
+          });
+        };
 
-    const markAllRead = async () => {
-      const res = await axios.post("/notification/markAllRead");
-      if (res && res.data > 0) {
-        const copyNotifications = [...notifications.value];
-        copyNotifications.forEach((notification) => {
-          if (notification.seen === false) {
-            notification.seen = true;
+        socket.on("AppNotification", handleAppNotification);
+
+        onUnmounted(() => {
+          if (socket !== null && socket.active) {
+            socket.off("AppNotification", handleAppNotification);
           }
         });
       }
-    };
-
-    // onBeforeUnmount(() => {
-    //   if (socket.value !== null && socket.value.active) {
-    //     socket.value.off("AppNotification");
-    //   }
-    // });
-
-    watch(
-      () => notifications.value,
-      (newNotifications, oldNotifications) => {
-        handleSocketAppNotification();
-      }
-    );
+    });
 
     return { toggle, markAllRead, menu, notifications };
   },
