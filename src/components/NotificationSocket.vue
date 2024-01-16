@@ -4,34 +4,42 @@
       item?.seen === false ? 'bg-green-100 cursor-pointer unread m-1 ' : ''
     }`"
   >
-    <div
-      @click="
-        () => {
-          $emit('on-notification-click', item?.id);
-          router.push(`${item?.route}`);
-        }
-      "
-    >
+    <div>
       <div class="flex flex-column p-3">
         <div class="flex justify-content-between align-items-center">
           <h5 className="mb-0 font-bold text-900	">
             {{ item?.title }}
           </h5>
-          <div class="flex flex-end">
+          <div
+            class="flex flex-end"
+            @click="
+              () => {
+                $emit('handle-delete', item?.id);
+              }
+            "
+          >
             <span style="color: red" class="pi pi-trash"></span>
           </div>
         </div>
-
-        <h5 className="mb-0 text-lg font-bold text-900">
-          {{ item?.user.name }} {{ item?.user.lastName }}
-        </h5>
-        <div class="flex gap-3 align-items-center">
-          <span className="d-block">
-            {{ item?.message }}
-          </span>
-          <span class="font-bold notification-item-date">
-            {{ moment(item?.createdAt).fromNow() }}
-          </span>
+        <div
+          @click="
+            () => {
+              $emit('on-notification-click', item?.id);
+              router.push(`${item?.route}`);
+            }
+          "
+        >
+          <h5 className="mb-0 text-lg font-bold text-900">
+            {{ item?.user.name }} {{ item?.user.lastName }}
+          </h5>
+          <div class="flex gap-3 align-items-center">
+            <span className="d-block">
+              {{ item?.message }}
+            </span>
+            <span class="font-bold notification-item-date">
+              {{ moment(item?.createdAt).fromNow() }}
+            </span>
+          </div>
         </div>
       </div>
       <!-- <div
@@ -66,6 +74,7 @@ import { useRouter } from "vue-router";
 export default defineComponent({
   name: "NotificationSocket",
   components: {},
+  emits: ["handle-delete", "on-notification-click"],
   props: {
     item: { type: Object as PropType<INotificationItem> },
   },

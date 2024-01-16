@@ -10,23 +10,42 @@
       id="overlay_menu"
       :model="notifications"
       :popup="true"
-      style="width: 300px; max-height: 200px"
+      :dismissable="false"
+      style="width: 300px; max-height: 400px; overflow-y: auto"
     >
       <template #start>
-        <div class="flex align-items-center g-1 pb-2 flex-wrap">
-          <Button
-            icon="pi pi-sync"
-            severity="danger"
-            text
-            rounded
-            aria-label="Mark as read"
-            @click="markAllRead"
-          />
-          <p>Mark all as read</p>
+        <div class="flex justify-content-between">
+          <div class="flex align-items-center g-1 pb-2 flex-wrap">
+            <Button
+              icon="pi pi-sync"
+              severity="danger"
+              text
+              rounded
+              aria-label="Mark as read"
+              @click="markAllRead"
+            />
+            <p>Mark all as read</p>
+          </div>
+          <div>
+            <Button
+              icon="pi pi-trash"
+              severity="warning"
+              text
+              rounded
+              aria-label="Mark as read"
+              @click="() => handleDelete()"
+            />
+          </div>
         </div>
       </template>
       <template #item="{ item: { msg } }">
-        <NotificationSocket :item="msg" />
+        <NotificationSocket :item="msg" @handle-delete="handleDelete" />
+      </template>
+      <template #end>
+        <div class="flex justify-content-between p-3">
+          <div>View all</div>
+          <div>Load more</div>
+        </div>
       </template>
     </Menu>
   </div>
@@ -38,7 +57,7 @@ import { useWebSocket } from "@/hooks/userWebSocket/index";
 import axios from "axios";
 import Button from "primevue/button";
 import Menu from "primevue/menu";
-import { defineComponent, onMounted, onUnmounted, ref } from "vue";
+import { computed, defineComponent, onMounted, onUnmounted, ref } from "vue";
 import NotificationSocket from "./NotificationSocket.vue";
 import { INotificationItem } from "@/interfaces/other/INotificationItem";
 import { useToast } from "primevue/usetoast";
@@ -52,12 +71,31 @@ export default defineComponent({
   setup(props) {
     const notifications = ref<INotificationItem[]>([]);
     const socket: any = useWebSocket();
-
+    const idsToDelete = ref<number[]>([]);
     const toast = useToast();
     const menu = ref<any>();
 
     const toggle = (event: any) => {
       menu.value.toggle(event);
+    };
+
+    const handleDelete = async (id?: number) => {
+      try {
+        const res: any = await axios.post("/notification/deleteAll", {
+          ids: id ? [id] : idsToDelete.value,
+        });
+        if (res && res.data > 0) {
+          toast.add({
+            life: 3000,
+            detail: `${res.data} notification were deleted`,
+            severity: "warn",
+            summary: "Notification delete",
+          });
+          getAllNotifications();
+        }
+      } catch (err: any) {
+        console.log(err, "ERROR");
+      }
     };
 
     const getAllNotifications = async () => {
@@ -69,7 +107,9 @@ export default defineComponent({
           filters: [],
         });
         if (res && res.data) {
-          console.log(res.data);
+          idsToDelete.value = res.data.rows.map(
+            (notification: any) => notification.id
+          );
           notifications.value = res.data.rows.map((element: any) => ({
             msg: element,
           }));
@@ -112,7 +152,7 @@ export default defineComponent({
       }
     });
 
-    return { toggle, markAllRead, menu, notifications };
+    return { toggle, markAllRead, menu, notifications, handleDelete };
   },
 });
 </script>
