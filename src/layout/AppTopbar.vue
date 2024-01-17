@@ -1,3 +1,54 @@
+<template>
+  <div class="layout-topbar">
+    <!-- <router-link to="/" class="layout-topbar-logo">
+            <img :src="logoUrl" alt="logo" />
+            <span>SAKAI</span>
+        </router-link> -->
+
+    <button
+      class="p-link layout-menu-button layout-topbar-button"
+      @click="onMenuToggle()"
+    >
+      <i class="pi pi-bars"></i>
+    </button>
+
+    <button
+      class="p-link layout-topbar-menu-button layout-topbar-button"
+      @click="onTopBarMenuButton()"
+    >
+      <i class="pi pi-ellipsis-v"></i>
+    </button>
+
+    <div class="layout-topbar-menu" :class="topbarMenuClasses">
+      <div class="flex align-items-center">
+        <NotificationIcon :icon="'pi pi-circle'" />
+      </div>
+      <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
+        <i class="pi pi-calendar"></i>
+        <span>Calendar</span>
+      </button>
+      <button
+        v-tooltip="'Profile'"
+        @click="toggle"
+        class="p-link layout-topbar-button"
+      >
+        <i class="pi pi-user"></i>
+        <span>Profile</span>
+      </button>
+      <button
+        @click="onLogoutClick()"
+        v-tooltip="'Log out'"
+        class="p-link layout-topbar-button"
+      >
+        <i class="pi pi-sign-out"></i>
+        <span>Log out</span>
+      </button>
+    </div>
+  </div>
+
+  <Menu ref="menu" id="overlay_menuProfile" :model="items" :popup="true" />
+</template>
+
 <script lang="ts">
 import {
   ref,
@@ -9,7 +60,7 @@ import {
 import { useLayout } from "@/layout/composables/layout";
 import { useRouter } from "vue-router";
 import Menu from "primevue/menu";
-import JwtManager from "../utils/jwtManager";
+// import JwtManager from "../utils/jwtManager";
 import { useDispatch } from "@/store/redux/helpers";
 import AuthManager from "@/utils/authManager";
 import NotificationIcon from "@/components/NotificationIcon.vue";
@@ -24,7 +75,7 @@ export default defineComponent({
     const outsideClickListener = ref<any>(null);
     const topbarMenuActive = ref<boolean>(false);
     const router = useRouter();
-    const menu = ref();
+    const menu = ref<any>();
     const dispatch = useDispatch();
 
     onMounted(() => {
@@ -99,12 +150,12 @@ export default defineComponent({
           {
             label: "Password",
             icon: "pi pi-user-edit",
-            to: "/profile/personal",
+            to: "/profilePassword",
           },
           {
             label: "Details",
             icon: "pi pi-folder",
-            to: "/profile/details",
+            to: "/profileDetails",
           },
         ],
       },
@@ -115,60 +166,12 @@ export default defineComponent({
       onLogoutClick,
       toggle,
       onTopBarMenuButton,
+      menu,
       items,
       topbarMenuClasses,
     };
   },
 });
 </script>
-
-<template>
-  <div class="layout-topbar">
-    <!-- <router-link to="/" class="layout-topbar-logo">
-            <img :src="logoUrl" alt="logo" />
-            <span>SAKAI</span>
-        </router-link> -->
-
-    <button
-      class="p-link layout-menu-button layout-topbar-button"
-      @click="onMenuToggle()"
-    >
-      <i class="pi pi-bars"></i>
-    </button>
-
-    <button
-      class="p-link layout-topbar-menu-button layout-topbar-button"
-      @click="onTopBarMenuButton()"
-    >
-      <i class="pi pi-ellipsis-v"></i>
-    </button>
-
-    <div class="layout-topbar-menu" :class="topbarMenuClasses">
-      <NotificationIcon :icon="'pi pi-circle'" />
-      <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
-        <i class="pi pi-calendar"></i>
-        <span>Calendar</span>
-      </button>
-      <button
-        v-tooltip="'Profile'"
-        @click="toggle"
-        class="p-link layout-topbar-button"
-      >
-        <i class="pi pi-user"></i>
-        <span>Profile</span>
-      </button>
-      <button
-        @click="onLogoutClick()"
-        v-tooltip="'Log out'"
-        class="p-link layout-topbar-button"
-      >
-        <i class="pi pi-sign-out"></i>
-        <span>Log out</span>
-      </button>
-    </div>
-  </div>
-
-  <Menu ref="menu" id="overlay_menu" :model="items" :popup="true" />
-</template>
 
 <style lang="scss" scoped></style>

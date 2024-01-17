@@ -26,18 +26,35 @@
             </div>
           </div>
           <div v-if="!slotProps.item.accountSubmitted">
-            <!-- //if button clicked we will delete that account permanently -->
             <Button
-              icon="pi pi-times"
+              icon="pi pi-trash"
               severity="danger"
               text
               rounded
+              @click="
+                () => {
+                  fieldModal.provider = slotProps.item.name;
+                  fieldModal.id = slotProps.item.id;
+                  openModal = true;
+                }
+              "
               aria-label="Cancel"
             />
           </div>
         </div>
       </template>
     </PickList>
+
+    <Modal
+      v-model:openModal="openModal"
+      @handleClose="() => (openModal = false)"
+      :title="'Delete meal'"
+      :actions="modalActions"
+    >
+      Are you sure you want to delete
+      <span class="font-bold"> {{ fieldModal?.provider }} </span> ?
+    </Modal>
+
     <Toast />
   </div>
 </template>
@@ -49,15 +66,63 @@ import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
 
 import axios from "axios";
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, shallowRef } from "vue";
 import Button from "primevue/button";
+import Modal from "@/components/Modal.vue";
+
+interface IFieldModal {
+  id?: number;
+  provider?: string;
+}
 
 export default defineComponent({
   name: "ProvidersRegistration",
-  components: { PickList, Message, Toast, Button },
+  components: { PickList, Message, Toast, Button, Modal },
   setup() {
     const generalDataAccounts = ref<any>([]);
     const toast = useToast();
+    const openModal = ref<boolean>(false);
+    const fieldModal = ref<IFieldModal>({});
+
+    const removeProviderAccount = async (id: number) => {
+      try {
+        const res = await axios.delete(`user/${fieldModal.value?.id}`);
+        if (res && res.data) {
+          toast.add({
+            life: 3000,
+            detail: res.data.message,
+            severity: "success",
+            summary: "info",
+          });
+          fetchProviders();
+          openModal.value = false;
+        }
+      } catch (err) {
+        console.log(err, "ERR IN PROVIDER DELETE ");
+      }
+    };
+
+    const modalActions = shallowRef<any[]>([
+      {
+        component: Button,
+        props: {
+          type: "Submit",
+          icon: "pi pi-times",
+          label: "Delete",
+          severity: "danger",
+          onclick: removeProviderAccount,
+        },
+      },
+      {
+        component: Button,
+        props: {
+          label: "Cancel",
+          icon: "pi pi-check",
+          severity: "info",
+          onclick: () => (openModal.value = false),
+        },
+      },
+    ]);
 
     const fetchProviders = async () => {
       const res = await axios.get("/user/providers/get-all");
@@ -109,7 +174,15 @@ export default defineComponent({
       fetchProviders();
     });
 
-    return { generalDataAccounts, handleMoveToTarget, handleMoveToSource };
+    return {
+      generalDataAccounts,
+      openModal,
+      modalActions,
+      fieldModal,
+      removeProviderAccount,
+      handleMoveToTarget,
+      handleMoveToSource,
+    };
   },
 });
 </script>

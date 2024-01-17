@@ -47,7 +47,7 @@
 <script lang="ts">
 import { useField } from "vee-validate";
 import ValidationError from "../ValidationError.vue";
-import { defineComponent, ref } from "vue";
+import { defineComponent, inject, ref } from "vue";
 import axios from "axios";
 import Toast from "primevue/toast";
 import { useToast } from "primevue/usetoast";
@@ -83,6 +83,8 @@ export default defineComponent({
       });
     };
 
+    const functionsFromMealPage: any = inject("closeAndFetchData");
+
     const handleFileUpload = async (event: any) => {
       // isLoading.value = true;
       const file = event.files[0];
@@ -102,6 +104,8 @@ export default defineComponent({
             severity: "success",
             summary: "info",
           });
+          functionsFromMealPage.close();
+          functionsFromMealPage.fetch();
         }
       } catch (err) {
         console.log(err, "FILE ERROR UPLOAD");

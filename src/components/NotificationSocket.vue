@@ -12,6 +12,7 @@
           </h5>
           <div
             class="flex flex-end"
+            v-tooltip="'Delete'"
             @click="
               () => {
                 $emit('handle-delete', item?.id);
@@ -32,11 +33,11 @@
           <h5 className="mb-0 text-lg font-bold text-900">
             {{ item?.user.name }} {{ item?.user.lastName }}
           </h5>
-          <div class="flex gap-3 align-items-center">
-            <span className="d-block">
+          <div class="flex align-items-center justify-content-between mt-3">
+            <span>
               {{ item?.message }}
             </span>
-            <span class="font-bold notification-item-date">
+            <span class="font-bold text-sm text-right">
               {{ moment(item?.createdAt).fromNow() }}
             </span>
           </div>
@@ -103,9 +104,9 @@ export default defineComponent({
   } */
 }
 
-.notification-item-date {
+/* .notification-item-date {
   width: 100% !important;
-}
+} */
 /* .notification-item-title { */
 /* width: 30%; */
 /* } */

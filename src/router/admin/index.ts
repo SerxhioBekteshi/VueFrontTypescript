@@ -1,11 +1,12 @@
 import Home from "../base/Home/index.vue";
 import AppLayout from "@/layout/AppLayout.vue";
 import Quiz from "./Quiz.vue";
-import ProvidersRegistration from "./ProvidersRegistration.vue";
+import ProvidersRegistration from "./providersRegistration/index.vue";
 import MealsConfiguration from "@/views/other/MealsConfigurations.vue";
 import Permissions from "./permissions/index.vue";
 import ProviderEmail from "./providerEmails/index.vue";
 import AdminOrders from "./Orders.vue";
+import OrderDetails from "../provider/OrderDetails.vue";
 
 const adminRoutes = [
   {
@@ -19,8 +20,16 @@ const adminRoutes = [
       },
       {
         path: "orders",
-        name: "Admin Orders",
+        name: "AdminOrders",
         component: AdminOrders,
+      },
+      {
+        path: "orders/:id",
+        name: "OrderDetails",
+        component: OrderDetails,
+        meta: {
+          requiresAuth: true,
+        },
       },
       {
         path: "quiz",
@@ -54,6 +63,7 @@ const adminRoutes = [
           requiresAuth: true,
         },
       },
+
       {
         path: "permissions",
         name: "Permissions",

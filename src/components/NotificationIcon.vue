@@ -1,9 +1,16 @@
 <template>
   <div>
-    <button @click="toggle" class="p-link layout-topbar-button">
+    <!-- <button @click="toggle" class="p-link layout-topbar-button">
       <i :class="icon"></i>
       <span>Notification</span>
-    </button>
+    </button> -->
+
+    <Badge
+      :value="numberOfUnseenNotifications"
+      @click="toggle"
+      severity="success"
+      style="cursor: pointer"
+    ></Badge>
 
     <Menu
       ref="menu"
@@ -20,6 +27,7 @@
               icon="pi pi-sync"
               severity="danger"
               text
+              size="small"
               rounded
               aria-label="Mark as read"
               @click="markAllRead"
@@ -28,9 +36,11 @@
           </div>
           <div>
             <Button
+              v-tooltip="'Delete all'"
               icon="pi pi-trash"
               severity="warning"
               text
+              size="small"
               rounded
               aria-label="Mark as read"
               @click="() => handleDelete()"
@@ -42,9 +52,27 @@
         <NotificationSocket :item="msg" @handle-delete="handleDelete" />
       </template>
       <template #end>
-        <div class="flex justify-content-between p-3">
-          <div>View all</div>
-          <div>Load more</div>
+        <div v-if="isLoading" class="flex justify-content-center">
+          <ProgressSpinner
+            style="width: 30px; height: 30px"
+            strokeWidth="2"
+            fill="var(--surface-ground)"
+            animationDuration=".5s"
+            aria-label="Custom ProgressSpinner"
+          />
+        </div>
+        <div class="flex justify-content-between p-1">
+          <div>
+            <Button label="View all" link size="small" />
+          </div>
+          <div>
+            <Button
+              @click="() => (pageSize = pageSize + 5)"
+              label="Load more"
+              link
+              size="small"
+            />
+          </div>
         </div>
       </template>
     </Menu>
@@ -57,27 +85,44 @@ import { useWebSocket } from "@/hooks/userWebSocket/index";
 import axios from "axios";
 import Button from "primevue/button";
 import Menu from "primevue/menu";
-import { computed, defineComponent, onMounted, onUnmounted, ref } from "vue";
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+} from "vue";
 import NotificationSocket from "./NotificationSocket.vue";
 import { INotificationItem } from "@/interfaces/other/INotificationItem";
 import { useToast } from "primevue/usetoast";
+import Badge from "primevue/badge";
+import ProgressSpinner from "primevue/progressspinner";
 
 export default defineComponent({
   name: "NotificationIcon",
-  components: { Menu, NotificationSocket, Button },
+  components: { Menu, NotificationSocket, Button, Badge, ProgressSpinner },
   props: {
     icon: { type: String, required: false, default: "pi pi-ellipsis-v" },
   },
   setup(props) {
     const notifications = ref<INotificationItem[]>([]);
     const socket: any = useWebSocket();
-    const idsToDelete = ref<number[]>([]);
+    // const idsToDelete = ref<number[]>([]);
     const toast = useToast();
     const menu = ref<any>();
+    const pageSize = ref<number>(5);
+    const isLoading = ref<boolean>(false);
+    const loadMessage = ref<string>("");
 
     const toggle = (event: any) => {
       menu.value.toggle(event);
     };
+
+    watch([pageSize], () => {
+      isLoading.value = true;
+      getAllNotifications();
+    });
 
     const handleDelete = async (id?: number) => {
       try {
@@ -98,21 +143,39 @@ export default defineComponent({
       }
     };
 
+    const numberOfUnseenNotifications = computed(() => {
+      return (
+        notifications.value &&
+        notifications.value.filter((notification: any) => notification.seen)
+          .length
+      );
+    });
+
+    console.log(numberOfUnseenNotifications.value);
+
+    const idsToDelete = computed(() => {
+      return (
+        notifications.value &&
+        notifications.value.map((notification: any) => notification.id)
+      );
+    });
+
     const getAllNotifications = async () => {
       try {
         const res = await axios.post("/table/notifications", {
           page: 1,
-          pageSize: 5,
+          pageSize: pageSize.value,
           search: "",
           filters: [],
         });
         if (res && res.data) {
-          idsToDelete.value = res.data.rows.map(
-            (notification: any) => notification.id
-          );
+          // idsToDelete.value = res.data.rows.map(
+          //   (notification: any) => notification.id
+          // );
           notifications.value = res.data.rows.map((element: any) => ({
             msg: element,
           }));
+          isLoading.value = false;
         }
       } catch (error) {
         console.log(error, "error in notification componenet");
@@ -152,7 +215,17 @@ export default defineComponent({
       }
     });
 
-    return { toggle, markAllRead, menu, notifications, handleDelete };
+    return {
+      toggle,
+      markAllRead,
+      handleDelete,
+      getAllNotifications,
+      pageSize,
+      numberOfUnseenNotifications,
+      isLoading,
+      menu,
+      notifications,
+    };
   },
 });
 </script>

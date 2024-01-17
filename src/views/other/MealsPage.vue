@@ -318,7 +318,7 @@
       :fetchDataAfterSubmit="fetchMeals"
       :showSubmitButton="false"
     >
-      <div v-if="formDrawerMode !== 'upload'">
+      <div v-if="formDrawerMode === eFormMode.Upload">
         <ImageForm :controller="'meals'" :imageData="formData || {}" />
       </div>
       <div v-else>
@@ -356,7 +356,14 @@
 </template>
 
 <script lang="ts">
-import { ref, onMounted, defineComponent, watch, shallowRef } from "vue";
+import {
+  ref,
+  onMounted,
+  defineComponent,
+  watch,
+  shallowRef,
+  provide,
+} from "vue";
 import * as yup from "yup";
 import DataView from "primevue/dataview";
 import Tag from "primevue/tag";
@@ -414,6 +421,9 @@ export default defineComponent({
     shouldCrud: { type: Boolean, required: true },
     shouldRate: { type: Boolean, required: true },
   },
+  enums: {
+    eFormMode,
+  },
   setup() {
     const profile = useReduxSelector((state) => state.user);
     const router = useRouter();
@@ -455,10 +465,11 @@ export default defineComponent({
 
     const onUploadClick = (id: any, image: any) => {
       formData.value = { id, image };
+      formDrawerMode.value = eFormMode.Upload;
     };
 
     const invalidateState = () => {
-      formDrawerMode.value = "";
+      formDrawerMode.value = null;
       meal.value = undefined;
       formData.value = undefined;
     };
@@ -578,6 +589,8 @@ export default defineComponent({
       currentPage.value = 1;
     };
 
+    provide("closeAndFetchData", { close: invalidateState, fetch: fetchMeals });
+
     return {
       meals,
       pageSize,
@@ -597,6 +610,7 @@ export default defineComponent({
       rowsPerPageOptions,
       totalItems,
       customToolbarComponent,
+      eFormMode,
       getSeverity,
       invalidateState,
       handleAddData,

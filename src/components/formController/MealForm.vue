@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form @onSubmit="handlePrevent">
+    <form @onSubmit="handlePrevent" v-if="selectData">
       <div class="gapper">
         <InputText
           name="name"
@@ -16,7 +16,7 @@
           :label="'Cousine'"
           :id="'cousine'"
           :placeholder="'Cousine'"
-          :controller="'quiz/get-all'"
+          :options="getQuestionOptionsByFieldName(selectData, 'cousine')"
         />
       </div>
 
@@ -26,7 +26,7 @@
           :label="'Diet Category'"
           :id="'dietCategory'"
           :placeholder="'Diet Category'"
-          :controller="'quiz/get-all'"
+          :options="getQuestionOptionsByFieldName(selectData, 'dietCategory')"
         />
       </div>
 
@@ -36,7 +36,7 @@
           :label="'Intolerance'"
           :id="'intolerance'"
           :placeholder="'Intolerance'"
-          :controller="'quiz/get-all'"
+          :options="getQuestionOptionsByFieldName(selectData, 'intolerance')"
         />
       </div>
 
@@ -46,6 +46,7 @@
           :label="'Calories'"
           :id="'calories'"
           :placeholder="'Calories'"
+          :options="getQuestionOptionsByFieldName(selectData, 'calories')"
         />
       </div>
 
@@ -55,7 +56,7 @@
           :label="'Achievement'"
           :id="'achievement'"
           :placeholder="'Achievement'"
-          :controller="'quiz/get-all'"
+          :options="getQuestionOptionsByFieldName(selectData, 'achievement')"
         />
       </div>
 
@@ -167,13 +168,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import InputText from "@/components/formElements/InputText.vue";
 import { inject } from "vue";
 import { FieldArray } from "vee-validate";
 import InputNumber from "@/components/formElements/InputNumber.vue";
 import Button from "primevue/button";
 import InputSelect from "@/components/formElements/InputSelect.vue";
+import axios from "axios";
 
 export default defineComponent({
   name: "MealForm",
@@ -191,12 +193,45 @@ export default defineComponent({
     const { fields: ingredients } =
       veeValidateForm.useFieldArray("ingredients");
 
+    const selectData = ref<any>();
+
     const handlePrevent = (event: any) => {
       event.preventDefault();
     };
 
+    onMounted(async () => {
+      try {
+        const res: any = await axios.get(`quiz/get-all`);
+
+        if (res && res.data) {
+          selectData.value = res.data;
+          console.log(selectData.value);
+
+          const sth = selectData.value.find(
+            (item: any) => item.fieldName === "cousine"
+          );
+        }
+      } catch (err: any) {
+        console.log(err);
+      }
+    });
+
+    const getQuestionOptionsByFieldName = (data: any, fieldName: string) => {
+      const question = selectData.value.find(
+        (item: any) => item.fieldName === fieldName
+      );
+
+      if (question) {
+        return question.questionOptions;
+      }
+
+      return [];
+    };
+
     return {
       handlePrevent,
+      getQuestionOptionsByFieldName,
+      selectData,
       name,
       cousine,
       carbonFootprint,
