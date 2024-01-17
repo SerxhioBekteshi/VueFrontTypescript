@@ -58,6 +58,7 @@ export default defineComponent({
   setup(props) {
     const { value, errorMessage, meta } = useField(() => props.name, undefined);
     const toast = useToast();
+    console.log(props.options, "OPTION");
     const selectOptions = ref<any[]>(props.options);
     const isLoading = ref<boolean>(props.controller ? true : false);
     // const selectedValue = ref();

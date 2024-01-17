@@ -31,6 +31,7 @@
               rounded
               aria-label="Mark as read"
               @click="markAllRead"
+              :disabled="notifications.length === 0"
             />
             <p>Mark all as read</p>
           </div>
@@ -41,6 +42,7 @@
               severity="warning"
               text
               size="small"
+              :disabled="notifications.length === 0"
               rounded
               aria-label="Mark as read"
               @click="() => handleDelete()"
@@ -63,10 +65,16 @@
         </div>
         <div class="flex justify-content-between p-1">
           <div>
-            <Button label="View all" link size="small" />
+            <Button
+              label="View all"
+              link
+              size="small"
+              :disabled="notifications.length === 0"
+            />
           </div>
           <div>
             <Button
+              :disabled="notifications.length === 0"
               @click="() => (pageSize = pageSize + 5)"
               label="Load more"
               link
@@ -98,10 +106,18 @@ import { INotificationItem } from "@/interfaces/other/INotificationItem";
 import { useToast } from "primevue/usetoast";
 import Badge from "primevue/badge";
 import ProgressSpinner from "primevue/progressspinner";
+import Toast from "primevue/toast";
 
 export default defineComponent({
   name: "NotificationIcon",
-  components: { Menu, NotificationSocket, Button, Badge, ProgressSpinner },
+  components: {
+    Menu,
+    NotificationSocket,
+    Button,
+    Badge,
+    ProgressSpinner,
+    Toast,
+  },
   props: {
     icon: { type: String, required: false, default: "pi pi-ellipsis-v" },
   },

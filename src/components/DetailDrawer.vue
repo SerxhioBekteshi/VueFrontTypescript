@@ -113,7 +113,7 @@ export default defineComponent({
           label: "Submit",
           severity: "primary",
           onClick: handleSubmit(handleFormSubmit),
-          disabled: !props.showSubmitButton,
+          // disabled: !props.showSubmitButton,
         },
       },
       {

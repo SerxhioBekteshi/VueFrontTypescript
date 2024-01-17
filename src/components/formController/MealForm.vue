@@ -3,10 +3,10 @@
     <form @onSubmit="handlePrevent" v-if="selectData">
       <div class="gapper">
         <InputText
-          name="name"
+          :name="'name'"
           :label="'Meal Name'"
-          id="name"
-          placeholder="Meal Name"
+          :id="'name'"
+          :placeholder="'Meal Name'"
         />
       </div>
 
@@ -63,7 +63,7 @@
       <div class="gapper">
         <InputNumber
           :label="'Carbon footprint'"
-          name="carbonFootprint"
+          :name="'carbonFootprint'"
           type="number"
           id="carbonFootprint"
           placeholder="Carbon footprint"
@@ -220,7 +220,6 @@ export default defineComponent({
       const question = selectData.value.find(
         (item: any) => item.fieldName === fieldName
       );
-
       if (question) {
         return question.questionOptions;
       }

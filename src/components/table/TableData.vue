@@ -122,6 +122,7 @@
               $emit('edit-clicked', slotProps.data, slotProps.data.id)
             "
             @delete-clicked="openModalFunction"
+            @on-cell-double-click="handleDoubleClick"
           />
         </div>
       </template>
@@ -140,14 +141,26 @@
   <Modal
     v-model:openModal="openModal"
     @handleClose="() => (openModal = false)"
-    :title="'Delete meal'"
-    :actions="modalActions"
+    :title="
+      modalInformation === eFormMode.Delete ? 'Delete meal' : 'Data preview'
+    "
+    :actions="modalInformation === eFormMode.Delete ? modalActions : []"
   >
-    Are you sure you want to delete
-    <span v-if="fieldModalToShow" style="font-weight: bold">
-      {{ fieldModalToShow.name }}
-    </span>
-    ?
+    <div v-if="modalInformation === eFormMode.Delete">
+      Are you sure you want to delete
+      <span v-if="fieldModalToShow" style="font-weight: bold">
+        {{ fieldModalToShow.name }}
+      </span>
+      ?
+    </div>
+    <div v-else>
+      <ul>
+        <li v-for="(value, key) in fieldModalToShow" :key="key">
+          {{ key }}:
+          <CellNestedObject :nestedObject="value" />
+        </li>
+      </ul>
+    </div>
   </Modal>
   <Toast />
 </template>
@@ -180,7 +193,8 @@ import CellEditor from "@/components/table/CellEditor.vue";
 import { eFilterOperator } from "@/assets/enums/eFilterOperator";
 import TablePaginator from "./TablePaginator.vue";
 import ISelectColumn from "@/interfaces/database/ISelectColumn";
-
+import CellNestedObject from "../table/CellNestedObject.vue";
+import { eFormMode } from "@/assets/enums/EFormMode";
 interface Action {
   component: any;
   props: Record<string, unknown>;
@@ -202,6 +216,7 @@ export default defineComponent({
     // CellEditor,
     Button,
     TablePaginator,
+    CellNestedObject,
   },
   props: {
     controller: { type: String },
@@ -221,10 +236,18 @@ export default defineComponent({
     selectableRows: { type: Boolean, default: true },
     toggleColumnsVisibility: { type: Boolean, default: true },
   },
-  emits: ["edit-clicked", "custom-row-bt-clicked", "insert-clicked"],
+  emits: [
+    "edit-clicked",
+    "custom-row-bt-clicked",
+    "insert-clicked",
+    "on-cell-double-click",
+  ],
+  enums: {
+    eFormMode,
+  },
   setup(props, { emit }) {
     const toast = useToast();
-
+    const modalInformation = ref<string>("");
     const {
       controller,
       checkbox,
@@ -242,6 +265,13 @@ export default defineComponent({
 
     const openModalFunction = (field: any, rowId: number) => {
       fieldModalToShow.value = { name: field, id: rowId };
+      modalInformation.value = eFormMode.Delete;
+      openModal.value = true;
+    };
+
+    const handleDoubleClick = (cellValue: any) => {
+      modalInformation.value = eFormMode.View;
+      fieldModalToShow.value = cellValue;
       openModal.value = true;
     };
 
@@ -450,6 +480,8 @@ export default defineComponent({
       selectColumns,
       fieldModalToShow,
       selectedRows,
+      eFormMode,
+      modalInformation,
       handleMultipleDelete,
       openModalFunction,
       handleRowDropdownChange,
@@ -458,6 +490,7 @@ export default defineComponent({
       handleCellEditorInput,
       fetchData,
       handleColumnsToShow,
+      handleDoubleClick,
     };
   },
 });

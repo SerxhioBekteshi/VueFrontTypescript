@@ -52,13 +52,25 @@
       >
     </div>
     <div v-else-if="cellColumn.propertyType === eColumnType.Object">
-      <ScrollPanel v-tooltip="'Scroll to see more'" style="height: 50px">
-        <ul>
-          <li v-for="(value, key) in cellValue" :key="key">
-            {{ key }}:
-            <CellNestedObject :nestedObject="value" />
-          </li>
-        </ul>
+      <ScrollPanel
+        v-tooltip="'Scroll to see more or double click'"
+        style="height: 50px"
+      >
+        <div
+          class="cursor-pointer"
+          @dblclick="
+            () => {
+              $emit('on-cell-double-click', cellValue);
+            }
+          "
+        >
+          <ul>
+            <li v-for="(value, key) in cellValue" :key="key">
+              {{ key }}:
+              <CellNestedObject :nestedObject="value" />
+            </li>
+          </ul>
+        </div>
       </ScrollPanel>
     </div>
     <div v-else-if="cellColumn.propertyType === eColumnType.Array">
@@ -102,6 +114,12 @@ export default defineComponent({
     TableCellActions,
     InputSwitch,
   },
+  emits: [
+    "on-cell-double-click",
+    "edit-clicked",
+    "custom-row-bt-clicked",
+    "delete-clicked",
+  ],
   props: {
     cellValue: {
       type: null,
