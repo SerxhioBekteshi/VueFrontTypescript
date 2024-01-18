@@ -8,6 +8,8 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@casl/ability": "^6.5.0",
+    "@casl/vue": "^2.2.1",
     "@paypal/paypal-js": "^7.1.0",
     "@paypal/sdk-client": "^4.0.177",
     "@reduxjs/toolkit": "^1.9.5",

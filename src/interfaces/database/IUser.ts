@@ -13,7 +13,7 @@ export interface IUser {
   termsAgreed?: String;
   address?: String;
   state?: String;
-  photo?: string;
+  image?: string;
   email?: string;
   createdAt?: Date;
   active?: boolean;
@@ -31,10 +31,4 @@ export interface IUser {
   gender?: string;
   birthDate?: Date;
   firstLogin?: boolean;
-  createPasswordResetToken: () => string;
-  changePasswordAfter: (iat: number) => boolean;
-  correctPassword: (
-    reqPassword: string,
-    currentPassword: string
-  ) => Promise<boolean>;
 }

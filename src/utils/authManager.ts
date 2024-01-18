@@ -36,7 +36,7 @@ class AuthManager {
         role: user.role,
         name: user.name,
         lastName: user.lastName,
-        photo: user.photo,
+        image: user.image,
         state: user.state,
         address: user.address,
       };
@@ -93,6 +93,8 @@ class AuthManager {
   ): Promise<void> {
     const res = await axios.post("user/login", credentials);
     const data = res?.data;
+    const dispatch = useDispatch();
+
     let response: any = null;
     if (data?.access_token || data?.refresh_token) {
       const userInfo = AuthManager.parseJwt(data.access_token);
@@ -106,7 +108,8 @@ class AuthManager {
       JwtManager.setAccessToken(response.accessToken);
       JwtManager.setRefreshToken(response.refreshToken);
 
-      useDispatch()(setUser(response?.user));
+      // useDispatch()(setUser(response?.user));
+      dispatch(setUser(response?.user));
       if (response.user.roleId === eRoleType.Admin) {
         router.push("/admin");
       } else if (response.user.roleId === eRoleType.Provider) {
@@ -131,7 +134,6 @@ class AuthManager {
       user
     );
 
-    console.log(res);
     if (res && res?.data) {
       return res.data;
     }
@@ -158,7 +160,7 @@ class AuthManager {
           role: userInfo.role,
           name: userInfo.name,
           lastName: userInfo.lastName,
-          photo: userInfo.photo,
+          image: userInfo.image,
           state: userInfo.state,
           address: userInfo.address,
         },

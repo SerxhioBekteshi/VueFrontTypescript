@@ -62,19 +62,18 @@ export default defineComponent({
     name: { type: String, required: true },
     showError: { type: Boolean, default: true },
     controller: { type: String },
+    includeId: { type: Boolean, default: true },
   },
   setup(props) {
     const { value, errorMessage, meta } = useField(() => props.name, undefined);
     const toast = useToast();
     const blobImage = ref<any>();
     const isLoading = ref<boolean>(false);
-    console.log(props.imageData);
     const handleFileSelection = (event: any) => {
       blobImage.value = event.files[event.files.length - 1].objectURL;
     };
 
     const handleError = (event: any) => {
-      console.log(event, "EVENT ERROR ");
       toast.add({
         life: 3000,
         detail: "awd",
@@ -93,7 +92,9 @@ export default defineComponent({
 
       try {
         const res: any = await axios.put(
-          `/${props.controller}/image/${props.imageData.id}`,
+          `/${props.controller}/image${
+            props.includeId ? `/${props.imageData.id}` : ""
+          }`,
           formData
         );
 

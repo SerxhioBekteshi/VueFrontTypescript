@@ -1,67 +1,54 @@
 <template>
   <div class="grid">
-    <div
-      class="md:col-5 sm:col-12 card flex align-items-center justify-content-center"
-    >
+    <div class="md:col-6 sm:col-12 card flex justify-content-center">
       <div class="flex flex-column gap-3">
-        <div class="image-wrapper flex justify-content-center">
-          <img
-            v-if="profile.photo"
-            class="image-content"
-            :src="`http://localhost:1112/public/images/users/${profile.photo}`"
-            :alt="profile.name"
-          />
-        </div>
-        <div class="flex justify-content-center align-items-center">
-          <FileUpload
-            @select="handleFileSelection($event)"
-            :multiple="false"
-            @uploader="handleFileUpload($event)"
-            :maxFileSize="1000000"
-            accept="image/*"
-            :custom-upload="true"
+        <div class="flex justify-content-center w-full">
+          <ImageForm
+            :controller="'user'"
+            :imageData="profile || {}"
+            :includeId="false"
           />
         </div>
       </div>
     </div>
-    <div class="md:col-7 sm:col-12 card">
+    <div class="md:col-6 sm:col-12 card">
       <div>
         <h2>Profile Settings</h2>
       </div>
-      <form @submit="handlePrevent">
+      <form @submit="(event) => event.preventDefault()">
         <div class="grid">
           <div style="margin-top: 1rem" class="col-6">
             <InputText
-              name="name"
+              :name="'name'"
               :label="'Name'"
-              id="name"
-              placeholder="Name"
+              :id="'name'"
+              :placeholder="'Name'"
             />
           </div>
 
           <div style="margin-top: 1rem" class="col-6">
             <InputText
-              name="lastName"
+              :name="'lastName'"
               :label="'Last Name'"
-              id="lastName"
-              placeholder="Last Name"
+              :id="'lastName'"
+              :placeholder="'Last Name'"
             />
           </div>
           <div class="col-12">
             <InputText
-              name="address"
+              :name="'address'"
               :label="'Address'"
-              id="address"
-              placeholder="Address"
+              :id="'address'"
+              :placeholder="'Address'"
             />
           </div>
 
           <div class="col-12">
             <InputText
-              name="state"
+              :name="'state'"
               :label="'State'"
-              id="state"
-              placeholder="State"
+              :id="'state'"
+              :placeholder="'State'"
             />
           </div>
 
@@ -73,19 +60,19 @@
               ]"
               :optionLabel="'gender'"
               :optionValue="'value'"
-              name="gender"
+              :name="'gender'"
               :label="'Gender'"
-              id="gender"
-              placeholder="Gender"
+              :id="'gender'"
+              :placeholder="'Gender'"
             />
           </div>
 
           <div class="col-12">
             <InputDate
-              name="birthDate"
+              :name="'birthDate'"
               :label="'BirthDate'"
-              id="birthDate"
-              placeholder="birthDate"
+              :id="'birthDate'"
+              :placeholder="'birthDate'"
               :dateFormat="'yy-mm-dd'"
             />
           </div>
@@ -109,18 +96,19 @@
 </template>
 
 <script lang="ts">
-import { useReduxSelector } from "@/store/redux/helpers";
+import { useDispatch, useReduxSelector } from "@/store/redux/helpers";
 import { defineComponent, provide } from "vue";
 import InputText from "@/components/formElements/InputText.vue";
-import { useField, useForm } from "vee-validate";
-import * as yup from "yup";
+import { useForm } from "vee-validate";
 import InputSelect from "@/components/formElements/InputSelect.vue";
 import InputDate from "@/components/formElements/InputDate.vue";
 import Button from "primevue/button";
 import axios from "axios";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
-import FileUpload from "primevue/fileupload";
+import ImageForm from "@/components/formController/ImageForm.vue";
+import { profileDetailsSchema } from "@/utils/validationSchemas";
+import { setUser } from "@/store/stores/user.store";
 
 export default defineComponent({
   name: "ProfileDetails",
@@ -129,101 +117,44 @@ export default defineComponent({
     InputSelect,
     InputDate,
     Button,
-    FileUpload,
     Toast,
+    ImageForm,
   },
   props: {},
   setup() {
     const profile = useReduxSelector((state) => state.user);
-
+    console.log(profile, "PROFILE");
     const toast = useToast();
-    const schema = yup.object().shape({
-      name: yup.string().required("Name is required").label("Name"),
-      lastName: yup
-        .string()
-        .required("Last name is required")
-        .label("Last Name"),
-      gender: yup.string().required("Gender is required").label("Gender"),
-      address: yup.string().required("Address is required").label("Address"),
-      state: yup.string().required("State is required").label("State"),
-      birthDate: yup
-        .string()
-        .required("Birthdate is required")
-        .label("Birthdate"),
-    });
+    // const dispatch = useDispatch();
 
     const { handleSubmit, resetForm, setFieldValue } = useForm({
       initialValues: profile,
-      validationSchema: schema,
+      validationSchema: profileDetailsSchema,
     });
-    provide("profileDetailsForm", { setFieldValue });
-    const handlePrevent = (event: any) => {
-      event.preventDefault();
-    };
-    const handleFileSelection = (event: any) => {
-      console.log(event.files[event.files.length - 1].objectURL);
-      // blobImage.value = event.files[event.files.length - 1].objectURL;
-    };
-
-    const handleFileUpload = async (event: any) => {
-      const file = event.files[0];
-      const formData = new FormData();
-      formData.append("image", file);
-
-      try {
-        const res: any = await axios.post(`/user/image`, formData);
-
-        if (res && res !== null) {
-          toast.add({
-            life: 3000,
-            detail: res.data.message,
-            severity: "success",
-            summary: "info",
-          });
-          //update user state after this from dispatch
-        }
-      } catch (err) {
-        console.log(err, "ERR");
-      }
-    };
+    provide("dateAssignValue", { setFieldValue });
 
     const handleEditProfileData = async (values: any) => {
       try {
         const res: any = await axios.put(`/user/update`, values);
-        if (res && res !== null) {
+        if (res && res.data) {
           toast.add({
             life: 3000,
             detail: res.data.message,
             severity: "success",
             summary: "info",
           });
+          // dispatch(setUser(res.data.user));
         }
       } catch (err) {
         console.log(err, "ERR");
       }
     };
 
-    const { value: name } = useField("name");
-    const { value: lastName } = useField("lastName");
-    const { value: gender } = useField("gender");
-    const { value: address } = useField("address");
-    const { value: state } = useField("state");
-    const { value: birthDate } = useField("birthDate");
-
     return {
-      name,
       profile,
-      lastName,
-      gender,
-      address,
-      state,
-      birthDate,
-      handlePrevent,
-      handleFileUpload,
-      handleEditProfileData,
       handleSubmit,
+      handleEditProfileData,
       resetForm,
-      handleFileSelection,
     };
   },
 });

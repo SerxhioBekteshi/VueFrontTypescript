@@ -91,6 +91,7 @@ export const passwordValidationSchema = yup.object().shape({
 export const profileDetailsSchema = yup.object().shape({
   name: yup.string().required("Name is required").label("Name"),
   lastName: yup.string().required("Last name is required").label("Last Name"),
+  email: yup.string().required("Email is required").label("Email"),
   gender: yup.string().required("Gender is required").label("Gender"),
   address: yup.string().required("Address is required").label("Address"),
   state: yup.string().required("State is required").label("State"),

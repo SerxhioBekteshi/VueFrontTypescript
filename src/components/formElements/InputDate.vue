@@ -39,7 +39,7 @@ import { inject } from "vue";
 
 const props = defineProps({
   name: { type: String, required: true },
-  type: { type: String, required: true },
+  id: { required: false },
   placeholder: { type: String },
   label: { type: String },
   selectionMode: { type: String },
@@ -51,7 +51,7 @@ const props = defineProps({
 });
 
 const { value, errorMessage, meta } = useField(() => props.name, undefined);
-const profileDetailsForm = inject("profileDetailsForm");
+const profileDetailsForm = inject("dateAssignValue");
 const formattedDate = ref(moment(value).format("YYYY/MM/DD"));
 
 const handleValueChange = (newValue) => {

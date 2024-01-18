@@ -6,6 +6,7 @@
         :label="'Meal image'"
         :imageData="imageData"
         :controller="controller"
+        :includeId="includeId"
       />
     </form>
   </div>
@@ -15,6 +16,7 @@
 import { defineComponent } from "vue";
 import { inject } from "vue";
 import InputFile from "../formElements/InputFile.vue";
+import { string } from "yup";
 
 export default defineComponent({
   name: "MealForm",
@@ -22,20 +24,10 @@ export default defineComponent({
   props: {
     controller: { type: String, required: true },
     imageData: { type: Object, required: true },
+    includeId: { type: Boolean, default: true },
   },
   setup() {
-    const veeValidateForm: any = inject("veeValidateForm");
-
-    const { value: image } = veeValidateForm.useField("image");
-
-    const handlePrevent = (event: any) => {
-      event.preventDefault();
-    };
-
-    return {
-      handlePrevent,
-      image,
-    };
+    return {};
   },
 });
 </script>

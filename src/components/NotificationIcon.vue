@@ -162,17 +162,17 @@ export default defineComponent({
     const numberOfUnseenNotifications = computed(() => {
       return (
         notifications.value &&
-        notifications.value.filter((notification: any) => notification.seen)
-          .length
+        notifications.value.filter((notification: any) => {
+          console.log();
+          return !notification.msg.seen;
+        }).length
       );
     });
-
-    console.log(numberOfUnseenNotifications.value);
 
     const idsToDelete = computed(() => {
       return (
         notifications.value &&
-        notifications.value.map((notification: any) => notification.id)
+        notifications.value.map((notification: any) => notification.msg.id)
       );
     });
 
