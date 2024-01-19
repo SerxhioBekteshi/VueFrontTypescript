@@ -30,7 +30,7 @@ class AppStorageManager {
     defaultValue?: any,
     family: eInfoTypeStorage = eInfoTypeStorage.Local
   ) {
-    let valToReturn = null;
+    let valToReturn: any = null;
     switch (family) {
       case eInfoTypeStorage.Local:
         valToReturn = AppStorageManager.encryptLocalStorage.getItem(key);

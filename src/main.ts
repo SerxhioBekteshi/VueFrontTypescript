@@ -14,7 +14,7 @@ import ToastService from "primevue/toastservice";
 import { createRedux } from "./store/redux/storePlugin";
 import initApp from "./utils/functions";
 import { defineAbilityFor } from "./initializers/ability";
-// import { WebsocketMixin } from "./hooks/userWebSocket/socketPlugin";
+import { WebsocketMixin } from "./hooks/userWebSocket/socketPlugin";
 import { abilitiesPlugin } from "@casl/vue";
 
 (async () => {
@@ -24,10 +24,11 @@ import { abilitiesPlugin } from "@casl/vue";
 
   createApp(App)
     .use(reduxStore)
+    .use(abilitiesPlugin, ability)
     .use(router)
     .use(ToastPlugin, { position: "top" })
     // .use(WebsocketMixin)
-    .use(abilitiesPlugin, ability)
+    // .provide("ACL_TOKEN", ability)
     .use(PrimeVue, { ripple: true })
     .use(ToastService)
     // .use(VueDraggable)

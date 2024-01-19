@@ -57,9 +57,7 @@ const userRoutes = [
         path: "orders",
         name: "UserOrders",
         component: UserOrders,
-        meta: {
-          requiresAuth: true,
-        },
+        meta: { permissions: { action: "read", subject: "Order" } },
       },
       {
         path: "orders/:id",

@@ -20,9 +20,7 @@ const providerRoutes = [
         path: "orders",
         name: "ProviderOrders",
         component: ProviderOrders,
-        meta: {
-          requiresAuth: true,
-        },
+        meta: { permissions: { action: "read", subject: "Order" } },
       },
       {
         path: "meals",
