@@ -39,6 +39,7 @@ class AuthManager {
         image: user.image,
         state: user.state,
         address: user.address,
+        accessPermissions: user.accessPermissions,
       };
 
       if (user.role === eRoles.Provider) {
@@ -58,6 +59,43 @@ class AuthManager {
       else return baseLoggedData;
     }
     return null;
+  }
+
+  static async getUserData(): Promise<any> {
+    try {
+      const res: any = await axios.get("/user/loggedUser");
+      if (res && res.data) {
+        const user = res.data;
+        const baseLoggedData = {
+          email: user.email,
+          id: user.id,
+          role: user.role,
+          name: user.name,
+          lastName: user.lastName,
+          image: user.image,
+          state: user.state,
+          address: user.address,
+          accessPermissions: user.accessPermissions,
+        };
+
+        if (user.role === eRoles.Provider) {
+          return {
+            ...baseLoggedData,
+            termsAgreed: user.termsAgreed,
+            nipt: user.nipt,
+          };
+        } else if (user.role === eRoles.User)
+          return {
+            ...baseLoggedData,
+            gender: user.gender,
+            birthDate: user.birthDate,
+            accountSubmitted: user.accountSubmitted,
+            quizFulfilled: user.quizFulfilled,
+          };
+      } else return null;
+    } catch (err) {
+      console.log(err, "ERR IN GETTING LOGGEDF USER DATA");
+    }
   }
 
   static loginWithToken(

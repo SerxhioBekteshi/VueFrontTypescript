@@ -123,7 +123,7 @@ export default defineComponent({
   props: {},
   setup() {
     const profile = useReduxSelector((state) => state.user);
-    console.log(profile, "PROFILE");
+    console.log(profile.value, "PROFILE");
     const toast = useToast();
     // const dispatch = useDispatch();
 

@@ -13,21 +13,24 @@ import Tooltip from "primevue/tooltip";
 import ToastService from "primevue/toastservice";
 import { createRedux } from "./store/redux/storePlugin";
 import initApp from "./utils/functions";
-import { WebsocketMixin } from "./hooks/userWebSocket/socketPlugin";
+import { defineAbilityFor } from "./initializers/ability";
+// import { WebsocketMixin } from "./hooks/userWebSocket/socketPlugin";
+import { abilitiesPlugin } from "@casl/vue";
 
 (async () => {
   const appStore = await initApp();
   const reduxStore = createRedux(appStore);
+  const ability = await defineAbilityFor();
 
   createApp(App)
     .use(reduxStore)
     .use(router)
     .use(ToastPlugin, { position: "top" })
     // .use(WebsocketMixin)
+    .use(abilitiesPlugin, ability)
     .use(PrimeVue, { ripple: true })
     .use(ToastService)
     // .use(VueDraggable)
     .directive("tooltip", Tooltip)
-    // .provide("$socket", socket)
     .mount("#app");
 })();

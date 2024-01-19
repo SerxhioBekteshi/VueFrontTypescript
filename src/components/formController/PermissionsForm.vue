@@ -46,7 +46,6 @@
 
       <div class="gapper">
         <InputSelect
-          :disabled="modeDrawer === eFormMode.Edit"
           :name="'subjectId'"
           :label="'Subject'"
           :id="'subjectId'"

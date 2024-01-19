@@ -103,7 +103,7 @@ export const initApp = async () => {
   let currentUser: IUserState | null = null;
   try {
     if (JwtManager.accessToken) {
-      currentUser = await AuthManager.getUserFromToken();
+      currentUser = await AuthManager.getUserData();
     }
   } catch (e) {
     console.log("initApp", e);

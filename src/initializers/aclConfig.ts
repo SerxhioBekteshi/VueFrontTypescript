@@ -27,10 +27,11 @@ export const buildAbility = (permissions: ACLObj[]): AppAbility =>
     ...permissions,
   ]);
 
-//   import { createMongoAbility, AbilityClass } from '@casl/ability';
+// import { createMongoAbility, AbilityClass } from "@casl/ability";
 
-//   export type Actions = 'create' | 'read' | 'update' | 'delete';
-//   export type Subjects = 'Article' | 'User'
+// export type Actions = "create" | "read" | "update" | "delete" | "update";
+// export type Subjects = string;
+// export type Roles = "admin" | "provider" | "user";
 
 // export type AppAbility = Ability<[Actions, Subjects]>;
 // export const AppAbility = Ability as AbilityClass<AppAbility>;
