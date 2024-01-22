@@ -23,21 +23,26 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const requiredPermissions = to.meta.permissions;
+  const requiredPermissions: any = to.meta.permissions;
   const abilities = useAbility();
 
-  console.log(abilities);
-  // // next();
-  // if (requiredPermissions) {
-  //   // Check if the user has the required permissions
-  //   if (ability.can(requiredPermissions.action, requiredPermissions.subject)) {
-  //     next();
-  //   } else {
-  //     next("/404NotFound");
-  //   }
-  // } else {
-  next(); // Route doesn't require specific permissions, proceed
-  // }
+  if (requiredPermissions) {
+    console.log(requiredPermissions);
+    console.log(abilities.rules);
+    console.log(
+      abilities.can(requiredPermissions.action, requiredPermissions.subject)
+    );
+    // Check if the user has the required permissions
+    if (
+      abilities.can(requiredPermissions.action, requiredPermissions.subject)
+    ) {
+      next();
+    } else {
+      next("/404NotFound");
+    }
+
+    next();
+  } else next();
 });
 
 export default router;

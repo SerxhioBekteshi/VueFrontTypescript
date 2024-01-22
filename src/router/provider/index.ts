@@ -20,7 +20,7 @@ const providerRoutes = [
         path: "orders",
         name: "ProviderOrders",
         component: ProviderOrders,
-        meta: { permissions: { action: "read", subject: "Order" } },
+        meta: { permissions: { action: "read", subject: "orders" } },
       },
       {
         path: "meals",

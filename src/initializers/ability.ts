@@ -1,6 +1,10 @@
 import store from "@/store/redux/configurations";
 import { useReduxSelector } from "@/store/redux/helpers";
-import { createMongoAbility, defineAbility } from "@casl/ability";
+import {
+  AbilityBuilder,
+  createMongoAbility,
+  defineAbility,
+} from "@casl/ability";
 import axios from "axios";
 import { provideAbility } from "@casl/vue";
 import { acl } from ".";
@@ -16,7 +20,8 @@ export type Actions = "manage" | "create" | "read" | "update" | "delete";
 export type Subjects = string;
 
 export const defineAbilityFor = async () => {
-  const ability = createMongoAbility<[Actions, Subjects]>();
+  const { can, cannot, build } = new AbilityBuilder(createMongoAbility);
+
   // console.log(ability, "CREATE MONGO ABILITY??");
 
   //   if (user) {
@@ -32,21 +37,21 @@ export const defineAbilityFor = async () => {
       // Dynamically define abilities based on fetched permissions
       accessPermissions.forEach((permission: any) => {
         const { action, subject } = permission;
-        ability.can(action.toLowerCase(), subject.toLowerCase());
+        can(action.toLowerCase(), subject.toLowerCase());
         // provideAbility(ability);
         // defineAbility;
-        console.log(ability.rules, "ABILITY");
+        // console.log(ability.rules, "ABILITY");
         // ability.can(action, subject);
       });
     } else {
-      ability.can("read", "");
+      // ability.can("read", "");
       //   ability.cannot("read", "restrictedSubject");
     }
   } catch (error) {
     console.error("Error fetching user permissions:", error);
   }
   //   }
-  console.log("Defined Abilities:", ability.rules); // Log defined abilities
+  // console.log("Defined Abilities:", ability.rules); // Log defined abilities
 
-  return ability;
+  return build();
 };

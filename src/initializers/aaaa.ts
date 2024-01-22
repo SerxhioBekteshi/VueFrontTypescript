@@ -1,9 +1,4 @@
-import {
-  AbilityBuilder,
-  Ability,
-  createMongoAbility,
-  MongoAbility as AppAbility,
-} from "@casl/ability";
+import { createMongoAbility, MongoAbility as AppAbility } from "@casl/ability";
 
 export type Subjects = string;
 export type Roles = "user" | "agents" | "admin" | "manager" | "delete";

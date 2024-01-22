@@ -22,7 +22,7 @@ const adminRoutes = [
         path: "orders",
         name: "AdminOrders",
         component: AdminOrders,
-        meta: { permissions: { action: "read", subject: "Order" } },
+        meta: { permissions: { action: "read", subject: "orders" } },
       },
       {
         path: "orders/:id",
