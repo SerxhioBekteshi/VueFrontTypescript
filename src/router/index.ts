@@ -22,27 +22,27 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  const requiredPermissions: any = to.meta.permissions;
-  const abilities = useAbility();
+// router.beforeEach((to, from, next) => {
+//   const requiredPermissions: any = to.meta.permissions;
+//   const abilities = useAbility();
 
-  if (requiredPermissions) {
-    console.log(requiredPermissions);
-    console.log(abilities.rules);
-    console.log(
-      abilities.can(requiredPermissions.action, requiredPermissions.subject)
-    );
-    // Check if the user has the required permissions
-    if (
-      abilities.can(requiredPermissions.action, requiredPermissions.subject)
-    ) {
-      next();
-    } else {
-      next("/404NotFound");
-    }
+//   if (requiredPermissions) {
+//     console.log(requiredPermissions);
+//     console.log(abilities.rules);
+//     console.log(
+//       abilities.can(requiredPermissions.action, requiredPermissions.subject)
+//     );
+//     // Check if the user has the required permissions
+//     if (
+//       abilities.can(requiredPermissions.action, requiredPermissions.subject)
+//     ) {
+//       next();
+//     } else {
+//       next("/404NotFound");
+//     }
 
-    next();
-  } else next();
-});
+//     next();
+//   } else next();
+// });
 
 export default router;
