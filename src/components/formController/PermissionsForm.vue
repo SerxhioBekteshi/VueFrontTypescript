@@ -89,7 +89,6 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import InputText from "@/components/formElements/InputText.vue";
-import { inject } from "vue";
 import InputSelect from "@/components/formElements/InputSelect.vue";
 import { eActionMode } from "@/assets/enums/eActionMode";
 import InputBoolean from "@/components/formElements/InputBoolean.vue";
@@ -119,8 +118,6 @@ export default defineComponent({
     },
   },
   setup() {
-    // const veeValidateForm: any = inject("veeValidateForm");
-
     const enumRoles = ref<any[]>(
       Object.entries(eRoles).map(([key, value]) => ({
         value,
@@ -131,16 +128,11 @@ export default defineComponent({
 
     const toggleStates = ref(Array(enumRoles.value.length).fill(false));
 
-    // const { value: name } = veeValidateForm.useField("name");
-    // const { value: action } = veeValidateForm.useField("action");
-
     return {
       eActionMode,
       eRoles,
       enumRoles,
       eFormMode,
-      // name,
-      // action,
       toggleStates,
     };
   },

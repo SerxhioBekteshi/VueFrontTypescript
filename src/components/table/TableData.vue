@@ -42,7 +42,12 @@
         "
       >
         <Button
-          @click="() => (openModal = true)"
+          @click="
+            () => {
+              openModal = true;
+              modalInformation = eFormMode.Delete;
+            }
+          "
           icon="pi pi-trash"
           severity="danger"
           rounded
@@ -69,7 +74,6 @@
       <div v-if="dataLoading">
         <div
           style="display: flex; justify-content: center; align-items: center"
-          ProgressSpinner
         >
           <ProgressSpinner />
         </div>
@@ -89,7 +93,6 @@
     />
 
     <Column
-      v-if="selectableRows"
       :selectionMode="showDelete ? 'multiple' : undefined"
       headerStyle="width: 3rem"
     ></Column>
@@ -266,6 +269,8 @@ export default defineComponent({
     const openModalFunction = (field: any, rowId: number) => {
       fieldModalToShow.value = { name: field, id: rowId };
       modalInformation.value = eFormMode.Delete;
+      console.log(modalInformation.value);
+
       openModal.value = true;
     };
 

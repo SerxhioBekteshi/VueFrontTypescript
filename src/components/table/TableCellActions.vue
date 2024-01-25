@@ -34,6 +34,7 @@ export default defineComponent({
       type: null,
     },
   },
+  emits: ["edit-clicked", "custom-row-bt-clicked", "delete-clicked"],
   setup(props, { emit }) {
     const handleIconClick = (icon: any) => {
       switch (icon.icon) {

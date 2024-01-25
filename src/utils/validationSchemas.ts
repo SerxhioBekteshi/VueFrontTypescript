@@ -1,4 +1,6 @@
+import axios from "axios";
 import * as yup from "yup";
+import debounce from "lodash/debounce";
 
 export const modalOrderSchema = yup.object().shape({
   quantity: yup.number().required("Quantity is required").label("Quantity"),
@@ -155,11 +157,42 @@ export const registrationProviderSchema = yup.object().shape({
     ),
 });
 
+const menuPermissionNameValidation = async () => {
+  try {
+    const res: any = await axios.get("menu/no-role-get-all");
+    if (res && res.data) {
+      return res.data.map((obj: any) => obj.label);
+    }
+  } catch (err) {
+    console.log(err, "ERR");
+  }
+};
+// const debouncedMenuPermissionNameValidation = debounce(
+//   menuPermissionNameValidation,
+//   1000
+// );
+
 export const permissionSchema = yup.object().shape({
-  name: yup.string().required("Name is required").label("Name"),
+  name: yup
+    .string()
+    .required("Name is required")
+    .label("Name")
+    .test("menu-permission-name", async function (value) {
+      const validPermissionNames = await menuPermissionNameValidation();
+
+      return (
+        validPermissionNames.includes(value) ||
+        this.createError({
+          path: "name",
+          message: `Permission name should equal one of the following values: "${validPermissionNames.join(
+            "----"
+          )}"`,
+        })
+      );
+    }),
   roles: yup.array().of(yup.string()).label("Roles"),
   action: yup.string().required("Action is required").label("Action"),
-  description: yup.string().label("Description"),
-  isActive: yup.boolean().label("Active permission"),
-  subjectId: yup.number().label("Subject"),
+  description: yup.string().notRequired().label("Description"),
+  isActive: yup.boolean().notRequired().label("Active permission"),
+  subjectId: yup.string().notRequired().label("Menu Subject"),
 });

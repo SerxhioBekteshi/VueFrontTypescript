@@ -33,7 +33,7 @@
 <script lang="ts">
 import { useField } from "vee-validate";
 import ValidationError from "../ValidationError.vue";
-import { defineComponent, onMounted, ref } from "vue";
+import { PropType, defineComponent, onMounted, ref, watch } from "vue";
 import Dropdown from "primevue/dropdown";
 import axios from "axios";
 import Toast from "primevue/toast";
@@ -54,14 +54,27 @@ export default defineComponent({
     controller: { type: String },
     disabled: { type: Boolean, default: false },
     includeEmptyOption: { type: Boolean, default: false },
+    defaultValue: { default: null },
   },
   setup(props) {
-    const { value, errorMessage, meta } = useField(() => props.name, undefined);
+    const { value, errorMessage, meta } = useField<string | null>(
+      () => props.name,
+      undefined,
+      {
+        initialValue:
+          props.defaultValue !== undefined ? props.defaultValue : null,
+      }
+    );
     const toast = useToast();
 
     const selectOptions = ref<any[]>(props.options);
+    // type: [String, null] as PropType<string | null>
     const isLoading = ref<boolean>(props.controller ? true : false);
     // const selectedValue = ref();
+
+    watch(value, (newValue) => {
+      console.log(newValue, "AAAA?");
+    });
 
     onMounted(async () => {
       if (props.controller) {
@@ -80,7 +93,7 @@ export default defineComponent({
             }
 
             if (props.includeEmptyOption) {
-              selectOptions.value = selectOptions.value.splice(0, 0, {
+              selectOptions.value.unshift({
                 [props.optionValue]: null,
                 [props.optionLabel]: "",
               });
@@ -101,7 +114,10 @@ export default defineComponent({
       }
 
       if (props.includeEmptyOption) {
-        selectOptions.value.push({ value: "", label: "" });
+        selectOptions.value.unshift({
+          [props.optionValue]: null,
+          [props.optionLabel]: "",
+        });
       }
       // if (props.options)
       //   selectedValue.value = props.options.find(
