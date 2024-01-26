@@ -1,10 +1,12 @@
 import JwtManager from "./jwtManager";
 import axios from "axios";
 import { setUser } from "../store/stores/user.store";
-import { navigateTo } from "../store/stores/navigation.store";
-import eRoleType from "@/assets/enums/eRoleType";
+// import { navigateTo } from "../store/stores/navigation.store";
+// import eRoleType from "@/assets/enums/eRoleType";
 import { eRoles } from "@/assets/enums/eRoles";
 import { useDispatch } from "@/store/redux/helpers";
+import { useAbility } from "@casl/vue";
+import { defineAbilityFor } from "@/initializers/ability";
 
 export interface IUserInfo {
   user?: any;
@@ -148,14 +150,16 @@ class AuthManager {
 
       // useDispatch()(setUser(response?.user));
       dispatch(setUser(response?.user));
-      if (response.user.roleId === eRoleType.Admin) {
-        router.push("/admin");
-      } else if (response.user.roleId === eRoleType.Provider) {
-        router.push("/provider");
-      } else {
-        if (!response.user.quizFulfilled) router.push("/user/quiz");
-        else router.push("/user");
-      }
+
+      router.push("/dashboard");
+      // if (response.user.roleId === eRoleType.Admin) {
+      //   router.push("/admin");
+      // } else if (response.user.roleId === eRoleType.Provider) {
+      //   router.push("/provider");
+      // } else {
+      //   if (!response.user.quizFulfilled) router.push("/user/quiz");
+      //   else router.push("/user");
+      // }
     }
   }
 

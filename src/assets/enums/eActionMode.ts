@@ -3,4 +3,6 @@ export enum eActionMode {
   Add = "Add",
   Edit = "Edit",
   Delete = "Delete",
+  Upload = "Upload",
+  Custom = "Custom",
 }

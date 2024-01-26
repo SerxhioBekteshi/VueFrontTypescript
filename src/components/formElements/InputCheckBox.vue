@@ -40,7 +40,6 @@ export default defineComponent({
     options: { type: Array as PropType<ICheckBox[]>, required: true },
   },
   setup(props) {
-    console.log(props.name, "awdawd");
     const { value, errorMessage, meta } = useField(() => props.name, undefined);
     // console.log(props.options, props.optionValue, value.value);
     // const selectedValue = ref(

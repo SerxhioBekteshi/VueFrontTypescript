@@ -89,6 +89,8 @@ import AuthManager from "@/utils/authManager";
 import { useRouter } from "vue-router";
 import { useDispatch } from "@/store/redux/helpers";
 import store from "@/store/redux/configurations";
+import { useAbility } from "@casl/vue";
+import { defineAbilityFor } from "@/initializers/ability";
 
 export default defineComponent({
   name: "LoginView",
@@ -98,6 +100,8 @@ export default defineComponent({
     const email = ref("");
     const password = ref("");
     const router = useRouter();
+    const ability = useAbility();
+
     // const dispatch = useDispatch();
     // console.log(dispatch, "DISPATCH");
     // const dd = store.dispatch;
@@ -110,6 +114,8 @@ export default defineComponent({
       };
       try {
         await AuthManager.login(loginUser, router);
+        const updatedAbility = await defineAbilityFor();
+        ability.update(updatedAbility.rules);
       } catch (err) {
         console.log(err, "ERR");
       }

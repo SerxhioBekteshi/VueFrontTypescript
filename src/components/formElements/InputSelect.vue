@@ -72,10 +72,6 @@ export default defineComponent({
     const isLoading = ref<boolean>(props.controller ? true : false);
     // const selectedValue = ref();
 
-    watch(value, (newValue) => {
-      console.log(newValue, "AAAA?");
-    });
-
     onMounted(async () => {
       if (props.controller) {
         try {

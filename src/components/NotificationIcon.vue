@@ -163,7 +163,6 @@ export default defineComponent({
       return (
         notifications.value &&
         notifications.value.filter((notification: any) => {
-          console.log();
           return !notification.msg.seen;
         }).length
       );

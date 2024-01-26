@@ -64,7 +64,6 @@ export default defineComponent({
     });
 
     const handleFormSubmit = async (data: any) => {
-      console.log(data, "DATA TO SBUMIT");
       let res: any = null;
       try {
         if (props.modeDrawer === eFormMode.Add.toString()) {

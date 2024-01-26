@@ -36,6 +36,8 @@
             { label: eActionMode.Edit, value: eActionMode.Edit },
             { label: eActionMode.Delete, value: eActionMode.Delete },
             { label: eActionMode.Add, value: eActionMode.Add },
+            { label: eActionMode.Upload, value: eActionMode.Upload },
+            { label: eActionMode.Custom, value: eActionMode.Custom },
           ]"
           :name="'action'"
           :label="'Permission Action'"

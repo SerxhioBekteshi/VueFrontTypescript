@@ -26,7 +26,7 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const onCustomRowBtClick = (rowId: number) => {
-      router.push(`/admin/orders/${rowId}`);
+      router.push(`/orders/${rowId}`);
     };
     return { onCustomRowBtClick };
   },
