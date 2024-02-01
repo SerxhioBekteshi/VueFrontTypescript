@@ -34,14 +34,16 @@ const aclRoutes = [
         path: "quiz",
         name: "Quiz",
         component: Quiz,
-        meta: { permissions: { action: "read", subject: "quiz" } },
+        meta: {
+          permissions: { action: "read", subject: "quiz configuration" },
+        },
       },
       {
         path: "providers/registration",
         name: "ProvidersRegistration",
         component: ProvidersRegistration,
         meta: {
-          permissions: { action: "read", subject: "providers accounts" },
+          permissions: { action: "read", subject: "provider accounts" },
         },
       },
       {

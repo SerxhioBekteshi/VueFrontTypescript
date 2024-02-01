@@ -29,6 +29,8 @@ router.beforeEach((to, from, next) => {
   const requiredPermissions: any = to.meta.permissions;
   const abilities = useAbility();
 
+  console.log(to.meta.permissions, "CHESCKSSSSSSSSSs", abilities.rules);
+
   if (requiredPermissions) {
     // console.log(requiredPermissions);
     // console.log(abilities.rules);
