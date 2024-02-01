@@ -29,7 +29,6 @@ export const defineAbilityFor = async () => {
     // const user = useReduxSelector((state) => state.user);
 
     const accessPermissions = await fetchUserPermissions();
-    console.log(accessPermissions, "AAAA");
     // acl.buildAbility(accessPermissions);
 
     // console.log(acl, "ACL");

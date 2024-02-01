@@ -80,16 +80,18 @@ export default defineComponent({
           );
         }
 
-        toast.add({
-          life: 3000,
-          detail: res.data.message,
-          severity: "success",
-          summary: "info",
-        });
-        if (props.fetchDataAfterSubmit) {
-          props.fetchDataAfterSubmit();
+        if (res && res.data) {
+          toast.add({
+            life: 3000,
+            detail: res.data.message,
+            severity: "success",
+            summary: "info",
+          });
+          if (props.fetchDataAfterSubmit) {
+            props.fetchDataAfterSubmit();
+          }
+          handleCloseDrawer();
         }
-        handleCloseDrawer();
       } catch (err) {
         console.log(err, "ERR");
       }

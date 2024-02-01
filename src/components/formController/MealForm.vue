@@ -46,7 +46,6 @@
           :label="'Calories'"
           :id="'calories'"
           :placeholder="'Calories'"
-          :options="getQuestionOptionsByFieldName(selectData, 'calories')"
         />
       </div>
 
@@ -64,9 +63,8 @@
         <InputNumber
           :label="'Carbon footprint'"
           :name="'carbonFootprint'"
-          type="number"
-          id="carbonFootprint"
-          placeholder="Carbon footprint"
+          :id="'carbonFootprint'"
+          :placeholder="'Carbon footprint'"
         />
       </div>
 
@@ -183,13 +181,6 @@ export default defineComponent({
   setup() {
     const veeValidateForm: any = inject("veeValidateForm");
 
-    const { value: name } = veeValidateForm.useField("name");
-    const { value: cousine } = veeValidateForm.useField("cousine");
-    const { value: carbonFootprint } =
-      veeValidateForm.useField("carbonFootprint");
-    const { value: dietCategory } = veeValidateForm.useField("dietCategory");
-    const { value: calories } = veeValidateForm.useField("calories");
-    const { value: intolerance } = veeValidateForm.useField("intolerance");
     const { fields: ingredients } =
       veeValidateForm.useFieldArray("ingredients");
 
@@ -205,11 +196,6 @@ export default defineComponent({
 
         if (res && res.data) {
           selectData.value = res.data;
-          console.log(selectData.value);
-
-          const sth = selectData.value.find(
-            (item: any) => item.fieldName === "cousine"
-          );
         }
       } catch (err: any) {
         console.log(err);
@@ -224,6 +210,7 @@ export default defineComponent({
         return question.questionOptions;
       }
 
+
       return [];
     };
 
@@ -231,12 +218,6 @@ export default defineComponent({
       handlePrevent,
       getQuestionOptionsByFieldName,
       selectData,
-      name,
-      cousine,
-      carbonFootprint,
-      dietCategory,
-      calories,
-      intolerance,
       ingredients,
     };
   },

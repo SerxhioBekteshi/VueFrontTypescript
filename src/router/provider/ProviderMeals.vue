@@ -1,6 +1,6 @@
 <template>
   <div class="card">
-    <MealsPage :shouldCrud="true" :shouldRate="false" />
+    <MealsPage />
   </div>
 </template>
 
@@ -14,9 +14,7 @@ export default defineComponent({
   components: { MealsPage },
   props: {},
   setup() {
-    const ability = useAbility();
-
-    return { ability };
+    return {};
   },
 });
 </script>

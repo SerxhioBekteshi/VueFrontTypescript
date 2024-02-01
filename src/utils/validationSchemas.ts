@@ -7,21 +7,15 @@ export const modalOrderSchema = yup.object().shape({
 });
 
 export const mealSchema = yup.object().shape({
-  ingredients: yup
-    .array()
-    .of(
-      yup.object().shape({
-        name: yup
-          .string()
-          .required("Ingredient name is required")
-          .label("Name"),
-        portion: yup
-          .number()
-          .required("Ingredient portion is required")
-          .label("Portion"),
-      })
-    )
-    .strict(),
+  ingredients: yup.array().of(
+    yup.object().shape({
+      name: yup.string().required("Ingredient name is required").label("Name"),
+      portion: yup
+        .number()
+        .required("Ingredient portion is required")
+        .label("Portion"),
+    })
+  ),
   name: yup.string().required("Name is required").label("Name"),
   price: yup.number().required("Price is required").label("Price"),
   cousine: yup.string().required("Cousine is required").label("Cousine"),
@@ -33,7 +27,7 @@ export const mealSchema = yup.object().shape({
     .string()
     .required("Diet category is required")
     .label("Diet category"),
-  calories: yup.number().required("Calories are required").label("Calories"),
+  calories: yup.string().required("Calories are required").label("Calories"),
   achievement: yup
     .string()
     .required("Health goal is required")

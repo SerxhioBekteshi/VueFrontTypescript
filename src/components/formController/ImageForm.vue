@@ -14,12 +14,10 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { inject } from "vue";
 import InputFile from "../formElements/InputFile.vue";
-import { string } from "yup";
 
 export default defineComponent({
-  name: "MealForm",
+  name: "ImageForm",
   components: { InputFile },
   props: {
     controller: { type: String, required: true },

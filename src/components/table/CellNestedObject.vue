@@ -1,12 +1,16 @@
 <template>
   <div>
-    <ul v-if="isObject">
-      <li v-for="(value, key) in nestedObject" :key="key">
-        {{ key }}
-        <CellNestedObject :nestedObject="value" />
-      </li>
-    </ul>
-    <span v-else>{{ nestedObject }}</span>
+    <template v-if="isObject">
+      <ul>
+        <li v-for="(value, key) in nestedObject" :key="key">
+          {{ key }}
+          <CellNestedObject :nestedObject="value" />
+        </li>
+      </ul>
+    </template>
+    <template v-else>
+      <span>{{ nestedObject }}</span>
+    </template>
   </div>
 </template>
 
@@ -16,7 +20,7 @@ import { computed, defineComponent } from "vue";
 export default defineComponent({
   props: {
     nestedObject: {
-      type: Object,
+      type: [Object, String],
       default: () => ({}),
     },
   },

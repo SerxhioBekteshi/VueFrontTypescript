@@ -18,7 +18,7 @@ import aclRoutes from "./routesAcl";
 //   ...baseRoutes,
 // ];
 
-const routes = [...baseRoutes, ...aclRoutes];
+const routes = [...baseRoutes, ...aclRoutes, ...profileRoutes];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
@@ -28,8 +28,6 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const requiredPermissions: any = to.meta.permissions;
   const abilities = useAbility();
-
-  console.log(to.meta.permissions, "CHESCKSSSSSSSSSs", abilities.rules);
 
   if (requiredPermissions) {
     // console.log(requiredPermissions);

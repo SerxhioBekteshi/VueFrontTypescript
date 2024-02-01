@@ -1,6 +1,6 @@
 <template>
   <span class="p-float-label">
-    <InputText
+    <InputNumber
       v-model="value"
       :id="id"
       :style="{ borderColor: errorMessage ? 'red' : '', width: '100%' }"
@@ -28,7 +28,7 @@
 import { useField } from "vee-validate";
 import ValidationError from "../ValidationError.vue";
 import { defineProps, ref, watch } from "vue";
-import InputText from "primevue/inputtext";
+import InputNumber from "primevue/inputnumber";
 
 const props = defineProps({
   name: { type: String, required: true },
@@ -40,10 +40,9 @@ const props = defineProps({
 
 const { handleChange, value, handleBlur, errorMessage, meta } = useField(
   () => props.name,
+  { asNumber: true },
   undefined
 );
-
-// const state = value;
 
 // const validationListeners = {
 //   blur: (evt) => handleBlur(evt, true),

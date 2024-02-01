@@ -59,12 +59,14 @@ export default defineComponent({
   setup(props) {
     const { value, errorMessage, meta } = useField<string | null>(
       () => props.name,
-      undefined,
-      {
-        initialValue:
-          props.defaultValue !== undefined ? props.defaultValue : null,
-      }
+      undefined
+      // {
+      //   initialValue:
+      //     props.defaultValue !== undefined ? props.defaultValue : value ? value :null,
+      // }
     );
+
+    console.log(value.value);
     const toast = useToast();
 
     const selectOptions = ref<any[]>(props.options);

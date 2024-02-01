@@ -101,7 +101,7 @@ import { useField } from "vee-validate";
 import InputToggle from "@/components/formElements/InputToggle.vue";
 
 export default defineComponent({
-  name: "MealForm",
+  name: "PermissionForm",
   components: {
     InputText,
     InputSelect,

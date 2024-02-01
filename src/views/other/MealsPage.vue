@@ -15,7 +15,7 @@
                 :show-export="true"
                 :showSearch="true"
                 :controller="'meals'"
-                :showAddBt="shouldCrud"
+                :showAddBt="ability.can('add', 'meals')"
                 :value="searchValue"
                 :actionButton="actionButton"
                 :customComponent="customToolbarComponent"
@@ -55,7 +55,7 @@
                     :controller="'meals/rate'"
                     :rateId="slotProps.data.id"
                     :rateValue="slotProps.data.rating"
-                    :shouldRate="shouldRate"
+                    :shouldRate="ability.can('custom', 'meals')"
                   />
                   <div class="flex align-items-center gap-3">
                     <span class="flex align-items-center gap-2">
@@ -91,43 +91,41 @@
                 </div>
 
                 <div class="flex flex-column align-items-center gap-2">
-                  <!-- BUTONAT -->
-                  <div v-if="shouldCrud">
-                    <Button
-                      icon="pi pi-file-edit"
-                      severity="help"
-                      text
-                      rounded
-                      size="small"
-                      style="padding-left: 0; padding-right: 0"
-                      @click="onEditClick(slotProps.data)"
-                      aria-label="Favorite"
-                    />
-                    <Button
-                      icon="pi pi-trash"
-                      severity="danger"
-                      text
-                      rounded
-                      style="padding-inline: 0; padding-right: 0"
-                      @click="
-                        () => openModalFunction(slotProps.data.id, 'delete')
-                      "
-                      size="small"
-                      aria-label="Cancel"
-                    />
-                  </div>
-                  <div v-else>
-                    <Button
-                      icon="pi pi-cart-plus"
-                      severity="warning"
-                      text
-                      rounded
-                      size="small"
-                      @click="
-                        () => openModalFunction(slotProps.data, 'checkout')
-                      "
-                    />
-                  </div>
+                  <Button
+                    icon="pi pi-file-edit"
+                    severity="help"
+                    v-if="ability.can('edit', 'meals')"
+                    text
+                    rounded
+                    size="small"
+                    style="padding-left: 0; padding-right: 0"
+                    @click="onEditClick(slotProps.data)"
+                    aria-label="Favorite"
+                  />
+                  <Button
+                    icon="pi pi-trash"
+                    severity="danger"
+                    text
+                    v-if="ability.can('delete', 'meals')"
+                    rounded
+                    style="padding-inline: 0; padding-right: 0"
+                    @click="
+                      () => openModalFunction(slotProps.data.id, 'delete')
+                    "
+                    size="small"
+                    aria-label="Cancel"
+                  />
+
+                  <Button
+                    icon="pi pi-cart-plus"
+                    severity="warning"
+                    text
+                    v-if="ability.can('custom', 'meals')"
+                    rounded
+                    size="small"
+                    @click="() => openModalFunction(slotProps.data, 'checkout')"
+                  />
+
                   <!-- IMAZHI -->
                   <div class="image-wrapper">
                     <img
@@ -156,11 +154,13 @@
                       slotProps.data.dietCategory
                     }}</span>
                   </div>
-                  <div v-if="shouldCrud" style="display: flex">
+
+                  <div style="display: flex">
                     <Button
                       icon="pi pi-file-edit"
                       severity="help"
                       text
+                      v-if="ability.can('edit', 'meals')"
                       rounded
                       size="small"
                       @click="onEditClick(slotProps.data)"
@@ -171,18 +171,19 @@
                       severity="danger"
                       text
                       rounded
+                      v-if="ability.can('delete', 'meals')"
                       @click="
                         () => openModalFunction(slotProps.data.id, 'delete')
                       "
                       size="small"
                       aria-label="Cancel"
                     />
-                  </div>
-                  <div v-else>
+
                     <Button
                       icon="pi pi-cart-plus"
                       severity="warning"
                       text
+                      v-if="ability.can('custom', 'meals')"
                       rounded
                       size="small"
                       @click="
@@ -209,7 +210,7 @@
                       :controller="'meals/rate'"
                       :rateId="slotProps.data.id"
                       :rateValue="slotProps.data.rating"
-                      :shouldRate="shouldRate"
+                      :shouldRate="ability.can('custom', 'meals')"
                     />
 
                     <Tag
@@ -223,6 +224,7 @@
                       rounded
                       outlined
                       size="small"
+                      v-if="ability.can('upload', 'meals')"
                       @click="
                         () =>
                           onUploadClick(slotProps.data.id, slotProps.data.image)
@@ -364,7 +366,6 @@ import {
   shallowRef,
   provide,
 } from "vue";
-import * as yup from "yup";
 import DataView from "primevue/dataview";
 import Tag from "primevue/tag";
 import axios from "axios";
@@ -395,6 +396,7 @@ import { useRouter } from "vue-router";
 import { setPaymentData } from "@/store/stores/payment.store";
 import ImageForm from "@/components/formController/ImageForm.vue";
 import { mealSchema, modalOrderSchema } from "@/utils/validationSchemas";
+import { useAbility } from "@casl/vue";
 
 export default defineComponent({
   name: "MealsPage",
@@ -417,16 +419,14 @@ export default defineComponent({
     Message,
     OrderSystemMealForm,
   },
-  props: {
-    shouldCrud: { type: Boolean, required: true },
-    shouldRate: { type: Boolean, required: true },
-  },
   enums: {
     eFormMode,
   },
   setup() {
     const profile = useReduxSelector((state) => state.user);
     const router = useRouter();
+    const ability = useAbility();
+    console.log(ability.rules);
 
     const formDrawerMode = ref<any>();
     const meals = ref<IMeal[]>([]);
@@ -460,6 +460,7 @@ export default defineComponent({
 
     const onEditClick = (data: IMeal) => {
       formDrawerMode.value = eFormMode.Edit;
+      console.log(data, "DATA");
       formData.value = data;
     };
 
@@ -597,6 +598,7 @@ export default defineComponent({
       currentPage,
       handleChangePage,
       handleRowDropdownChange,
+      ability,
       meal,
       modalOrderSchema,
       mealSchema,

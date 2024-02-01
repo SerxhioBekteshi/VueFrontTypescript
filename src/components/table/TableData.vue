@@ -1,7 +1,4 @@
 <template>
-  <!-- <div v-if="!showAddBt">
-    <Button icon="pi pi-external-link" label="Add" />
-  </div> -->
   <DataTable
     removableSort
     :tableClass="showEdit ? 'editable-cells-table' : ''"
@@ -157,12 +154,31 @@
       ?
     </div>
     <div v-else>
-      <ul>
-        <li v-for="(value, key) in fieldModalToShow" :key="key">
-          {{ key }}:
-          <CellNestedObject :nestedObject="value" />
-        </li>
-      </ul>
+      <div v-if="modalViewRenderType === eColumnType.Object">
+        <ul>
+          <li v-for="(value, key) in fieldModalToShow" :key="key">
+            {{ key }}:
+            <CellNestedObject :nestedObject="value" />
+          </li>
+        </ul>
+      </div>
+      <div v-else-if="modalViewRenderType === eColumnType.Array">
+        <div
+          v-if="
+            Array.isArray(fieldModalToShow) && fieldModalToShow.length === 0
+          "
+          style="display: flex; justify-content: center"
+        >
+          <InlineMessage severity="error"
+            >No data available for this cell to view</InlineMessage
+          >
+        </div>
+        <ul v-for="(obj, index) in fieldModalToShow" :key="index">
+          <li v-for="(value, key) in obj" :key="key">
+            <CellNestedObject :nestedObject="value" />
+          </li>
+        </ul>
+      </div>
     </div>
   </Modal>
   <Toast />
@@ -198,6 +214,8 @@ import TablePaginator from "./TablePaginator.vue";
 import ISelectColumn from "@/interfaces/database/ISelectColumn";
 import CellNestedObject from "../table/CellNestedObject.vue";
 import { eFormMode } from "@/assets/enums/EFormMode";
+import eColumnType from "@/assets/enums/eColumnType";
+import InlineMessage from "primevue/inlinemessage";
 interface Action {
   component: any;
   props: Record<string, unknown>;
@@ -218,6 +236,7 @@ export default defineComponent({
     ProgressSpinner,
     // CellEditor,
     Button,
+    InlineMessage,
     TablePaginator,
     CellNestedObject,
   },
@@ -247,10 +266,13 @@ export default defineComponent({
   ],
   enums: {
     eFormMode,
+    eColumnType,
   },
   setup(props, { emit }) {
     const toast = useToast();
     const modalInformation = ref<string>("");
+    const modalViewRenderType = ref<any>();
+
     const {
       controller,
       checkbox,
@@ -274,9 +296,10 @@ export default defineComponent({
       openModal.value = true;
     };
 
-    const handleDoubleClick = (cellValue: any) => {
+    const handleDoubleClick = (cellValue: any, type: any) => {
       modalInformation.value = eFormMode.View;
       fieldModalToShow.value = cellValue;
+      modalViewRenderType.value = type;
       openModal.value = true;
     };
 
@@ -487,6 +510,8 @@ export default defineComponent({
       selectedRows,
       eFormMode,
       modalInformation,
+      modalViewRenderType,
+      eColumnType,
       handleMultipleDelete,
       openModalFunction,
       handleRowDropdownChange,
