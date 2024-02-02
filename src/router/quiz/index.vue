@@ -48,7 +48,7 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 import Stepper from "../../components/Stepper.vue";
 import Button from "primevue/button";
-import Step from "../other/Step.vue";
+import Step from "./Step.vue";
 import { useField, useForm } from "vee-validate";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";

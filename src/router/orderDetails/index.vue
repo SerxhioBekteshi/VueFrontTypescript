@@ -19,7 +19,7 @@ import { defineComponent, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
 export default defineComponent({
-  name: "ProviderOrders",
+  name: "OrderDetails",
   components: { TableData },
   setup() {
     const route = useRoute();

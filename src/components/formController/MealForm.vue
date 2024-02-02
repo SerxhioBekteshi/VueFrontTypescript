@@ -154,7 +154,7 @@
               severity="info"
               size="small"
               style="width: fit-content"
-              @click="push({ label: '', value: '' })"
+              @click="push({ portion: '', name: '' })"
             >
               Add ingredient
             </Button>
@@ -209,7 +209,6 @@ export default defineComponent({
       if (question) {
         return question.questionOptions;
       }
-
 
       return [];
     };

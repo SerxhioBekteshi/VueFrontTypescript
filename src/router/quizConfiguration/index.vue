@@ -109,121 +109,121 @@
   </draggable>
 
   <!-- <div v-for="(question, i) in quizQuestion" :key="question.id">
-    <Panel
-      :header="question.order + ' ' + question.question"
-      class="mb-2"
-      toggleable
-    >
-      <template #icons>
-        <button
-          class="p-panel-header-icon p-link mr-2"
-          :id="`overlay_menu_${i}`"
-          @click="toggleMenuPopup(i, $event, question)"
-        >
-          <span class="pi pi-cog"></span>
-        </button>
-        {{ i }}
-        <Menu
-          ref="menuRef"
-          :id="`overlay_menu_${i}`"
-          :model="menuItems"
-          :popup="true"
-        />
-      </template>
-      <div
-        style="
-          display: flex;
-          flex-direction: row;
-          justify-content: center;
-          align-items: center;
-        "
+      <Panel
+        :header="question.order + ' ' + question.question"
+        class="mb-2"
+        toggleable
       >
-        <div v-if="question.questionType === 'select'">
-          <SelectButton
-            :options="question.questionOptions"
+        <template #icons>
+          <button
+            class="p-panel-header-icon p-link mr-2"
+            :id="`overlay_menu_${i}`"
+            @click="toggleMenuPopup(i, $event, question)"
+          >
+            <span class="pi pi-cog"></span>
+          </button>
+          {{ i }}
+          <Menu
+            ref="menuRef"
+            :id="`overlay_menu_${i}`"
+            :model="menuItems"
+            :popup="true"
+          />
+        </template>
+        <div
+          style="
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+          "
+        >
+          <div v-if="question.questionType === 'select'">
+            <SelectButton
+              :options="question.questionOptions"
+              optionLabel="label"
+              multiple
+              aria-labelledby="multiple"
+            />
+          </div>
+          <div v-for="(option, index) in question.questionOptions" :key="index">
+            <div
+              v-if="question.questionType === 'radio'"
+              style="display: flex; align-items: center; padding-inline: 1rem"
+            >
+              <RadioButton
+                class="p-invalid"
+                :inputId="index.toString()"
+                name="option"
+              />
+              <label :for="index.toString()" class="ml-2">{{
+                option.label
+              }}</label>
+            </div>
+  
+            <div
+              v-if="question.questionType === 'checkbox'"
+              style="display: flex; align-items: center; padding-inline: 1rem"
+            >
+              <Checkbox
+                class="p-invalid"
+                :inputId="index.toString()"
+                name="option"
+              />
+              <label :for="index.toString()" class="ml-2">{{
+                option.label
+              }}</label>
+            </div>
+          </div>
+        </div>
+      </Panel>
+  
+      <div
+        class="mb-3 mt-3 flex quizContent"
+        style="width: 100%S"
+        v-if="question.fieldType === 'select'"
+      >
+        <div>
+          <Listbox
+            style="width: 100%"
+            :options="JSON.parse(JSON.stringify(question.fieldAnswers)).map((element: any) => { return { label: element.label, value: element.value } }
+                  )"
             optionLabel="label"
-            multiple
-            aria-labelledby="multiple"
+            class="w-full md:w-14rem"
           />
         </div>
-        <div v-for="(option, index) in question.questionOptions" :key="index">
+      </div>
+  
+      <div
+        v-if="question.fieldType === 'radio'"
+        style="display: flex"
+        class="mb-3 mt-3 flex"
+      >
+        <div class="flex gap-5">
           <div
-            v-if="question.questionType === 'radio'"
-            style="display: flex; align-items: center; padding-inline: 1rem"
+            class="flex align-items-center"
+            v-for="field in question.fieldAnswers"
+            :key="field._id"
           >
-            <RadioButton
-              class="p-invalid"
-              :inputId="index.toString()"
-              name="option"
-            />
-            <label :for="index.toString()" class="ml-2">{{
-              option.label
-            }}</label>
-          </div>
-
-          <div
-            v-if="question.questionType === 'checkbox'"
-            style="display: flex; align-items: center; padding-inline: 1rem"
-          >
-            <Checkbox
-              class="p-invalid"
-              :inputId="index.toString()"
-              name="option"
-            />
-            <label :for="index.toString()" class="ml-2">{{
-              option.label
-            }}</label>
+            <RadioButton :inputId="field.value" :value="field.value" />
+            <label :for="field.value" class="ml-2">{{ field.label }}</label>
           </div>
         </div>
       </div>
-    </Panel>
-
-    <div
-      class="mb-3 mt-3 flex quizContent"
-      style="width: 100%S"
-      v-if="question.fieldType === 'select'"
-    >
-      <div>
-        <Listbox
-          style="width: 100%"
-          :options="JSON.parse(JSON.stringify(question.fieldAnswers)).map((element: any) => { return { label: element.label, value: element.value } }
-                )"
-          optionLabel="label"
-          class="w-full md:w-14rem"
-        />
-      </div>
-    </div>
-
-    <div
-      v-if="question.fieldType === 'radio'"
-      style="display: flex"
-      class="mb-3 mt-3 flex"
-    >
-      <div class="flex gap-5">
-        <div
-          class="flex align-items-center"
-          v-for="field in question.fieldAnswers"
-          :key="field._id"
-        >
-          <RadioButton :inputId="field.value" :value="field.value" />
-          <label :for="field.value" class="ml-2">{{ field.label }}</label>
+  
+      <div v-if="question.fieldType === 'checkbox'">
+        <div class="flex gap-3">
+          <div
+            class="flex align-items-center"
+            v-for="field in question.fieldAnswers"
+            :key="field._id"
+          >
+            <Checkbox :inputId="field.value" :value="field.label" />
+            <label :for="field.value" class="ml-2">{{ field.label }}</label>
+          </div>
         </div>
       </div>
-    </div>
-
-    <div v-if="question.fieldType === 'checkbox'">
-      <div class="flex gap-3">
-        <div
-          class="flex align-items-center"
-          v-for="field in question.fieldAnswers"
-          :key="field._id"
-        >
-          <Checkbox :inputId="field.value" :value="field.label" />
-          <label :for="field.value" class="ml-2">{{ field.label }}</label>
-        </div>
-      </div>
-    </div>
-  </div> -->
+    </div> -->
 
   <div v-if="formData || modeDrawer">
     <DetailDrawer
@@ -261,7 +261,7 @@ import draggable from "vuedraggable";
 import { questionValidationSchema } from "@/utils/validationSchemas";
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
-  name: "Quiz",
+  name: "QuizConfiguration",
   components: {
     Button,
     DetailDrawer,

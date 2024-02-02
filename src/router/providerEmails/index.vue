@@ -1,8 +1,8 @@
 <template>
   <Card style="width: 100%">
     <!-- <template #header>
-      <img alt="user header" src="/images/usercard.png" />
-    </template> -->
+        <img alt="user header" src="/images/usercard.png" />
+      </template> -->
     <template #title> Send email</template>
     <template #subtitle>
       Fill the provider email in the above field so he can register into the

@@ -188,8 +188,8 @@ export default defineComponent({
 </script>
 <style>
 .p-picklist-buttons button:nth-child(2),
-/* .p-picklist-buttons button:nth-child(3), */
-.p-picklist-buttons button:nth-child(4) {
+  /* .p-picklist-buttons button:nth-child(3), */
+  .p-picklist-buttons button:nth-child(4) {
   display: none;
 }
 </style>

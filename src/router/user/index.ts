@@ -1,7 +1,6 @@
 import AppLayout from "@/layout/AppLayout.vue";
 import Home from "../base/Home/index.vue";
 import UserMeals from "./UserMeals.vue";
-import QuizLayout from "@/views/other/QuizLayout.vue";
 import PaymentPage from "./payments/index.vue";
 import PaymentProcessPage from "./PaymentProcessPage/index.vue";
 import OrderDetails from "../provider/OrderDetails.vue";
@@ -24,14 +23,6 @@ const userRoutes = [
         path: "meals",
         name: "UserMeals",
         component: UserMeals,
-        meta: {
-          requiresAuth: true,
-        },
-      },
-      {
-        path: "quiz",
-        component: QuizLayout,
-        name: "Quiz layout",
         meta: {
           requiresAuth: true,
         },

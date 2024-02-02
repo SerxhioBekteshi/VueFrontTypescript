@@ -1,13 +1,14 @@
 import Home from "./base/Home/index.vue";
 import AppLayout from "@/layout/AppLayout.vue";
-import Quiz from "./admin/Quiz.vue";
-import ProvidersRegistration from "./admin/providersRegistration/index.vue";
-import MealsConfiguration from "@/views/other/MealsConfigurations.vue";
-import Permissions from "./admin/permissions/index.vue";
-import ProviderEmail from "./admin/providerEmails/index.vue";
-import Orders from "./admin/Orders.vue";
-import OrderDetails from "./provider/OrderDetails.vue";
-import Meals from "./provider/ProviderMeals.vue";
+import QuizConfiguration from "./quizConfiguration/index.vue";
+import QuizLayout from "./quiz/index.vue";
+import ProvidersRegistration from "./providersRegistration/index.vue";
+import MealsConfiguration from "./mealsConfiguration/index.vue";
+import Permissions from "./permissions/index.vue";
+import ProviderEmail from "./providerEmails/index.vue";
+import Orders from "./orders/index.vue";
+import OrderDetails from "./orderDetails/index.vue";
+import Meals from "./meals/index.vue";
 
 const aclRoutes = [
   {
@@ -31,11 +32,19 @@ const aclRoutes = [
         component: OrderDetails,
       },
       {
-        path: "quiz",
-        name: "Quiz",
-        component: Quiz,
+        path: "quizConfiguration",
+        name: "QuizConfiguration",
+        component: QuizConfiguration,
         meta: {
           permissions: { action: "read", subject: "quiz configuration" },
+        },
+      },
+      {
+        path: "quiz",
+        name: "QuizLayout",
+        component: QuizLayout,
+        meta: {
+          permissions: { action: "read", subject: "quiz layout" },
         },
       },
       {

@@ -1,22 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import adminRoutes from "./admin";
-import providerRoutes from "./provider";
 import profileRoutes from "./profile";
-import userRoutes from "./user";
 import baseRoutes from "./base";
-import JwtManager from "@/utils/jwtManager";
-import { inject } from "vue";
 import { useAbility } from "@casl/vue";
 import aclRoutes from "./routesAcl";
-
-// const routes = [
-//   ...adminRoutes,
-//   ...userRoutes,
-//   ...providerRoutes,
-//   ...profileRoutes,
-//   ...baseRoutes,
-// ];
 
 const routes = [...baseRoutes, ...aclRoutes, ...profileRoutes];
 
@@ -42,10 +29,11 @@ router.beforeEach((to, from, next) => {
       next();
     } else {
       next("/404NotFound");
+      return;
     }
-
+  } else {
     next();
-  } else next();
+  }
 });
 
 export default router;

@@ -388,7 +388,7 @@ import { eRoles } from "@/assets/enums/eRoles";
 import { useDispatch, useReduxSelector } from "@/store/redux/helpers";
 import { eFilterOperator } from "@/assets/enums/eFilterOperator";
 import { calculateFiltersForMeal } from "@/utils/functions";
-import OrderSystemMealForm from "./OrderSystemMealForm.vue";
+import OrderSystemMealForm from "../orderMeals/OrderSystemMealForm.vue";
 import IMeal from "@/interfaces/database/IMeal";
 import DataViewLayoutOptions from "primevue/dataviewlayoutoptions";
 import MealsSkeleton from "./MealsSkeleton.vue";
@@ -399,7 +399,7 @@ import { mealSchema, modalOrderSchema } from "@/utils/validationSchemas";
 import { useAbility } from "@casl/vue";
 
 export default defineComponent({
-  name: "MealsPage",
+  name: "MealsView",
   components: {
     DataView,
     Accordion,

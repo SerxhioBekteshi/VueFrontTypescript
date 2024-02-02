@@ -1,17 +1,16 @@
 <template>
   <div class="card">
-    <MealsPage />
+    <MealsView />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import MealsPage from "@/views/other/MealsPage.vue";
-import { useAbility } from "@casl/vue";
+import MealsView from "@/views/meals/MealsView.vue";
 
 export default defineComponent({
-  name: "ProviderMeals",
-  components: { MealsPage },
+  name: "MealsPage",
+  components: { MealsView },
   props: {},
   setup() {
     return {};
