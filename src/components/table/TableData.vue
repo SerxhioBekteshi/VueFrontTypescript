@@ -110,6 +110,8 @@
             :cellValue="
               slotProps.data[`${column.propertyName}`]
                 ? slotProps.data[`${column.propertyName}`]
+                : slotProps.data[`${column.propertyName}`] === null
+                ? 'NULL'
                 : tableColumns[tableColumns.length - 1]
             "
             :cellColumn="column"
