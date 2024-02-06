@@ -54,7 +54,6 @@
 </template>
 
 <script lang="ts">
-import { useReduxSelector } from "@/store/redux/helpers";
 import Card from "primevue/card";
 import Divider from "primevue/divider";
 import { defineComponent, onMounted, ref } from "vue";
@@ -71,7 +70,7 @@ export default defineComponent({
     const isLoading = ref<boolean>(true);
 
     onMounted(() => {
-      const paymentStore = useReduxSelector((state: any) => state.payment);
+      const paymentStore: any = {};
       if (paymentStore.value.length !== 0) {
         let totalsPerItem = paymentStore.value.map((item: any) => {
           let total = item.quantity * item.price;

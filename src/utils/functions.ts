@@ -5,6 +5,7 @@ import initStore from "@/store/redux/initStore";
 import { eFilterOperator } from "@/assets/enums/eFilterOperator";
 import axiosInit from "@/initializers/axios";
 import { useToast } from "vue-toast-notification";
+import store from "@/store/vuexStore/storeModules";
 
 export function getNameById(myObject: any, id: number) {
   for (const [key, value] of Object.entries(myObject)) {
@@ -108,8 +109,13 @@ export const initApp = async () => {
   } catch (e) {
     console.log("initApp", e);
   }
-  const appStore = initStore(currentUser);
-  return appStore;
+
+  if (currentUser) {
+    store.commit("setUser", currentUser);
+  }
+
+  // const appStore = initStore(currentUser);
+  // return appStore;
 };
 
 export default initApp;

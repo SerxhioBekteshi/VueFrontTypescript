@@ -365,6 +365,7 @@ import {
   watch,
   shallowRef,
   provide,
+  computed,
 } from "vue";
 import DataView from "primevue/dataview";
 import Tag from "primevue/tag";
@@ -385,7 +386,6 @@ import Rate from "../../components/formElements/Rate.vue";
 import TablePaginator from "../../components/table/TablePaginator.vue";
 import { PageState } from "primevue/paginator";
 import { eRoles } from "@/assets/enums/eRoles";
-import { useDispatch, useReduxSelector } from "@/store/redux/helpers";
 import { eFilterOperator } from "@/assets/enums/eFilterOperator";
 import { calculateFiltersForMeal } from "@/utils/functions";
 import OrderSystemMealForm from "../orderMeals/OrderSystemMealForm.vue";
@@ -397,6 +397,7 @@ import { setPaymentData } from "@/store/stores/payment.store";
 import ImageForm from "@/components/formController/ImageForm.vue";
 import { mealSchema, modalOrderSchema } from "@/utils/validationSchemas";
 import { useAbility } from "@casl/vue";
+import { useStore } from "vuex";
 
 export default defineComponent({
   name: "MealsView",
@@ -423,7 +424,9 @@ export default defineComponent({
     eFormMode,
   },
   setup() {
-    const profile = useReduxSelector((state) => state.user);
+    const store = useStore();
+    const profile = computed(() => store.state.user.user);
+
     const router = useRouter();
     const ability = useAbility();
     console.log(ability.rules);
@@ -554,14 +557,14 @@ export default defineComponent({
     };
 
     const handleCheckout = (dataComing: any) => {
-      useDispatch()(
-        setPaymentData({
-          quantity: parseInt(dataComing.quantity),
-          name: meal.value.name,
-          price: meal.value.price,
-          id: meal.value.id,
-        })
-      );
+      // useDispatch()(
+      //   setPaymentData({
+      //     quantity: parseInt(dataComing.quantity),
+      //     name: meal.value.name,
+      //     price: meal.value.price,
+      //     id: meal.value.id,
+      //   })
+      // );
       router.push("payments/paypal");
     };
 

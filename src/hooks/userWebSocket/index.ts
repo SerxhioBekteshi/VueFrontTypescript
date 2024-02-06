@@ -1,85 +1,69 @@
-// import {
-//   App,
-//   ref,
-//   onMounted,
-//   onBeforeUnmount,
-//   provide,
-//   inject,
-//   watch,
-//   Ref,
-// } from "vue";
+import {
+  App,
+  Ref,
+  computed,
+  inject,
+  onMounted,
+  onUnmounted,
+  provide,
+  ref,
+} from "vue";
 
-import { Socket } from "socket.io-client";
-import { Ref, inject } from "vue";
+// Import the required Vue 3 plugin for your WebSocket logic
+import { io, Socket } from "socket.io-client";
+import store from "@/store/vuexStore/storeModules";
 
-// // Import the required Vue 3 plugin for your WebSocket logic
-// import { io, Socket } from "socket.io-client";
-// import { useReduxSelector } from "@/store/redux/helpers";
+// Define your WebSocketContext key for providing and injecting the WebSocket instance
+const WebsocketContextKey = Symbol();
 
-// // Define your WebSocketContext key for providing and injecting the WebSocket instance
-// const WebsocketContextKey = Symbol();
+// Define the WebSocketProvider component
+const installWebSocket = (app: App) => {
+  app.component("WebSocketProvider", {
+    name: "WebSocketProvider",
+    props: {},
+    setup(slots) {
+      // const WebsocketContextKey = "WebSocketProvider";
+      const connection = ref<any>(null);
+      let socket: Socket | null = null;
+      onMounted(() => {
+        const userState: any = store?.state;
+        const user = userState?.user?.user;
 
-// // Define the WebSocketProvider component
-// const installWebSocket = (app: App) => {
-//   app.component("WebSocketProvider", {
-//     name: "WebSocketProvider",
-//     props: {},
-//     setup(slots) {
-//       console.log("WebSocketProvider component setup");
-
-//       const user = useReduxSelector((state) => state.user);
-//       const connection = ref<Socket | null>(null);
-
-//       const initializeSocket = () => {
-//         let socket: Socket | null = null;
-//         if (user.value?.role) {
-//           socket = io("http://localhost:1112", {
-//             autoConnect: false,
-//             transports: ["websocket", "polling"],
-//             query: {
-//               userObjectId: user.value._id,
-//               userId: user.value.id,
-//               role: user.value.role,
-//             },
-//           });
-
-//           if (!socket.active) {
-//             try {
-//               socket.connect();
-//               connection.value = socket;
-//             } catch (error) {
-//               console.log("WebsocketProvider.start", error);
-//             }
-//           }
-
-//           return socket;
-//         }
-//       };
-
-//       const startSocket = () => {
-//         const socket = initializeSocket();
-
-//         onBeforeUnmount(() => {
-//           if (socket && socket.active) {
-//             try {
-//               socket.disconnect();
-//             } catch (error) {
-//               console.log("WebsocketProvider.disconnect", error);
-//             }
-//           }
-//         });
-//       };
-
-//       onMounted(() => {
-//         startSocket();
-//         provide(WebsocketContextKey, connection.value);
-//       });
-
-//       // Render slots (children components)
-//       return () => slots.default && slots.default();
-//     },
-//   });
-// };
+        if (user.value?.role) {
+          socket = io("http://localhost:1112", {
+            autoConnect: false,
+            transports: ["websocket", "polling"],
+            query: {
+              userId: user.value.id,
+              adminId: user.value.id,
+              role: user.value.role,
+            },
+          });
+          if (!socket.active) {
+            try {
+              socket.connect();
+              connection.value = socket;
+              provide(WebsocketContextKey, connection.value);
+            } catch (error) {
+              console.error("WebsocketProvider.start", error);
+            }
+          }
+        }
+      });
+      onUnmounted(() => {
+        if (socket && socket.active) {
+          try {
+            socket.disconnect();
+          } catch (error) {
+            console.error("WebsocketProvider.disconnect", error);
+          }
+        }
+      });
+      // Render slots (children components)
+      return () => slots.default && slots.default();
+    },
+  });
+};
 
 // // Define the useWebSocket composable function for accessing the WebSocket instance
 // const useWebSocket = () => {

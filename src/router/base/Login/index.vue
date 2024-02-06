@@ -91,6 +91,7 @@ import { useDispatch } from "@/store/redux/helpers";
 import store from "@/store/redux/configurations";
 import { useAbility } from "@casl/vue";
 import { defineAbilityFor } from "@/initializers/ability";
+import { useStore } from "vuex";
 
 export default defineComponent({
   name: "LoginView",
@@ -101,6 +102,7 @@ export default defineComponent({
     const password = ref("");
     const router = useRouter();
     const ability = useAbility();
+    const store = useStore();
 
     // const dispatch = useDispatch();
     // console.log(dispatch, "DISPATCH");
@@ -113,7 +115,7 @@ export default defineComponent({
         password: password.value,
       };
       try {
-        await AuthManager.login(loginUser, router);
+        await AuthManager.login(loginUser, router, store);
         const updatedAbility = await defineAbilityFor();
         ability.update(updatedAbility.rules);
       } catch (err) {

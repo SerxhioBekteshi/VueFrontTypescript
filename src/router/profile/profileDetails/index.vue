@@ -96,8 +96,7 @@
 </template>
 
 <script lang="ts">
-import { useDispatch, useReduxSelector } from "@/store/redux/helpers";
-import { defineComponent, provide } from "vue";
+import { computed, defineComponent, provide } from "vue";
 import InputText from "@/components/formElements/InputText.vue";
 import { useForm } from "vee-validate";
 import InputSelect from "@/components/formElements/InputSelect.vue";
@@ -109,6 +108,7 @@ import Toast from "primevue/toast";
 import ImageForm from "@/components/formController/ImageForm.vue";
 import { profileDetailsSchema } from "@/utils/validationSchemas";
 import { setUser } from "@/store/stores/user.store";
+import { useStore } from "vuex";
 
 export default defineComponent({
   name: "ProfileDetails",
@@ -122,10 +122,11 @@ export default defineComponent({
   },
   props: {},
   setup() {
-    const profile = useReduxSelector((state) => state.user);
-    console.log(profile.value, "PROFILE");
+    // const profile: any = {};
+    const store = useStore();
+    const profile = computed(() => store.state.user.user);
+
     const toast = useToast();
-    // const dispatch = useDispatch();
 
     const { handleSubmit, resetForm, setFieldValue } = useForm({
       initialValues: profile,

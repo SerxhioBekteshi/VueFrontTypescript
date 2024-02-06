@@ -1,12 +1,15 @@
-import { Ability, AbilityBuilder, createMongoAbility } from "@casl/ability";
+import { createMongoAbility, MongoAbility as AppAbility } from "@casl/ability";
 
 export type Subjects = string;
 export type Roles = "admin" | "provider" | "user";
-export type Actions = "manage" | "create" | "read" | "update" | "delete";
-
-export type AppAbility = any | undefined;
-
-// export const AppAbility = createMongoAbility as any;
+export type Actions =
+  | "manage"
+  | "create"
+  | "read"
+  | "update"
+  | "delete"
+  | "upload"
+  | "custom";
 
 export type ACLObj = {
   action: Actions;

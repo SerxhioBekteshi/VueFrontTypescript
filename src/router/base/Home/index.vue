@@ -36,7 +36,7 @@
 // import Button from "primevue/button"
 import Button from "primevue/button";
 import TableData from "@/components/table/TableData.vue";
-import { defineComponent, ref, shallowRef } from "vue";
+import { computed, defineComponent, ref, shallowRef } from "vue";
 import { PrimeIcons } from "primevue/api";
 import { eFormMode } from "@/assets/enums/EFormMode";
 import DetailDrawer from "@/components/DetailDrawer.vue";
@@ -44,6 +44,7 @@ import MealForm from "@/components/formController/MealForm.vue";
 import * as yup from "yup";
 import Timeline from "primevue/timeline";
 import Card from "primevue/card";
+import { useStore } from "vuex";
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
@@ -53,6 +54,9 @@ export default defineComponent({
     const modeDrawer = ref<any>(null);
     const formData = ref<any>(null);
     const tableDataRef = ref<any>(null);
+    const store = useStore();
+
+    const currentUser = computed(() => store.state.user.user);
 
     const fetchDataAfterSubmit = () => {
       if (tableDataRef.value) {

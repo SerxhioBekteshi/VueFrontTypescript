@@ -12,7 +12,7 @@ export const useDispatch = () => store.dispatch;
 //   return computed(() => fn(rootStore.state as State));
 // };
 
-export const useReduxSelector = <T>(selectorFn: (state: RootState) => T) => {
-  const rootStore = inject(storeKey) as { state: RootState };
-  return computed(() => selectorFn(rootStore.state));
-};
+// export const useReduxSelector = <T>(selectorFn: (state: RootState) => T) => {
+//   const rootStore = inject(storeKey) as { state: RootState };
+//   return computed(() => selectorFn(rootStore.state));
+// };

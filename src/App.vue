@@ -5,15 +5,14 @@
 <script lang="ts">
 import { Socket, io } from "socket.io-client";
 import {
-  Ref,
+  computed,
   defineComponent,
-  inject,
   onMounted,
   onUnmounted,
   provide,
   ref,
 } from "vue";
-import { useReduxSelector } from "./store/redux/helpers";
+import { useStore } from "vuex";
 
 export default defineComponent({
   name: "App",
@@ -22,9 +21,10 @@ export default defineComponent({
     const WebsocketContextKey = "WebSocketProvider";
     const connection = ref<any>(null);
     let socket: Socket | null = null;
-
     onMounted(() => {
-      const user = useReduxSelector((state) => state.user);
+      const store = useStore();
+
+      const user = computed(() => store.state.user.user);
       if (user.value?.role) {
         socket = io("http://localhost:1112", {
           autoConnect: false,
@@ -35,7 +35,6 @@ export default defineComponent({
             role: user.value.role,
           },
         });
-
         if (!socket.active) {
           try {
             socket.connect();
@@ -48,7 +47,6 @@ export default defineComponent({
         }
       }
     });
-
     onUnmounted(() => {
       if (socket && socket.active) {
         try {

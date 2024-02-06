@@ -1,13 +1,13 @@
-import store from "@/store/redux/configurations";
-import { useReduxSelector } from "@/store/redux/helpers";
 import {
   AbilityBuilder,
   createMongoAbility,
-  defineAbility,
+  // defineAbility,
 } from "@casl/ability";
 import axios from "axios";
-import { provideAbility } from "@casl/vue";
-import { acl } from ".";
+// import { provideAbility } from "@casl/vue";
+// import { acl } from ".";
+// import { useStore } from "vuex";
+import store from "@/store/vuexStore/storeModules";
 
 export const fetchUserPermissions = async () => {
   const response = await axios.get(`/user/loggedUser`);
@@ -20,38 +20,27 @@ export type Actions = "manage" | "create" | "read" | "update" | "delete";
 export type Subjects = string;
 
 export const defineAbilityFor = async () => {
-  const { can, cannot, build } = new AbilityBuilder(createMongoAbility);
+  const { can, build } = new AbilityBuilder(createMongoAbility);
 
-  // console.log(ability, "CREATE MONGO ABILITY??");
+  const userPermissions: any = store?.state;
+  const accessPermissions = userPermissions?.user?.user?.accessPermissions;
 
-  //   if (user) {
-  try {
-    // const user = useReduxSelector((state) => state.user);
+  // acl.buildAbility(accessPermissions);
 
-    const accessPermissions = await fetchUserPermissions();
-    // acl.buildAbility(accessPermissions);
-
-    // console.log(acl, "ACL");
-
-    if (accessPermissions) {
-      // Dynamically define abilities based on fetched permissions
-      accessPermissions.forEach((permission: any) => {
-        const { action, subject } = permission;
-        can(action.toLowerCase(), subject.toLowerCase());
-        // provideAbility(ability);
-        // defineAbility;
-        // console.log(ability.rules, "ABILITY");
-        // ability.can(action, subject);
-      });
-    } else {
-      // ability.can("read", "");
-      //   ability.cannot("read", "restrictedSubject");
-    }
-  } catch (error) {
-    console.error("Error fetching user permissions:", error);
+  if (accessPermissions) {
+    // Dynamically define abilities based on fetched permissions
+    accessPermissions.forEach((permission: any) => {
+      const { action, subject } = permission;
+      can(action.toLowerCase(), subject.toLowerCase());
+      // provideAbility(ability);
+      // defineAbility;
+      // console.log(ability.rules, "ABILITY");
+      // ability.can(action, subject);
+    });
+  } else {
+    can("read", "all");
+    //   ability.cannot("read", "restrictedSubject");
   }
-  //   }
-  // console.log("Defined Abilities:", ability.rules); // Log defined abilities
 
   return build();
 };

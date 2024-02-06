@@ -7,6 +7,7 @@ import { eRoles } from "@/assets/enums/eRoles";
 import { useDispatch } from "@/store/redux/helpers";
 import { useAbility } from "@casl/vue";
 import { defineAbilityFor } from "@/initializers/ability";
+import { Store, useStore } from "vuex";
 
 export interface IUserInfo {
   user?: any;
@@ -30,35 +31,7 @@ class AuthManager {
   static async getUserFromToken(): Promise<any> {
     if (JwtManager.accessToken) {
       const userInfo = AuthManager.parseJwt(JwtManager.accessToken);
-      const user = userInfo.user;
-
-      const baseLoggedData = {
-        email: user.email,
-        id: user.id,
-        role: user.role,
-        name: user.name,
-        lastName: user.lastName,
-        image: user.image,
-        state: user.state,
-        address: user.address,
-        accessPermissions: user.accessPermissions,
-      };
-
-      if (user.role === eRoles.Provider) {
-        return {
-          ...baseLoggedData,
-          termsAgreed: user.termsAgreed,
-          nipt: user.nipt,
-        };
-      } else if (user.role === eRoles.User)
-        return {
-          ...baseLoggedData,
-          gender: user.gender,
-          birthDate: user.birthDate,
-          accountSubmitted: user.accountSubmitted,
-          quizFulfilled: user.quizFulfilled,
-        };
-      else return baseLoggedData;
+      return this.handleUserDataBasedOnRole(userInfo);
     }
     return null;
   }
@@ -66,34 +39,9 @@ class AuthManager {
   static async getUserData(): Promise<any> {
     try {
       const res: any = await axios.get("/user/loggedUser");
-      if (res && res.data) {
-        const user = res.data;
-        const baseLoggedData = {
-          email: user.email,
-          id: user.id,
-          role: user.role,
-          name: user.name,
-          lastName: user.lastName,
-          image: user.image,
-          state: user.state,
-          address: user.address,
-          accessPermissions: user.accessPermissions,
-        };
 
-        if (user.role === eRoles.Provider) {
-          return {
-            ...baseLoggedData,
-            termsAgreed: user.termsAgreed,
-            nipt: user.nipt,
-          };
-        } else if (user.role === eRoles.User)
-          return {
-            ...baseLoggedData,
-            gender: user.gender,
-            birthDate: user.birthDate,
-            accountSubmitted: user.accountSubmitted,
-            quizFulfilled: user.quizFulfilled,
-          };
+      if (res && res.data) {
+        return this.handleUserDataBasedOnRole(res.data);
       } else return null;
     } catch (err) {
       console.log(err, "ERR IN GETTING LOGGEDF USER DATA");
@@ -129,11 +77,12 @@ class AuthManager {
     credentials: any,
     // dispatch: any,
     // navigate: any
-    router: any
+    router: any,
+    store: Store<any>
   ): Promise<void> {
     const res = await axios.post("user/login", credentials);
     const data = res?.data;
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();
 
     let response: any = null;
     if (data?.access_token || data?.refresh_token) {
@@ -149,7 +98,9 @@ class AuthManager {
       JwtManager.setRefreshToken(response.refreshToken);
 
       // useDispatch()(setUser(response?.user));
-      dispatch(setUser(response?.user));
+      // dispatch(setUser(response?.user));
+      // store.dispatch("user/setUser", response?.user);
+      store.commit("setUser", this.handleUserDataBasedOnRole(response?.user));
 
       router.push("/dashboard");
       // if (response.user.roleId === eRoleType.Admin) {
@@ -218,6 +169,38 @@ class AuthManager {
     useDispatch()(setUser(null));
     // dispatch(setUser(null));
   }
+
+  public static handleUserDataBasedOnRole = (user: any): any => {
+    const baseLoggedData = {
+      email: user.email,
+      id: user.id,
+      role: user.role,
+      name: user.name,
+      lastName: user.lastName,
+      image: user.image,
+      state: user.state,
+      address: user.address,
+      accessPermissions: user.accessPermissions,
+    };
+
+    if (user.role === eRoles.Provider) {
+      return {
+        ...baseLoggedData,
+        termsAgreed: user.termsAgreed,
+        nipt: user.nipt,
+      };
+    } else if (user.role === eRoles.User) {
+      return {
+        ...baseLoggedData,
+        gender: user.gender,
+        birthDate: user.birthDate,
+        accountSubmitted: user.accountSubmitted,
+        quizFulfilled: user.quizFulfilled,
+      };
+    }
+
+    return baseLoggedData;
+  };
 }
 
 export default AuthManager;
