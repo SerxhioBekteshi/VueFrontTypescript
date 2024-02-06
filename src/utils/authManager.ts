@@ -8,6 +8,7 @@ import { useDispatch } from "@/store/redux/helpers";
 import { useAbility } from "@casl/vue";
 import { defineAbilityFor } from "@/initializers/ability";
 import { Store, useStore } from "vuex";
+import { eMutationTypes } from "@/assets/enums/eMutationTypes";
 
 export interface IUserInfo {
   user?: any;
@@ -100,7 +101,10 @@ class AuthManager {
       // useDispatch()(setUser(response?.user));
       // dispatch(setUser(response?.user));
       // store.dispatch("user/setUser", response?.user);
-      store.commit("setUser", this.handleUserDataBasedOnRole(response?.user));
+      store.commit(
+        eMutationTypes.SET_USER,
+        this.handleUserDataBasedOnRole(response?.user)
+      );
 
       router.push("/dashboard");
       // if (response.user.roleId === eRoleType.Admin) {

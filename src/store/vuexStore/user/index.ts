@@ -1,5 +1,5 @@
 import { Module } from "vuex";
-import { RootState } from "./types";
+import { RootState } from "../types";
 import { getters } from "./getters";
 import { mutations } from "./mutation";
 import { IUserState } from "@/interfaces/other/IUserState";

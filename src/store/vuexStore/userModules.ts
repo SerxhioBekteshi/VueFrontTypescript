@@ -1,3 +1,4 @@
+import { eMutationTypes } from "@/assets/enums/eMutationTypes";
 import AuthManager from "@/utils/authManager";
 import axios from "axios";
 
@@ -23,7 +24,10 @@ const userModule = {
     async fetchUser({ commit }) {
       // Fetch user data
       const userData = await fetchUserData();
-      commit("setUser", AuthManager.handleUserDataBasedOnRole(userData));
+      commit(
+        eMutationTypes.SET_USER,
+        AuthManager.handleUserDataBasedOnRole(userData)
+      );
     },
   },
 };

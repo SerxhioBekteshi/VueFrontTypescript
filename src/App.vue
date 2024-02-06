@@ -13,6 +13,7 @@ import {
   ref,
 } from "vue";
 import { useStore } from "vuex";
+import { RootState } from "./store/vuexStore/types";
 
 export default defineComponent({
   name: "App",
@@ -22,9 +23,10 @@ export default defineComponent({
     const connection = ref<any>(null);
     let socket: Socket | null = null;
     onMounted(() => {
-      const store = useStore();
-
-      const user = computed(() => store.state.user.user);
+      // const store = useStore();
+      const store = useStore<RootState>();
+      const user = computed(() => store.getters.getUserInfo);
+      // const user = computed(() => store.state.user.user);
       if (user.value?.role) {
         socket = io("http://localhost:1112", {
           autoConnect: false,

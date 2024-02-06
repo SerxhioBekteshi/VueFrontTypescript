@@ -24,7 +24,7 @@
     "chart.js": "3.3.2",
     "core-js": "^3.8.3",
     "encrypt-storage": "^2.12.16",
-    "i18next": "^23.7.16",
+    "i18next": "^23.8.2",
     "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",

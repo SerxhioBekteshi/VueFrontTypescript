@@ -163,7 +163,6 @@ export default defineComponent({
       return (
         notifications.value &&
         notifications.value.filter((notification: any) => {
-          console.log(notification, "NOTIFICATION"); //TO BE SEEN SEPSE SEEN ISHTE UNDEFINED KETU SE MBAJ MEND CFARE
           return !notification.msg.seen;
         }).length
       );

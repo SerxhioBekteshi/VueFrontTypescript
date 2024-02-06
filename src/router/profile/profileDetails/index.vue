@@ -109,6 +109,7 @@ import ImageForm from "@/components/formController/ImageForm.vue";
 import { profileDetailsSchema } from "@/utils/validationSchemas";
 import { setUser } from "@/store/stores/user.store";
 import { useStore } from "vuex";
+import { RootState } from "@/store/vuexStore/types";
 
 export default defineComponent({
   name: "ProfileDetails",
@@ -123,8 +124,10 @@ export default defineComponent({
   props: {},
   setup() {
     // const profile: any = {};
-    const store = useStore();
-    const profile = computed(() => store.state.user.user);
+    // const store = useStore();
+    // const profile = computed(() => store.state.user.user);
+    const store = useStore<RootState>();
+    const profile = computed(() => store.getters.getUserInfo);
 
     const toast = useToast();
 

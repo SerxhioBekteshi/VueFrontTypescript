@@ -29,7 +29,8 @@ export default defineComponent({
   setup(props, { slots }) {
     // const user = useGetUser();
     // const user = useReduxSelector((state) => state.user);
-    // const user = computed(() => store.state.user.user);
+    //      const store = useStore<RootState>();
+      // const user = computed(() => store.getters.getUserInfo);
     // const connection = ref<Socket | null>(null);
 
     // const initializeSocket = () => {

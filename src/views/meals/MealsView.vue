@@ -398,6 +398,7 @@ import ImageForm from "@/components/formController/ImageForm.vue";
 import { mealSchema, modalOrderSchema } from "@/utils/validationSchemas";
 import { useAbility } from "@casl/vue";
 import { useStore } from "vuex";
+import { RootState } from "@/store/vuexStore/types";
 
 export default defineComponent({
   name: "MealsView",
@@ -424,8 +425,10 @@ export default defineComponent({
     eFormMode,
   },
   setup() {
-    const store = useStore();
-    const profile = computed(() => store.state.user.user);
+    // const store = useStore();
+    // const profile = computed(() => store.state.user.user);
+    const store = useStore<RootState>();
+    const profile = computed(() => store.getters.getUserInfo);
 
     const router = useRouter();
     const ability = useAbility();

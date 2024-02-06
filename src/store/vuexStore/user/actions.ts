@@ -1,6 +1,6 @@
 import { ActionTree } from "vuex";
 import { UserState } from "./index";
-import { RootState } from "./types";
+import { RootState } from "../types";
 import { eMutationTypes } from "../../../assets/enums/eMutationTypes";
 
 export const actions: ActionTree<UserState, RootState> = {

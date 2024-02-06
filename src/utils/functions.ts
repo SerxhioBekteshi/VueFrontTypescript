@@ -6,6 +6,7 @@ import { eFilterOperator } from "@/assets/enums/eFilterOperator";
 import axiosInit from "@/initializers/axios";
 import { useToast } from "vue-toast-notification";
 import store from "@/store/vuexStore/storeModules";
+import { eMutationTypes } from "@/assets/enums/eMutationTypes";
 
 export function getNameById(myObject: any, id: number) {
   for (const [key, value] of Object.entries(myObject)) {
@@ -111,7 +112,7 @@ export const initApp = async () => {
   }
 
   if (currentUser) {
-    store.commit("setUser", currentUser);
+    store.commit(eMutationTypes.SET_USER, currentUser);
   }
 
   // const appStore = initStore(currentUser);

@@ -45,6 +45,7 @@ import * as yup from "yup";
 import Timeline from "primevue/timeline";
 import Card from "primevue/card";
 import { useStore } from "vuex";
+import { RootState } from "@/store/vuexStore/types";
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
@@ -54,9 +55,9 @@ export default defineComponent({
     const modeDrawer = ref<any>(null);
     const formData = ref<any>(null);
     const tableDataRef = ref<any>(null);
-    const store = useStore();
-
-    const currentUser = computed(() => store.state.user.user);
+    const store = useStore<RootState>();
+    const userInfo = computed(() => store.getters.getUserInfo);
+    console.log(userInfo.value, "Home vuex user");
 
     const fetchDataAfterSubmit = () => {
       if (tableDataRef.value) {
