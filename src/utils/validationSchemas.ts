@@ -37,10 +37,7 @@ export const mealSchema = yup.object().shape({
 export const questionValidationSchema = yup.object().shape({
   question: yup.string().required("Question is required").label("question"),
   order: yup.number().required("Order is required").label("Order"),
-  fieldName: yup
-    .string()
-    .required("Field name is required")
-    .label("Field Name"),
+  fieldName: yup.string().required("Field name is required").label("Field Name"),
   questionOptions: yup
     .array()
     .of(

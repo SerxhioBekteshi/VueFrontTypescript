@@ -1,27 +1,32 @@
 <template>
   <div>
-    <form @onSubmit="handlePrevent">
+    <form @onSubmit="(e: any) =>  e.preventDefault()">
+      <div style="margin-block: 3rem">
+        <Tag severity="info" style="font-size: 1rem" :value="inputTypeValue">
+        </Tag>
+      </div>
+
       <div style="margin-bottom: 2rem">
         <InputText
-          name="question"
+          :name="'question'"
           :label="'Determine the question'"
-          placeholder="Question"
+          :placeholder="'Question'"
         />
       </div>
 
       <div style="margin-bottom: 2rem">
         <InputNumber
-          name="order"
+          :name="'order'"
           :label="'Determine the order of this question'"
-          placeholder="Order"
+          :placeholder="'Order'"
         />
       </div>
 
       <div style="margin-bottom: 1rem">
-        <InputNumber
-          name="fieldName"
+        <InputText
+          :name="'fieldName'"
           :label="'Field name'"
-          placeholder="Field name"
+          :placeholder="'Field name'"
         />
       </div>
 
@@ -107,28 +112,25 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { computed, defineComponent } from "vue";
 import InputText from "@/components/formElements/InputText.vue";
 import InputNumber from "@/components/formElements/InputNumber.vue";
 import { inject } from "vue";
 import { FieldArray } from "vee-validate";
 import Button from "primevue/button";
+import Tag from "primevue/tag";
 
 export default defineComponent({
   name: "QuizForm",
-  components: { InputText, InputNumber, FieldArray, Button },
+  components: { InputText, InputNumber, FieldArray, Button, Tag },
   setup() {
     const veeValidateForm: any = inject("veeValidateForm");
 
-    const { value: question } = veeValidateForm.useField("question");
-    const { value: order } = veeValidateForm.useField("order");
-    const { fields: questionOptions } =
-      veeValidateForm.useFieldArray("questionOptions");
-    const handlePrevent = (event: any) => {
-      event.preventDefault();
-    };
+    const inputTypeValue = computed(() => {
+      return veeValidateForm.useField("questionType").value.value;
+    });
 
-    return { handlePrevent, question, order, questionOptions };
+    return { inputTypeValue };
   },
 });
 </script>

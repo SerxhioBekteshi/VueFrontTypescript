@@ -64,6 +64,7 @@ import Menu from "primevue/menu";
 import { useDispatch } from "@/store/redux/helpers";
 import AuthManager from "@/utils/authManager";
 import NotificationIcon from "@/components/NotificationIcon.vue";
+import { useStore } from "vuex";
 
 export default defineComponent({
   name: "AppTopbar",
@@ -76,6 +77,8 @@ export default defineComponent({
     const topbarMenuActive = ref<boolean>(false);
     const router = useRouter();
     const menu = ref<any>();
+    const store = useStore();
+
     const dispatch = useDispatch();
 
     onMounted(() => {
@@ -97,7 +100,7 @@ export default defineComponent({
     };
     const onLogoutClick = () => {
       // topbarMenuActive.value = false;
-      AuthManager.logout(dispatch);
+      AuthManager.logout(store);
       router.push("/login");
       // JwtManager.clearToken();
     };

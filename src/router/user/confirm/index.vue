@@ -82,6 +82,9 @@ import AuthManager from "@/utils/authManager";
 // import useGetUser from "../../../../main/hooks/useGetUser";
 // import { useStore } from "vuex";
 import Button from "primevue/button";
+import { useStore } from "vuex";
+import { useAbility } from "@casl/vue";
+import { defineAbilityFor } from "@/initializers/ability";
 
 export default defineComponent({
   name: "ConfirmEmailView",
@@ -91,6 +94,8 @@ export default defineComponent({
     // const user = useGetUser();
     const route = useRoute();
     const token = route.query.token;
+    const store = useStore();
+    const ability = useAbility();
 
     const router = useRouter();
     // const store = useStore();
@@ -119,16 +124,24 @@ export default defineComponent({
             });
 
             if (res.data) {
+              ability.update([
+                ...ability.rules,
+                { action: "read", subject: "quiz layout" },
+              ]);
               setTimeout(() => {
                 AuthManager.loginWithToken(
                   res.data.user,
                   res.data.access_token,
                   res.data.refresh_token,
-                  router
+                  router,
+                  store
+
                   // res.data.refresh_token,
                   // dispatch
                 );
               }, 3000);
+              const updatedAbility = await defineAbilityFor();
+              ability.update(updatedAbility.rules);
               validToken.value = true;
             }
           } catch (err: any) {

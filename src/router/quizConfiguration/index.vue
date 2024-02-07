@@ -251,7 +251,6 @@ import { defineComponent, onMounted, ref, shallowRef } from "vue";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
 import axios from "axios";
-import * as yup from "yup";
 import Panel from "primevue/panel";
 import Menu from "primevue/menu";
 import { eFormMode } from "@/assets/enums/EFormMode";
@@ -349,6 +348,7 @@ export default defineComponent({
     const getQuiz = async () => {
       try {
         const res = await axios.get("/quiz/get-all");
+        console.log(res, "RESS");
         if (res && res.data) {
           res.data.sort((a: any, b: any) => a.order - b.order);
           quizQuestion.value = res.data;

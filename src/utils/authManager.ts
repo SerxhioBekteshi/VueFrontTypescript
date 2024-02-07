@@ -1,13 +1,10 @@
 import JwtManager from "./jwtManager";
 import axios from "axios";
 import { setUser } from "../store/stores/user.store";
-// import { navigateTo } from "../store/stores/navigation.store";
-// import eRoleType from "@/assets/enums/eRoleType";
+
 import { eRoles } from "@/assets/enums/eRoles";
 import { useDispatch } from "@/store/redux/helpers";
-import { useAbility } from "@casl/vue";
-import { defineAbilityFor } from "@/initializers/ability";
-import { Store, useStore } from "vuex";
+import { Store } from "vuex";
 import { eMutationTypes } from "@/assets/enums/eMutationTypes";
 
 export interface IUserInfo {
@@ -53,37 +50,52 @@ class AuthManager {
     user: any,
     accessToken: string,
     refreshToken?: string,
-    router?: any
-    // dispatch?: any
+    router?: any,
+    store?: any
   ) {
     if (user) {
       JwtManager.setAccessToken(accessToken);
       // JwtManager.setRefreshToken(refreshToken);
 
-      user && useDispatch()(setUser(user));
+      store.commit(
+        eMutationTypes.SET_USER,
+        this.handleUserDataBasedOnRole(user)
+      );
 
-      // if (user.firstLogin) {
-      //   user && dispatch && dispatch(navigateTo(`/${user.role}/changePassword`));
-      // }
-
-      // if (user.shouldVerify) {
-      //   user && useDispatch()(navigateTo("/confirm"));
-      // }
-
-      user && useDispatch()(router.push(`/${user.role.toLowerCase()}/quiz`));
+      router.push("/quiz");
     }
   }
 
-  static async login(
-    credentials: any,
-    // dispatch: any,
-    // navigate: any
-    router: any,
-    store: Store<any>
-  ): Promise<void> {
+  static handleAfterLoginAfterMath(
+    userResponse: any,
+    store: Store<any>,
+    router?: any
+  ) {
+    console.log(userResponse, "aaa");
+    if (
+      (userResponse?.user && userResponse?.accessToken) ||
+      userResponse?.refreshToken
+    ) {
+      JwtManager.setAccessToken(userResponse.accessToken);
+      JwtManager.setRefreshToken(userResponse.refreshToken);
+
+      store.commit(
+        eMutationTypes.SET_USER,
+        this.handleUserDataBasedOnRole(userResponse?.user)
+      );
+
+      if (
+        userResponse.user.role === eRoles.User &&
+        !userResponse.user.quizFulfilled
+      )
+        router.push("/quiz");
+      else router.push("/dashboard");
+    }
+  }
+
+  static async login(credentials: any): Promise<void> {
     const res = await axios.post("user/login", credentials);
     const data = res?.data;
-    // const dispatch = useDispatch();
 
     let response: any = null;
     if (data?.access_token || data?.refresh_token) {
@@ -93,28 +105,7 @@ class AuthManager {
         refreshToken: data.refresh_token,
         user: userInfo?.user,
       };
-    }
-    if ((response?.user && response?.accessToken) || response?.refreshToken) {
-      JwtManager.setAccessToken(response.accessToken);
-      JwtManager.setRefreshToken(response.refreshToken);
-
-      // useDispatch()(setUser(response?.user));
-      // dispatch(setUser(response?.user));
-      // store.dispatch("user/setUser", response?.user);
-      store.commit(
-        eMutationTypes.SET_USER,
-        this.handleUserDataBasedOnRole(response?.user)
-      );
-
-      router.push("/dashboard");
-      // if (response.user.roleId === eRoleType.Admin) {
-      //   router.push("/admin");
-      // } else if (response.user.roleId === eRoleType.Provider) {
-      //   router.push("/provider");
-      // } else {
-      //   if (!response.user.quizFulfilled) router.push("/user/quiz");
-      //   else router.push("/user");
-      // }
+      return response;
     }
   }
 
@@ -168,10 +159,9 @@ class AuthManager {
     return responseLogin;
   }
 
-  static logout(dispatch: any) {
+  static logout(store: any) {
     JwtManager.clearToken();
-    useDispatch()(setUser(null));
-    // dispatch(setUser(null));
+    store.commit(eMutationTypes.CLEAR_USER);
   }
 
   public static handleUserDataBasedOnRole = (user: any): any => {

@@ -31,7 +31,7 @@
               size="small"
               severity="info"
               label="Navigate to see your suggested meals"
-              @click="() => router.push('/user/meals')"
+              @click="() => router.push('/meals')"
             />
           </div>
         </div>
@@ -52,6 +52,7 @@ import Step from "./Step.vue";
 import { useField, useForm } from "vee-validate";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
+import { useStore } from "vuex";
 
 export interface StepArray {
   fieldName: string;
@@ -68,6 +69,9 @@ export default defineComponent({
     const steps = ref<StepArray[]>([]);
     const activeStep = ref<number>(0);
     const initialValuesKey = ref<any>({});
+
+    const store = useStore();
+    const user = computed(() => store.getters.getUserInfo);
 
     const label = computed(() => {
       return activeStep.value === quizQuestion.value.length - 1
@@ -193,7 +197,7 @@ export default defineComponent({
       getQuiz();
     });
 
-    return { activeStep, stepperActions, quizQuestion, router, steps };
+    return { activeStep, stepperActions, quizQuestion, router, steps, user };
   },
 });
 </script>

@@ -15,7 +15,6 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const requiredPermissions: any = to.meta.permissions;
   const abilities = useAbility();
-
   if (requiredPermissions) {
     // console.log(requiredPermissions);
     // console.log(abilities.rules);
