@@ -9,7 +9,7 @@
       platform
     </template>
     <template #content>
-      <InputText v-model="email" type="text" size="large" placeholder="Email" />
+      <InputText v-model="email" type="text" placeholder="Email" />
     </template>
     <template #footer>
       <Button icon="pi pi-check" label="Send" @click="handleEmailSend" />

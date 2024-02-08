@@ -36,6 +36,7 @@ const baseRoutes = [
     name: "404NotFound",
     component: NotFoundRoutePage,
   },
+  { path: "/:pathMatch(.*)", redirect: "/" },
 ];
 
 export default baseRoutes;

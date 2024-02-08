@@ -4,6 +4,9 @@ import profileRoutes from "./profile";
 import baseRoutes from "./base";
 import { useAbility } from "@casl/vue";
 import aclRoutes from "./routesAcl";
+import { useToast } from "vue-toast-notification";
+import { computed } from "vue";
+import { useStore } from "vuex";
 
 const routes = [...baseRoutes, ...aclRoutes, ...profileRoutes];
 
@@ -15,6 +18,27 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const requiredPermissions: any = to.meta.permissions;
   const abilities = useAbility();
+  const toast = useToast();
+  const store = useStore();
+  const isLoggedIn = computed(() => store.state.user.user);
+
+  const isBaseRoute = baseRoutes.some((route) => route.path === to.path);
+  if (isBaseRoute) {
+    next();
+    return;
+  }
+
+  if (!isLoggedIn.value && to.path !== "/") {
+    next("/");
+    toast.open({
+      message: "Cant access certain routes if not logged in",
+      type: "error",
+      position: "top-right",
+      duration: 3000,
+    });
+    return;
+  }
+
   if (requiredPermissions) {
     // console.log(requiredPermissions);
     // console.log(abilities.rules);

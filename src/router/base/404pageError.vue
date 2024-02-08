@@ -6,16 +6,30 @@
       <p>
         The page you are looking for might be unavailable or does not exist.
       </p>
-      <router-link to="/">Go back to the home page</router-link>
+      <Button
+        label="Go back to the home page"
+        link
+        @click="() => router.push(`/dashboard`)"
+      />
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import Button from "primevue/button";
 import { defineComponent } from "vue";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "404NotFound",
+  components: {
+    Button,
+  },
+  setup() {
+    const router = useRouter();
+
+    return { router };
+  },
 });
 </script>
 

@@ -348,7 +348,6 @@ export default defineComponent({
     const getQuiz = async () => {
       try {
         const res = await axios.get("/quiz/get-all");
-        console.log(res, "RESS");
         if (res && res.data) {
           res.data.sort((a: any, b: any) => a.order - b.order);
           quizQuestion.value = res.data;

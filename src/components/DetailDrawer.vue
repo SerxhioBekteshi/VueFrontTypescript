@@ -38,9 +38,14 @@ export default defineComponent({
     formData: { type: Object },
     controller: { type: String, required: true },
     validationSchema: { type: Object, required: true },
-    fetchDataAfterSubmit: { type: Function, required: true },
+    fetchDataAfterSubmit: { type: Function },
     showSubmitButton: { type: Boolean, default: true },
     additionalDataToSubmit: { type: Object },
+    shouldRefreshPageIfFieldNull: {
+      type: String,
+      required: false,
+      default: "",
+    },
   },
   enums: {
     eFormMode,
@@ -91,6 +96,9 @@ export default defineComponent({
             props.fetchDataAfterSubmit();
           }
           handleCloseDrawer();
+          if (data[`${props.shouldRefreshPageIfFieldNull}`] == null) {
+            location.reload();
+          }
         }
       } catch (err) {
         console.log(err, "ERR");

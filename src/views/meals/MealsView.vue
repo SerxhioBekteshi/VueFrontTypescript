@@ -429,10 +429,9 @@ export default defineComponent({
     // const profile = computed(() => store.state.user.user);
     const store = useStore<RootState>();
     const profile = computed(() => store.getters.getUserInfo);
-
+    console.log(profile.value);
     const router = useRouter();
     const ability = useAbility();
-    console.log(ability.rules);
 
     const formDrawerMode = ref<any>();
     const meals = ref<IMeal[]>([]);

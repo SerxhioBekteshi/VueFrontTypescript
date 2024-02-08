@@ -57,7 +57,6 @@ export default defineComponent({
     const tableDataRef = ref<any>(null);
     const store = useStore<RootState>();
     const userInfo = computed(() => store.getters.getUserInfo);
-    console.log(userInfo.value, "Home vuex user");
 
     const fetchDataAfterSubmit = () => {
       if (tableDataRef.value) {

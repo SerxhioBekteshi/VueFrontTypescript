@@ -62,7 +62,7 @@ export default defineComponent({
       undefined
       // {
       //   initialValue:
-      //     props.defaultValue !== undefined ? props.defaultValue : value ? value :null,
+      //     props.defaultValue !== undefined ? props.defaultValue : null,
       // }
     );
 

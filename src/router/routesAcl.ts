@@ -9,6 +9,7 @@ import ProviderEmail from "./providerEmails/index.vue";
 import Orders from "./orders/index.vue";
 import OrderDetails from "./orderDetails/index.vue";
 import Meals from "./meals/index.vue";
+import Users from "./users/index.vue";
 
 const aclRoutes = [
   {
@@ -82,8 +83,15 @@ const aclRoutes = [
         component: Meals,
         meta: { permissions: { action: "read", subject: "meals" } },
       },
+      {
+        path: "users",
+        name: "Users",
+        component: Users,
+        meta: { permissions: { action: "read", subject: "users" } },
+      },
     ],
   },
+  { path: "/:pathMatch(.*)", redirect: "/dashboard" },
 ];
 
 export default aclRoutes;

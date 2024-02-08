@@ -31,7 +31,7 @@
               size="small"
               severity="info"
               label="Navigate to see your suggested meals"
-              @click="() => router.push('/meals')"
+              @click="() => handleAfterQuizSubmission()"
             />
           </div>
         </div>
@@ -78,6 +78,11 @@ export default defineComponent({
         ? "Submit"
         : "Next";
     });
+
+    const handleAfterQuizSubmission = () => {
+      location.reload();
+      router.push("/meals");
+    };
 
     const stepperActions = computed(() => {
       if (activeStep.value === quizQuestion.value.length) return [];
@@ -197,7 +202,23 @@ export default defineComponent({
       getQuiz();
     });
 
-    return { activeStep, stepperActions, quizQuestion, router, steps, user };
+    // router.beforeRouteLeave((to, from, next) => {
+    //   if (to.path !== "/meals" && activeStep.value === quizQuestion.value.length) {
+    //     next(false); // Prevent route change
+    //   } else {
+    //     next(); // Allow route change
+    //   }
+    // });
+
+    return {
+      activeStep,
+      stepperActions,
+      quizQuestion,
+      router,
+      steps,
+      user,
+      handleAfterQuizSubmission,
+    };
   },
 });
 </script>

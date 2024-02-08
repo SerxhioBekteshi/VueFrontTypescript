@@ -293,8 +293,6 @@ export default defineComponent({
     const openModalFunction = (field: any, rowId: number) => {
       fieldModalToShow.value = { name: field, id: rowId };
       modalInformation.value = eFormMode.Delete;
-      console.log(modalInformation.value);
-
       openModal.value = true;
     };
 

@@ -71,7 +71,6 @@ class AuthManager {
     store: Store<any>,
     router?: any
   ) {
-    console.log(userResponse, "aaa");
     if (
       (userResponse?.user && userResponse?.accessToken) ||
       userResponse?.refreshToken
