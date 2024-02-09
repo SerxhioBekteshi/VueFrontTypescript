@@ -5,45 +5,57 @@
       :class="pointerClassIcon(step, 'back')"
       @click="!processing ? backClicked() : null"
     >
-      <i class="fa fa-fw fa-chevron-left" aria-hidden="true"></i>
+      <i
+        class="pi pi-arrow-left"
+        style="font-size: 1rem"
+        aria-hidden="true"
+      ></i>
     </div>
 
     <div class="wizard-steps__steps">
-      <template v-for="(stepData, index) in visibleSteps">
+      <template>
         <div
-          class="wizard-steps__step_item"
-          :class="pointerClassItem(step, index)"
-          :key="`step_${stepData.key}`"
-          @click="clickStep(getStepIndex(step), index, stepData)"
+          v-for="(stepData, index) in visibleSteps"
+          :key="`step_${stepData.key}_${index}`"
         >
           <div
-            class="wizard-steps__step_round"
-            :class="classStatus(step, index, stepData)"
+            class="wizard-steps__step_item"
+            :class="pointerClassItem(step, index)"
+            @click="clickStep(getStepIndex(step), index)"
           >
-            <template v-if="getStepIndex(step) > index">
-              <i class="fa fa-fw fa-check" aria-hidden="true"></i>
-            </template>
-            <template v-else>
-              {{ index + 1 }}
-            </template>
+            <div
+              class="wizard-steps__step_round"
+              :class="classStatus(step, index, stepData)"
+            >
+              <template v-if="getStepIndex(step) > index">
+                <i
+                  class="pi pi-check"
+                  style="font-size: 1rem"
+                  aria-hidden="true"
+                ></i>
+              </template>
+              <template v-else>
+                {{ index + 1 }}
+              </template>
+            </div>
           </div>
-        </div>
 
-        <div
-          class="wizard-steps__step_label text-wrap"
-          :class="pointerClassItem(step, index)"
-          @click="clickStep(getStepIndex(step), index, stepData)"
-          :key="`step_label_${stepData.key}`"
-        >
-          {{ stepData.label }}
-        </div>
+          <div
+            class="wizard-steps__step_label text-wrap"
+            :class="pointerClassItem(step, index)"
+            @click="clickStep(getStepIndex(step), index)"
+            :key="`step_label_${stepData.key}`"
+          >
+            {{ stepData.label }}
+          </div>
 
-        <div
-          v-if="index < visibleSteps.length - 1"
-          :key="`step_seperator_${stepData.key}`"
-          class="wizard-steps__step_separator"
-          :class="classStatus(step, index, stepData)"
-        ></div>
+          <div
+            v-if="index < visibleSteps.length - 1"
+            :key="`step_seperator_${stepData.key}`"
+            class="wizard-steps__step_separator"
+            :class="classStatus(step, index, stepData)"
+          ></div>
+        </div>
       </template>
     </div>
 
@@ -52,27 +64,29 @@
       :class="pointerClassIcon(step, 'next')"
       @click="!processing ? nextClicked() : null"
     >
-      <i class="fa fa-fw fa-chevron-right" aria-hidden="true"></i>
+      <i
+        class="pi pi-arrow-right"
+        style="font-size: 1rem"
+        aria-hidden="true"
+      ></i>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import {
-  ref,
-  computed,
-  defineProps,
-  defineEmits,
-  defineComponent,
-  PropType,
-} from "vue";
+import { computed, defineComponent, PropType } from "vue";
 
-export interface IStep {
+interface IStep {
   key: string;
   label: string;
+  hideStep?: boolean;
+  hideBackButton?: boolean;
+  hideNextButton?: boolean;
+  moveToStepHandler?: (step: number) => Promise<void>;
   backHandler?: () => Promise<void>;
   nextHandler?: () => Promise<void>;
 }
+
 export default defineComponent({
   name: "WizardSteps",
   components: {},
@@ -86,12 +100,12 @@ export default defineComponent({
     const visibleSteps = computed(() => {
       if (!props.wizardData) return [];
       return props.wizardData.filter(
-        (x) => x.hideStep === "undefined" || !x.hideStep
+        (x: any) => x.hideStep === "undefined" || !x.hideStep
       );
     });
 
     const getStepIndex = (step: IStep) => {
-      return visibleSteps.value.findIndex((obj) => obj.key === step.key);
+      return visibleSteps.value.findIndex((obj: any) => obj.key === step.key);
     };
 
     const pointerClassIcon = (step: IStep, direction: string) => {
@@ -135,11 +149,7 @@ export default defineComponent({
       return actualIndex > nextIndex;
     };
 
-    const clickStep = async (
-      actualIndex: number,
-      nextIndex: number,
-      step: IStep
-    ) => {
+    const clickStep = async (actualIndex: number, nextIndex: number) => {
       if (!canClickStep(actualIndex, nextIndex)) return;
       emit("moveToStep", nextIndex);
     };
@@ -151,6 +161,7 @@ export default defineComponent({
       pointerClassIcon,
       pointerClassItem,
       classStatus,
+      getStepIndex,
       visibleSteps,
     };
   },
@@ -211,13 +222,13 @@ export default defineComponent({
         font-weight: 600;
 
         &.active {
-          background-color: var(--main-color);
-          border: 2px solid var(--main-color);
+          background-color: red;
+          border: 2px solid blue;
           color: white;
         }
         &.done {
-          border: 2px solid var(--main-color);
-          color: var(--main-color);
+          border: 2px solid pink;
+          color: purple;
         }
       }
     }
@@ -231,7 +242,7 @@ export default defineComponent({
       height: 1px;
 
       &.done {
-        border: 1px solid var(--main-color);
+        border: 1px solid pink;
       }
     }
 

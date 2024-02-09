@@ -10,11 +10,7 @@
         v-if="(viewFirstBackButton || stepIndex !== 0) && !step.hideBackButton"
       >
         <div class="text-left no_padding">
-          <Button
-            class="btn btn-secondary fs_13"
-            :disabled="processing"
-            @click.prevent="$emit('back-clicked')"
-          >
+          <Button :disabled="processing" @click.prevent="$emit('back-clicked')">
             <i class="glyphicon glyphicon-chevron-left"></i>
 
             <span v-if="step.backLabel" v-html="step.backLabel"></span>
@@ -32,7 +28,7 @@
           >
             <i class="glyphicon glyphicon-chevron-left"></i>
             <span>
-              abb.label
+              {{ abb.label }}
               <!-- {{ $t(abb.label) }} -->
             </span>
           </Button>
@@ -49,7 +45,7 @@
             @click.prevent="$emit('additional-clicked', anb.handler)"
           >
             <span>
-              anb.label
+              {{ anb.label }}
               <!-- {{ $t(anb.label) }} -->
             </span>
             <i class="glyphicon glyphicon-chevron-right"></i>
@@ -61,7 +57,8 @@
           >
             <span v-if="step.nextLabel" v-html="step.nextLabel"></span>
             <span v-else>
-              {{ $t("wizards.next") }}
+              next
+              <!-- {{ $t("wizards.next") }} -->
             </span>
             <i class="glyphicon glyphicon-chevron-right"></i>
           </Button>
@@ -72,9 +69,8 @@
 </template>
 
 <script lang="ts">
-import Step from "@/router/quiz/Step.vue";
 import Button from "primevue/button";
-import { defineProps, defineComponent, defineEmits } from "vue";
+import { PropType, defineComponent } from "vue";
 
 export interface IStep {
   key: string;
@@ -90,11 +86,12 @@ export default defineComponent({
   name: "WizardButtons",
   components: { Button },
   props: {
-    step: { type: IStep, required: true },
+    wizardData: { type: Array as PropType<any[]>, default: () => [] },
+    step: { type: Object as PropType<IStep>, required: true },
     stepIndex: { type: Number, required: true },
     processing: { type: Boolean, required: true },
     viewFirstBackButton: { type: Boolean, required: true },
-    disableNextButton: { type: Boolean, required: true },
+    disableNextButton: { type: Boolean, default: false },
   },
   emits: ["back-clicked", "additional-clicked", "next-clicked"],
   setup() {

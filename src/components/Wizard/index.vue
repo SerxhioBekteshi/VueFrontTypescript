@@ -1,7 +1,7 @@
 <template>
   <div class="vue-wizard">
     <WizardSteps
-      :wizard-data="wizardData"
+      :wizardData="wizardData"
       :step="step"
       :processing="processing"
       position="top"
@@ -9,7 +9,7 @@
     ></WizardSteps>
 
     <div class="wizard-body-container">
-      <!-- <LoadingMask :show="processing" /> -->
+      <ProgressSpinner v-if="processing" />
 
       <div
         v-for="stepData in wizardData"
@@ -24,18 +24,18 @@
       </div>
 
       <WizardButtons
-        :wizard-data="wizardData"
+        :wizardData="wizardData"
         :step="step"
-        :step-index="stepIndex"
+        :stepIndex="stepIndex"
         :processing="processing"
-        :view-first-back-button="viewFirstBackButton"
-        @additional-clicked="
-          (handler) => {
+        :viewFirstBackButton="viewFirstBackButton"
+        @additionalClicked="
+          (handler: any) => {
             $emit('additional-clicked', handler);
           }
         "
-        @back-clicked="backClicked"
-        @next-clicked="nextClicked"
+        @backClicked="backClicked"
+        @nextClicked="nextClicked"
       ></WizardButtons>
     </div>
   </div>
@@ -43,12 +43,16 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, PropType } from "vue";
-import WizardButtons from "@/components/Wizard/WizardButtons.vue";
-import WizardSteps from "@/components/Wizard/WizardSteps.vue";
+import WizardButtons from "./WizardButtons.vue";
+import WizardSteps from "./WizardSteps.vue";
+import ProgressSpinner from "primevue/progressspinner";
 
 interface Step {
   key: string;
   label: string;
+  hideStep?: boolean;
+  hideBackButton?: boolean;
+  hideNextButton?: boolean;
   moveToStepHandler?: (step: number) => Promise<void>;
   backHandler?: () => Promise<void>;
   nextHandler?: () => Promise<void>;
@@ -59,9 +63,11 @@ export default defineComponent({
   components: {
     WizardButtons,
     WizardSteps,
+    ProgressSpinner,
   },
+  emits: ["stepChanged", "additional-clicked"],
   props: {
-    wizardData: { type: Array as PropType<Step[]>, default: () => [] },
+    wizardData: { type: Array as PropType<Step[]> | any, default: () => [] },
     processing: { type: Boolean, default: false },
     viewFirstBackButton: { type: Boolean, default: false },
   },
@@ -80,6 +86,17 @@ export default defineComponent({
       }
     };
 
+    const step = computed<Step>(() => {
+      return props.wizardData[stepIndex.value];
+    });
+
+    const stepKey = computed(() => {
+      emit("stepChanged", props.wizardData[stepIndex.value].key);
+      return props.wizardData[stepIndex.value].key;
+    });
+
+    const stepsNumber = computed(() => props.wizardData.length);
+
     const goToStep = (step: number) => {
       stepIndex.value = step;
     };
@@ -92,35 +109,30 @@ export default defineComponent({
       stepIndex.value = props.wizardData.length - 1;
     };
 
-    const moveToStep = async (step: number) => {
-      if (props.wizardData[step].moveToStepHandler) {
-        await props.wizardData[step].moveToStepHandler(step);
+    const moveToStep = async (stepIndex: number) => {
+      const stepToMove = props.wizardData[stepIndex];
+      if (stepToMove.moveToStepHandler) {
+        await stepToMove.moveToStepHandler(stepIndex);
       }
     };
 
     const backClicked = async () => {
-      if (props.wizardData[stepIndex.value].backHandler) {
-        await props.wizardData[stepIndex.value].backHandler();
+      const currentStep = step.value;
+      if (currentStep.backHandler) {
+        await currentStep.backHandler();
       } else {
         goBack();
       }
     };
 
     const nextClicked = async () => {
-      if (props.wizardData[stepIndex.value].nextHandler) {
-        await props.wizardData[stepIndex.value].nextHandler();
+      const currentStep = step.value;
+      if (currentStep.nextHandler) {
+        await currentStep.nextHandler();
       } else {
         goNext();
       }
     };
-
-    const step: any = computed(() => props.wizardData[stepIndex.value]);
-
-    const stepKey = computed(() => {
-      emit("stepChanged", props.wizardData[stepIndex.value].key);
-      return props.wizardData[stepIndex.value].key;
-    });
-    const stepsNumber = computed(() => props.wizardData.length);
 
     const performWizardCheck = () => {
       if (!props.wizardData || props.wizardData.length === 0) {
@@ -143,24 +155,24 @@ export default defineComponent({
       }
     };
 
-    const performSlotsCheck = () => {
-      const missingSlots = [];
-      const keys = props.wizardData.filter((x) => x.key).map((x) => x.key);
+    // const performSlotsCheck = () => {
+    //   const missingSlots = [];
+    //   const keys = props.wizardData.filter((x) => x.key).map((x) => x.key);
 
-      keys.forEach((key) => {
-        if (!$scopedSlots[key]) {
-          missingSlots.push(key);
-        }
-      });
+    //   keys.forEach((key) => {
+    //     if (!$scopedSlots[key]) {
+    //       missingSlots.push(key);
+    //     }
+    //   });
 
-      if (missingSlots.length) {
-        alert(`Missing slots:\n\n${JSON.stringify(missingSlots)}`);
-      }
-    };
+    //   if (missingSlots.length) {
+    //     alert(`Missing slots:\n\n${JSON.stringify(missingSlots)}`);
+    //   }
+    // };
 
     onMounted(() => {
       performWizardCheck();
-      performSlotsCheck();
+      // performSlotsCheck();
     });
 
     return {
@@ -168,6 +180,8 @@ export default defineComponent({
       step,
       stepKey,
       stepsNumber,
+      goNext,
+      goBack,
       moveToStep,
       backClicked,
       nextClicked,
