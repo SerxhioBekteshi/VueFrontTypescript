@@ -100,6 +100,10 @@ export const calculateFiltersForMeal = (array: any) => {
   return formattedArray;
 };
 
+export const getKeyByValue = (object: any, value: any) => {
+  return Object.keys(object).find((key) => object[key] === value);
+};
+
 export const initApp = async () => {
   await axiosInit(useToast);
   let currentUser: IUserState | null = null;

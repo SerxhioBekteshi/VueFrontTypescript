@@ -25,13 +25,24 @@
     </div>
 
     <Wizard
-      ref="createWizard"
+      ref="wizardRef"
       :wizardData="wizardData"
       :viewFirstBackButton="true"
       :processing="isProccessing"
       @stepChanged="stepChanged"
     >
-      <template v-slot:first>
+      <div v-for="(question, index) in quizQuestion" :key="index">
+        <template
+          v-if="getKeyByValue(eQuizSlot, index + 1)"
+          v-slot:[`${getKeyByValue(eQuizSlot,index+1)}`]
+        >
+          <Step :data="question" />
+        </template>
+      </div>
+
+      <!-- <template v-slot:first>
+        <Step :data="quizQuestion[index]" />
+
         <div>FIRST THING HERE</div>
       </template>
 
@@ -41,7 +52,7 @@
 
       <template v-slot:third>
         <div>THIRD STEP HERE</div>
-      </template>
+      </template> -->
     </Wizard>
   </div>
 </template>
@@ -49,18 +60,28 @@
 <script lang="ts">
 import Button from "primevue/button";
 import Wizard from "@/components/Wizard/index.vue";
-import { defineComponent, reactive, ref, toRefs } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import eQuizSlot from "@/assets/enums/eQuizSlot";
+import axios from "axios";
+import Step from "@/router/quiz/Step.vue";
+import { getKeyByValue } from "@/utils/functions";
 
 export default defineComponent({
   name: "LandingPage",
-  components: { Button, Wizard },
+  components: { Button, Wizard, Step },
+  enums: { eQuizSlot },
   setup() {
     const isProccessing = ref<boolean>(false);
-    const wizardRef = ref<any>(null);
+    const wizardRef = ref<any>();
     const currentStep = ref<string>("first");
+    const quizQuestion = ref<any[]>([]);
 
     const router = useRouter();
+
+    const stepProcessing = () => {
+      isProccessing.value = true;
+    };
 
     const stepChanged = (step: any) => {
       console.log("DO STH ");
@@ -74,22 +95,19 @@ export default defineComponent({
       switch (currentStep.value) {
         case "first":
           step = 1;
-
           break;
+
         case "second":
           step = 2;
 
           break;
         case "third":
-          step = 3;
           break;
       }
 
       if (step) {
-        console.log("JUST MAKE IT WORK FOR THE MOMENT");
-        // this.$refs.createWizard.goToStep(step);
-        // window.scrollTo(0, 0);
-        // this.getGoogleAnalyticsForStep(step);
+        wizardRef.value.goToStep(step);
+        window.scrollTo(0, 0);
       }
     };
 
@@ -102,19 +120,17 @@ export default defineComponent({
           break;
         case "third":
           step = 1;
-
           break;
       }
-      //   this.$refs.createWizard.goToStep(step);
-      //   window.scrollTo(0, 0)
-      //   this.getGoogleAnalyticsForStep(step)
+      wizardRef.value.goToStep(step);
+      window.scrollTo(0, 0);
     };
 
     const moveToStepHandler = (step: number, newStep: number) => {
       // step is the current step(origin) and newStep is the destination
       if (newStep === 0) {
         if (wizardRef.value) {
-          wizardRef.value.goToStep(step);
+          wizardRef.value.goToStep(newStep);
         }
         // this.$refs.stepFirst.init()
         // this.$refs.createWizard.goToStep(newStep)
@@ -132,7 +148,7 @@ export default defineComponent({
 
       window.scrollTo(0, 0);
     };
-    const wizardData = reactive<any>([
+    const wizardData = ref<any>([
       {
         key: "first",
         label: "first",
@@ -158,12 +174,39 @@ export default defineComponent({
         nextHandler: () => goNext(),
       },
     ]);
+
+    const getQuiz = async () => {
+      try {
+        const res = await axios.get("/quiz/get-all");
+        if (res && res.data) {
+          res.data.sort((a: any, b: any) => a.order - b.order);
+          quizQuestion.value = res.data;
+          // steps.value = res.data.map((question: any) => ({
+          //   fieldName: question.fieldName,
+          // }));
+          // res.data.forEach((obj: any) => {
+          //   const fieldName = obj.fieldName;
+          //   initialValuesKey.value[fieldName] = "";
+          // });
+        }
+      } catch (err: any) {
+        console.log(err, "ERR");
+      }
+    };
+
+    onMounted(() => {
+      getQuiz();
+    });
+
     return {
-      ...toRefs(wizardRef),
+      wizardRef,
       router,
       wizardData,
       isProccessing,
       stepChanged,
+      eQuizSlot,
+      quizQuestion,
+      getKeyByValue,
     };
   },
 });

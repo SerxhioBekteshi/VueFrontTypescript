@@ -168,7 +168,7 @@ export default defineComponent({
 });
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .wizard-steps__steps-container {
   display: flex;
   justify-content: space-between;
