@@ -13,50 +13,46 @@
     </div>
 
     <div class="wizard-steps__steps">
-      <template>
+      <div v-for="(stepData, index) in visibleSteps" :key="index">
         <div
-          v-for="(stepData, index) in visibleSteps"
+          class="wizard-steps__step_item"
+          :class="pointerClassItem(step, index)"
+          @click="clickStep(getStepIndex(step), index)"
           :key="`step_${stepData.key}_${index}`"
         >
           <div
-            class="wizard-steps__step_item"
-            :class="pointerClassItem(step, index)"
-            @click="clickStep(getStepIndex(step), index)"
+            class="wizard-steps__step_round"
+            :class="classStatus(step, index, stepData)"
           >
-            <div
-              class="wizard-steps__step_round"
-              :class="classStatus(step, index, stepData)"
-            >
-              <template v-if="getStepIndex(step) > index">
-                <i
-                  class="pi pi-check"
-                  style="font-size: 1rem"
-                  aria-hidden="true"
-                ></i>
-              </template>
-              <template v-else>
-                {{ index + 1 }}
-              </template>
+            <div v-if="getStepIndex(step) > index">
+              <i
+                class="pi pi-check"
+                style="font-size: 1rem"
+                aria-hidden="true"
+              ></i>
+            </div>
+            <div v-else>
+              {{ index + 1 }}
             </div>
           </div>
-
-          <div
-            class="wizard-steps__step_label text-wrap"
-            :class="pointerClassItem(step, index)"
-            @click="clickStep(getStepIndex(step), index)"
-            :key="`step_label_${stepData.key}`"
-          >
-            {{ stepData.label }}
-          </div>
-
-          <div
-            v-if="index < visibleSteps.length - 1"
-            :key="`step_seperator_${stepData.key}`"
-            class="wizard-steps__step_separator"
-            :class="classStatus(step, index, stepData)"
-          ></div>
         </div>
-      </template>
+
+        <div
+          :key="`step_label_${stepData.key}`"
+          class="wizard-steps__step_label text-wrap"
+          :class="pointerClassItem(step, index)"
+          @click="clickStep(getStepIndex(step), index)"
+        >
+          {{ stepData.label }}
+        </div>
+
+        <div
+          v-if="index < visibleSteps.length - 1"
+          :key="`step_seperator_${stepData.key}`"
+          class="wizard-steps__step_separator"
+          :class="classStatus(step, index, stepData)"
+        ></div>
+      </div>
     </div>
 
     <div
@@ -99,9 +95,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const visibleSteps = computed(() => {
       if (!props.wizardData) return [];
-      return props.wizardData.filter(
-        (x: any) => x.hideStep === "undefined" || !x.hideStep
-      );
+      return props.wizardData.filter((x: any) => !x.hideStep);
     });
 
     const getStepIndex = (step: IStep) => {
@@ -181,7 +175,6 @@ export default defineComponent({
   .wizard-steps__step_icon {
     display: flex;
     align-items: center;
-    justify-content: center;
     color: #676767;
 
     &.clickable:hover {
@@ -222,8 +215,8 @@ export default defineComponent({
         font-weight: 600;
 
         &.active {
-          background-color: red;
-          border: 2px solid blue;
+          background-color: #b39ddb;
+          border: 2px solid #7e57c2;
           color: white;
         }
         &.done {

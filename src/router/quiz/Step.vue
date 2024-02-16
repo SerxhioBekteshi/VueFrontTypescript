@@ -60,9 +60,10 @@
 
 <script lang="ts">
 import InputSelect from "../../components/formElements/InputSelect.vue";
-import { defineComponent, inject } from "vue";
+import { defineComponent, inject, onMounted } from "vue";
 import InputCheckBox from "@/components/formElements/InputCheckBox.vue";
 import InputRadioButton from "@/components/formElements/InputRadioButton.vue";
+import { useField } from "vee-validate";
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
@@ -72,8 +73,9 @@ export default defineComponent({
     data: { type: Object, required: true },
   },
   setup(props) {
-    const veeQuizForm: any = inject("veeQuizForm");
-    const { value: stepField } = veeQuizForm.useField(props.data.fieldName);
+    // const veeQuizForm: any = inject("veeQuizForm");
+
+    const { value: stepField } = useField(props.data.fieldName);
 
     // const fieldValue = ref("");
     // watch(

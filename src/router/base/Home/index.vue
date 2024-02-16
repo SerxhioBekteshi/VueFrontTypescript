@@ -1,172 +1,225 @@
 <template>
-  <!-- <div>
-    <TableData
-      :controller="'meals'"
-      :actionButton="actionButton"
-      @edit-clicked="onEditClick"
-      ref="tableDataRef"
-    />
-
-    <div v-if="modeDrawer || formData">
-      <DetailDrawer
-        :onClose="invalidateState"
-        :modeDrawer="modeDrawer"
-        :formData="formData"
-        :controller="'meals'"
-        :validationSchema="validationSchema"
-        :fetchDataAfterSubmit="fetchDataAfterSubmit"
+  <div>
+    <Wizard
+      v-if="quizQuestion && quizQuestion.length !== 0"
+      ref="wizardRef"
+      :wizardData="wizardData"
+      :viewFirstBackButton="true"
+      :processing="isProccessing"
+      @stepChanged="stepChanged"
+    >
+      <!-- <template
+        v-for="(question, index) in quizQuestion"
+        :key="index"
+        v-slot:item[question]="{ item }"
       >
-        <MealForm />
-      </DetailDrawer>
-    </div>
-  </div> -->
-  <div class="card">
-    <Timeline :value="events">
-      <template #opposite="slotProps">
-        <small class="p-text-secondary">{{ slotProps.item.date }}</small>
+        {{ item[question] }}
+        WHAT???
+      </template> -->
+
+      <template v-slot:firstQuestion>
+        <Step :data="quizQuestion[0]" />
       </template>
-      <template #content="slotProps">
-        {{ slotProps.item.status }}
+
+      <template v-slot:secondQuestion>
+        <Step :data="quizQuestion[1]" />
       </template>
-    </Timeline>
+
+      <template v-slot:thirdQuestion>
+        <Step :data="quizQuestion[2]" />
+      </template>
+
+      <template v-slot:fourthQuestion>
+        <Step :data="quizQuestion[3]" />
+      </template>
+
+      <template v-slot:fifthQuestion>
+        <Step :data="quizQuestion[4]" />
+      </template>
+    </Wizard>
   </div>
 </template>
 
 <script lang="ts">
-// import Button from "primevue/button"
-import Button from "primevue/button";
-import TableData from "@/components/table/TableData.vue";
-import { computed, defineComponent, ref, shallowRef } from "vue";
-import { PrimeIcons } from "primevue/api";
-import { eFormMode } from "@/assets/enums/EFormMode";
-import DetailDrawer from "@/components/DetailDrawer.vue";
-import MealForm from "@/components/formController/MealForm.vue";
-import * as yup from "yup";
-import Timeline from "primevue/timeline";
-import Card from "primevue/card";
-import { useStore } from "vuex";
-import { RootState } from "@/store/vuexStore/types";
+import { defineComponent, onMounted, ref } from "vue";
+import eQuizSlot from "@/assets/enums/eQuizSlot";
+import { useRouter } from "vue-router";
+import axios from "axios";
+import { getKeyByValue } from "@/utils/functions";
+import Wizard from "@/components/Wizard/index.vue";
+import Step from "@/router/quiz/Step.vue";
 
 export default defineComponent({
-  // eslint-disable-next-line vue/multi-word-component-names
   name: "Home",
-  components: { Timeline },
+  components: { Wizard, Step },
+  enums: { eQuizSlot },
   setup() {
-    const modeDrawer = ref<any>(null);
-    const formData = ref<any>(null);
-    const tableDataRef = ref<any>(null);
-    const store = useStore<RootState>();
-    const userInfo = computed(() => store.getters.getUserInfo);
+    const isProccessing = ref<boolean>(false);
+    const wizardRef = ref<any>();
+    const currentStep = ref<string>("firstQuestion");
+    const quizQuestion = ref<any[]>([]);
 
-    const fetchDataAfterSubmit = () => {
-      if (tableDataRef.value) {
-        tableDataRef.value.fetchData();
+    const router = useRouter();
+
+    const stepProcessing = () => {
+      isProccessing.value = true;
+    };
+
+    const stepChanged = (step: any) => {
+      currentStep.value = step;
+    };
+
+    const goNext = async () => {
+      let step;
+      let goOn = false;
+
+      switch (currentStep.value) {
+        case "firstQuestion":
+          step = 1;
+          break;
+
+        case "secondQuestion":
+          step = 2;
+          break;
+
+        case "thirdQuestion":
+          step = 3;
+          break;
+
+        case "fourthQuestion":
+          step = 4;
+          break;
+
+        case "fifthQuestion":
+          break;
+      }
+
+      if (step) {
+        wizardRef.value.goToStep(step);
+        window.scrollTo(0, 0);
       }
     };
 
-    const handleAddData = () => {
-      console.log("clicked");
-      modeDrawer.value = eFormMode.Add;
+    const goBack = async () => {
+      let step;
+      switch (currentStep.value) {
+        case "secondQuestion":
+          step = 0;
+          break;
+
+        case "thirdQuestion":
+          step = 1;
+          break;
+
+        case "fourthQuestion":
+          step = 2;
+          break;
+
+        case "fifthQuestion":
+          step = 3;
+          break;
+      }
+      wizardRef.value.goToStep(step);
+      window.scrollTo(0, 0);
     };
 
-    const actionButton = shallowRef<any>({
-      component: Button,
-      props: {
-        icon: PrimeIcons.PLUS,
-        label: "Insert",
-        severity: "primary",
-        onClick: handleAddData,
-      },
-    });
+    const moveToStepHandler = (step: number, newStep: number) => {
+      // step is the current step(origin) and newStep is the destination
+      if (newStep === 0) {
+        if (wizardRef.value) {
+          wizardRef.value.goToStep(newStep);
+        }
+        // this.$refs.stepFirst.init()
+        // this.$refs.createWizard.goToStep(newStep)
+        // if (this.$refs.subStepper) this.$refs.subStepper.goToStep(0) // subStepper should always get back to first step
+      }
 
-    const validationSchema = yup.object().shape({
-      ingredients: yup
-        .array()
-        .of(
-          yup.object().shape({
-            name: yup
-              .string()
-              .required("Ingredient name is required")
-              .label("Name"),
-            portion: yup
-              .number()
-              .required("Ingredient portion is required")
-              .label("Portion"),
-          })
-        )
-        .strict(),
-      name: yup.string().required("Name is required").label("Name"),
-      cousine: yup.string().required("Cousine is required").label("Cousine"),
-      carbonFootprint: yup
-        .number()
-        .required("Carbon footprint is required")
-        .label("Carbon footprint"),
-      dietCategory: yup
-        .string()
-        .required("Diet category is required")
-        .label("Diet category"),
-      calories: yup
-        .number()
-        .required("Calories are required")
-        .label("Calories"),
-      intolerance: yup
-        .string()
-        .required("Intolerance is required")
-        .label("Intolerance"),
-      achievement: yup
-        .string()
-        .required("Health goal is required")
-        .label("Health goal"),
-    });
+      if (newStep === 1) {
+        // this.$refs.stepSecond.init()
+        // this.$refs.createWizard.goToStep(newStep)
+        if (wizardRef.value) {
+          wizardRef.value.goToStep(newStep);
+        }
+        // if (this.$refs.subStepper) this.$refs.subStepper.goToStep(0)
+      }
 
-    const onEditClick = (data: any, rowId: number) => {
-      modeDrawer.value = eFormMode.Edit;
-      formData.value = data;
+      window.scrollTo(0, 0);
     };
-
-    const invalidateState = () => {
-      modeDrawer.value = null;
-      formData.value = null;
-    };
-
-    const events = ref([
+    const wizardData = ref<any>([
       {
-        status: "Ordered",
-        date: "15/10/2020 10:30",
-        icon: "pi pi-shopping-cart",
-        color: "#9C27B0",
+        key: "firstQuestion",
+        label: "first",
+        hideBackButton: true,
+        hideStep: false,
+        nextHandler: () => goNext(),
       },
       {
-        status: "Processing",
-        date: "15/10/2020 14:00",
-        icon: "pi pi-cog",
-        color: "#673AB7",
+        key: "secondQuestion",
+        label: "second",
+        hideStep: false,
+        moveToStepHandler: (step: any) => moveToStepHandler(1, step),
+        backHandler: () => goBack(),
+        nextHandler: () => goNext(),
       },
       {
-        status: "Shipped",
-        date: "15/10/2020 16:15",
-        icon: "pi pi-shopping-cart",
-        color: "#FF9800",
+        key: "thirdQuestion",
+        label: "second",
+        hideStep: false,
+        moveToStepHandler: (step: any) => moveToStepHandler(2, step),
+        backHandler: () => goBack(),
+        nextHandler: () => goNext(),
       },
       {
-        status: "Delivered",
-        date: "16/10/2020 10:00",
-        icon: "pi pi-check",
-        color: "#607D8B",
+        key: "fourthQuestion",
+        label: "second",
+        hideStep: false,
+        moveToStepHandler: (step: any) => moveToStepHandler(3, step),
+        backHandler: () => goBack(),
+        nextHandler: () => goNext(),
+      },
+      {
+        key: "fifthQuestion",
+        label: "third",
+        hideStep: false,
+        nextLabel: "what??",
+        moveToStepHandler: (step: any) => moveToStepHandler(4, step),
+        backHandler: () => goBack(),
+        nextHandler: () => goNext(),
       },
     ]);
 
+    const getQuiz = async () => {
+      try {
+        const res = await axios.get("/quiz/get-all");
+        if (res && res.data) {
+          res.data.sort((a: any, b: any) => a.order - b.order);
+          quizQuestion.value = res.data;
+          // steps.value = res.data.map((question: any) => ({
+          //   fieldName: question.fieldName,
+          // }));
+          // res.data.forEach((obj: any) => {
+          //   const fieldName = obj.fieldName;
+          //   initialValuesKey.value[fieldName] = "";
+          // });
+        }
+      } catch (err: any) {
+        console.log(err, "ERR");
+      }
+    };
+
+    onMounted(() => {
+      getQuiz();
+    });
+
     return {
-      actionButton,
-      modeDrawer,
-      formData,
-      validationSchema,
-      tableDataRef,
-      events,
-      fetchDataAfterSubmit,
-      handleAddData,
-      onEditClick,
-      invalidateState,
+      wizardRef,
+      router,
+      wizardData,
+      isProccessing,
+      stepChanged,
+      eQuizSlot,
+      quizQuestion,
+      getKeyByValue,
     };
   },
 });

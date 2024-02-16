@@ -193,7 +193,7 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 .vue-wizard {
   table.wizard.wizard-steps {
     table-layout: fixed;
@@ -203,7 +203,6 @@ export default defineComponent({
     padding: 15px;
     border: 1px solid #ffffff;
   }
-
   table.wizard.wizard-buttons {
     table-layout: fixed;
     width: 100%;
