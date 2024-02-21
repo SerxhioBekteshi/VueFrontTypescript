@@ -7,7 +7,7 @@
           {{ data.question }}
         </span>
       </div>
-      <div v-if="data.questionType === 'select'">
+      <div v-if="data.questionType === 'select'" class="applyMarginTop">
         <InputSelect
           :options="data.questionOptions"
           :optionLabel="'label'"
@@ -19,10 +19,10 @@
           :showError="false"
         />
       </div>
-      <form @onSubmit="handlePrevent">
+      <form @onSubmit="(event: any) =>       event.preventDefault()">
         <div
           v-if="data.questionType === 'radio'"
-          class="flex justify-content-center flex-wrap gap-3"
+          class="flex justify-content-center flex-wrap gap-3 applyMarginTop"
         >
           <InputRadioButton
             :options="data.questionOptions"
@@ -32,7 +32,7 @@
         </div>
         <div
           v-if="data.questionType === 'checkbox'"
-          class="flex justify-content-center flex-wrap gap-3"
+          class="flex justify-content-center flex-wrap gap-3 applyMarginTop"
         >
           <InputCheckBox
             :options="data.questionOptions"
@@ -74,26 +74,14 @@ export default defineComponent({
   },
   setup(props) {
     // const veeQuizForm: any = inject("veeQuizForm");
-
     const { value: stepField } = useField(props.data.fieldName);
 
-    // const fieldValue = ref("");
-    // watch(
-    //   stepField,
-    //   (newValue: any) => {
-    //     console.log(fieldValue.value);
-    //     const key = props.data.fieldName;
-    //     // veeQuizForm.setFieldValue(key, newValue);
-    //   },
-    //   { deep: true }
-    // );
-
-    const handlePrevent = (event: any) => {
-      event.preventDefault();
-    };
-
-    return { stepField, handlePrevent };
+    return { stepField };
   },
 });
 </script>
-<style scoped></style>
+<style scoped>
+.applyMarginTop {
+  margin-top: 1rem;
+}
+</style>

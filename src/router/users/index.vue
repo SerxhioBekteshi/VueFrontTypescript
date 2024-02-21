@@ -1,7 +1,7 @@
 <template>
   <div>
     <TableData
-      :controller="'users'"
+      :controller="'user'"
       ref="tableDataRef"
       :showExport="true"
       :showAddBt="false"

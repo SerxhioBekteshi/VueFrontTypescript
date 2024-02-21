@@ -22,7 +22,6 @@
           <Button
             v-for="abb in step.additionalBackButtons"
             :key="abb.key"
-            class="btn btn-secondary fs_13 mleft_5"
             :disabled="processing"
             @click.prevent="$emit('additional-clicked', abb.handler)"
           >
@@ -40,26 +39,21 @@
           <Button
             v-for="anb in step.additionalNextButtons"
             :key="anb.key"
-            class="btn btn-secondary fs_13 mright_5"
             :disabled="processing || disableNextButton"
             @click.prevent="$emit('additional-clicked', anb.handler)"
           >
             <span>
               {{ anb.label }}
-              <!-- {{ $t(anb.label) }} -->
             </span>
             <i class="glyphicon glyphicon-chevron-right"></i>
           </Button>
           <Button
-            class="btn btn-secondary fs_13"
             :disabled="processing || disableNextButton"
             @click.prevent="$emit('next-clicked')"
+            style="background-color: #10b981; border-color: #10b981"
           >
             <span v-if="step.nextLabel" v-html="step.nextLabel"></span>
-            <span v-else>
-              next
-              <!-- {{ $t("wizards.next") }} -->
-            </span>
+            <span v-else> Next </span>
             <i class="glyphicon glyphicon-chevron-right"></i>
           </Button>
         </div>
@@ -86,11 +80,10 @@ export default defineComponent({
   name: "WizardButtons",
   components: { Button },
   props: {
-    wizardData: { type: Array as PropType<any[]>, default: () => [] },
     step: { type: Object as PropType<IStep>, required: true },
-    stepIndex: { type: Number, required: true },
-    processing: { type: Boolean, required: true },
-    viewFirstBackButton: { type: Boolean, required: true },
+    stepIndex: { type: Number, default: 0, required: true },
+    processing: { type: Boolean, default: false, required: true },
+    viewFirstBackButton: { type: Boolean, default: false, required: true },
     disableNextButton: { type: Boolean, default: false },
   },
   emits: ["back-clicked", "additional-clicked", "next-clicked"],

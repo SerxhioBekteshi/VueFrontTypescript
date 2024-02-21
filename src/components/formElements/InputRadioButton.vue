@@ -40,7 +40,13 @@ export default defineComponent({
     options: { type: Array as PropType<IRadioButton[]>, required: true },
   },
   setup(props) {
-    const { value, errorMessage, meta } = useField(() => props.name, undefined);
+    const { value, errorMessage, meta } = useField(
+      () => props.name,
+      undefined,
+      {
+        initialValue: null,
+      }
+    );
     return { value, errorMessage, meta };
   },
 });

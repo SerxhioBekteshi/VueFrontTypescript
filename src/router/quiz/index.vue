@@ -1,58 +1,61 @@
 <template>
   <div>
-    <div class="card">
-      <Stepper
-        v-if="quizQuestion.length !== 0"
-        :activeStep="activeStep"
-        :steps="steps"
-        :actions="stepperActions"
-        :title="'Fulfill the quiz to get some meals suggested'"
+    <Wizard
+      v-if="quizQuestion && quizQuestion.length !== 0"
+      ref="wizardRef"
+      :wizardData="wizardData"
+      :viewFirstBackButton="true"
+      :processing="isProccessing"
+      @stepChanged="stepChanged"
+    >
+      <!-- <template
+        v-for="(question, index) in quizQuestion"
+        :key="index"
+        v-slot:item[question]="{ item }"
       >
-        <div v-for="(question, index) in quizQuestion" :key="index">
-          <div
-            v-if="activeStep === index && activeStep !== quizQuestion.length"
-          >
-            <Step :data="quizQuestion[index]" />
-          </div>
-        </div>
-        <div
-          v-if="activeStep === quizQuestion.length"
-          class="centered-container"
-        >
-          <div class="flex flex-row align-items-center gap-2 mb-3">
-            <i
-              class="pi pi-check"
-              style="color: green; font-size: 3rem; margin-right: 2rem"
-            ></i>
-            <p style="font-size: 2rem">Quiz fulfilled successfully</p>
-          </div>
-          <div class="flex-column align-center">
-            <Button
-              size="small"
-              severity="info"
-              label="Navigate to see your suggested meals"
-              @click="() => handleAfterQuizSubmission()"
-            />
-          </div>
-        </div>
-      </Stepper>
-    </div>
+        {{ item[question] }}
+        WHAT???
+      </template> -->
+
+      <template v-slot:firstQuestion>
+        <Step :data="quizQuestion[0]" />
+      </template>
+
+      <template v-slot:secondQuestion>
+        <Step :data="quizQuestion[1]" />
+      </template>
+
+      <template v-slot:thirdQuestion>
+        <Step :data="quizQuestion[2]" />
+      </template>
+
+      <template v-slot:fourthQuestion>
+        <Step :data="quizQuestion[3]" />
+      </template>
+
+      <template v-slot:fifthQuestion>
+        <Step :data="quizQuestion[4]" />
+      </template>
+    </Wizard>
   </div>
   <Toast />
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, provide } from "vue";
+import { defineComponent, onMounted } from "vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import Stepper from "../../components/Stepper.vue";
-import Button from "primevue/button";
 import Step from "./Step.vue";
-import { useField, useForm } from "vee-validate";
+import { useForm } from "vee-validate";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
 import { useStore } from "vuex";
+import eQuizSlot from "@/assets/enums/eQuizSlot";
+import Wizard from "@/components/Wizard/index.vue";
+import { getKeyByValue } from "@/utils/functions";
+import { useAbility } from "@casl/vue";
+import { defineAbilityFor } from "@/initializers/ability";
 
 export interface StepArray {
   fieldName: string;
@@ -60,100 +63,21 @@ export interface StepArray {
 
 export default defineComponent({
   name: "QuizLayout",
-  components: { Stepper, Step, Button, Toast },
+  components: { Wizard, Step, Toast },
+  enums: { eQuizSlot },
   props: {},
   setup() {
-    const router = useRouter();
-    const toast = useToast();
+    const isProccessing = ref<boolean>(false);
+    const wizardRef = ref<any>();
+    const currentStep = ref<string>("firstQuestion");
     const quizQuestion = ref<any[]>([]);
-    const steps = ref<StepArray[]>([]);
-    const activeStep = ref<number>(0);
-    const initialValuesKey = ref<any>({});
-
-    const store = useStore();
-    const user = computed(() => store.getters.getUserInfo);
-
-    const label = computed(() => {
-      return activeStep.value === quizQuestion.value.length - 1
-        ? "Submit"
-        : "Next";
-    });
-
-    const handleAfterQuizSubmission = () => {
-      location.reload();
-      router.push("/meals");
-    };
-
-    const stepperActions = computed(() => {
-      if (activeStep.value === quizQuestion.value.length) return [];
-      else {
-        return [
-          {
-            component: Button,
-            props: {
-              icon: "pi pi-times",
-              label: "Back",
-              severity: "primary",
-              onclick: () => {
-                if (activeStep.value !== 0)
-                  activeStep.value = activeStep.value - 1;
-                else {
-                  toast.add({
-                    life: 3000,
-                    detail: "Cant go more back than this",
-                    severity: "warn",
-                    summary: "info",
-                    group: "bl",
-                  });
-                }
-              },
-            },
-          },
-          {
-            component: Button,
-            props: {
-              label: label.value,
-              icon: "pi pi-check",
-              severity: "info",
-              type: label.value === "Submit" ? "Submit" : "Button",
-              // disabled: activeStep.value === quizQuestion.value.length,
-              onclick: () => {
-                if (activeStep.value !== quizQuestion.value.length)
-                  activeStep.value = activeStep.value + 1;
-                if (activeStep.value === quizQuestion.value.length) {
-                  handleSubmit(handleFormSubmit)();
-                }
-              },
-            },
-          },
-        ];
-      }
-    });
-
-    // const quizValidationSchema = yup.object().shape({
-    //   cousine: yup.string().required("Cousine is required").label("Cousine"),
-    //   dietCategory: yup
-    //     .string()
-    //     .required("Diet Category is required")
-    //     .label("Diet Category"),
-    //   intolerance: yup
-    //     .string()
-    //     .required("Intolerance is required")
-    //     .label("Intolerance"),
-    //   achievement: yup
-    //     .string()
-    //     .required("Health goal is required")
-    //     .label("Health goal"),
-    //   calories: yup.string().label("calories"),
-    // });
-
-    const { handleSubmit, resetForm, setFieldError, setErrors, setFieldValue } =
-      useForm({
-        // validationSchema: quizValidationSchema,
-        initialValues: initialValuesKey,
-      });
+    const toast = useToast();
+    const router = useRouter();
+    const { handleSubmit } = useForm();
+    const ability = useAbility();
 
     const handleFormSubmit = async (data: any) => {
+      isProccessing.value = true;
       try {
         const res: any = await axios.post("/quizResult", {
           quizResult: data,
@@ -165,19 +89,142 @@ export default defineComponent({
             severity: "success",
             summary: "info",
           });
+          isProccessing.value = false;
+          const updatedAbility = await defineAbilityFor();
+          ability.update(updatedAbility.rules);
+          router.push({
+            path: "/meals",
+            query: { fromQuiz: "fromQuizResults" },
+          });
         }
       } catch (err) {
-        console.log(err, "ERROR");
+        console.log(err, "Error in quiz results post");
+        isProccessing.value = false;
       }
     };
-    provide("veeQuizForm", {
-      handleSubmit,
-      resetForm,
-      setFieldError,
-      setErrors,
-      useField,
-      setFieldValue,
-    });
+
+    const stepChanged = (step: any) => {
+      currentStep.value = step;
+    };
+
+    const goNext = async () => {
+      let step;
+      let goOn = false;
+
+      switch (currentStep.value) {
+        case "firstQuestion":
+          step = 1;
+          break;
+
+        case "secondQuestion":
+          step = 2;
+          break;
+
+        case "thirdQuestion":
+          step = 3;
+          break;
+
+        case "fourthQuestion":
+          step = 4;
+
+          break;
+
+        case "fifthQuestion":
+          handleSubmit(handleFormSubmit)();
+          break;
+      }
+
+      if (step) {
+        wizardRef.value.goToStep(step);
+        window.scrollTo(0, 0);
+      }
+    };
+
+    const goBack = async () => {
+      let step;
+      switch (currentStep.value) {
+        case "secondQuestion":
+          step = 0;
+          break;
+
+        case "thirdQuestion":
+          step = 1;
+          break;
+
+        case "fourthQuestion":
+          step = 2;
+          break;
+
+        case "fifthQuestion":
+          step = 3;
+          break;
+      }
+      wizardRef.value.goToStep(step);
+      window.scrollTo(0, 0);
+    };
+
+    const moveToStepHandler = (step: number, newStep: number) => {
+      // step is the current step(origin) and newStep is the destination
+      if (newStep === 0) {
+        if (wizardRef.value) {
+          wizardRef.value.goToStep(newStep);
+        }
+        // this.$refs.stepFirst.init()
+        // this.$refs.createWizard.goToStep(newStep)
+      }
+
+      if (newStep === 1) {
+        // this.$refs.stepSecond.init()
+        // this.$refs.createWizard.goToStep(newStep)
+        if (wizardRef.value) {
+          wizardRef.value.goToStep(newStep);
+        }
+      }
+
+      window.scrollTo(0, 0);
+    };
+    const wizardData = ref<any>([
+      {
+        key: "firstQuestion",
+        label: "first",
+        hideBackButton: true,
+        hideStep: false,
+        nextHandler: () => goNext(),
+      },
+      {
+        key: "secondQuestion",
+        label: "second",
+        hideStep: false,
+        moveToStepHandler: (step: any) => moveToStepHandler(1, step),
+        backHandler: () => goBack(),
+        nextHandler: () => goNext(),
+      },
+      {
+        key: "thirdQuestion",
+        label: "third",
+        hideStep: false,
+        moveToStepHandler: (step: any) => moveToStepHandler(2, step),
+        backHandler: () => goBack(),
+        nextHandler: () => goNext(),
+      },
+      {
+        key: "fourthQuestion",
+        label: "fourth",
+        hideStep: false,
+        moveToStepHandler: (step: any) => moveToStepHandler(3, step),
+        backHandler: () => goBack(),
+        nextHandler: () => goNext(),
+      },
+      {
+        key: "fifthQuestion",
+        label: "fifth",
+        hideStep: false,
+        nextLabel: "Submit results",
+        moveToStepHandler: (step: any) => moveToStepHandler(4, step),
+        backHandler: () => goBack(),
+        nextHandler: () => goNext(),
+      },
+    ]);
 
     const getQuiz = async () => {
       try {
@@ -185,13 +232,6 @@ export default defineComponent({
         if (res && res.data) {
           res.data.sort((a: any, b: any) => a.order - b.order);
           quizQuestion.value = res.data;
-          steps.value = res.data.map((question: any) => ({
-            fieldName: question.fieldName,
-          }));
-          res.data.forEach((obj: any) => {
-            const fieldName = obj.fieldName;
-            initialValuesKey.value[fieldName] = "";
-          });
         }
       } catch (err: any) {
         console.log(err, "ERR");
@@ -202,22 +242,15 @@ export default defineComponent({
       getQuiz();
     });
 
-    // router.beforeRouteLeave((to, from, next) => {
-    //   if (to.path !== "/meals" && activeStep.value === quizQuestion.value.length) {
-    //     next(false); // Prevent route change
-    //   } else {
-    //     next(); // Allow route change
-    //   }
-    // });
-
     return {
-      activeStep,
-      stepperActions,
-      quizQuestion,
+      wizardRef,
       router,
-      steps,
-      user,
-      handleAfterQuizSubmission,
+      wizardData,
+      isProccessing,
+      stepChanged,
+      eQuizSlot,
+      quizQuestion,
+      getKeyByValue,
     };
   },
 });

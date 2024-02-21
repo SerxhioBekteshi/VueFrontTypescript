@@ -124,6 +124,7 @@ export default defineComponent({
             });
 
             if (res.data) {
+              console.log(res.data, "RES DATA");
               ability.update([
                 ...ability.rules,
                 { action: "read", subject: "quiz layout" },

@@ -38,6 +38,7 @@
       </template>
     </Wizard>
   </div>
+  <Toast />
 </template>
 
 <script lang="ts">
@@ -48,21 +49,46 @@ import axios from "axios";
 import { getKeyByValue } from "@/utils/functions";
 import Wizard from "@/components/Wizard/index.vue";
 import Step from "@/router/quiz/Step.vue";
+import Toast from "primevue/toast";
+import { useToast } from "primevue/usetoast";
+import { useForm } from "vee-validate";
 
 export default defineComponent({
   name: "Home",
-  components: { Wizard, Step },
+  components: { Wizard, Step, Toast },
   enums: { eQuizSlot },
   setup() {
     const isProccessing = ref<boolean>(false);
     const wizardRef = ref<any>();
     const currentStep = ref<string>("firstQuestion");
     const quizQuestion = ref<any[]>([]);
-
+    const toast = useToast();
     const router = useRouter();
+    const { handleSubmit } = useForm();
 
     const stepProcessing = () => {
       isProccessing.value = true;
+    };
+
+    const handleFormSubmit = async (data: any) => {
+      console.log(data);
+
+      // try {
+      //   const res: any = await axios.post("/quizResult", {
+      //     quizResult: data,
+      //   });
+      //   if (res && res.data) {
+      //     toast.add({
+      //       life: 3000,
+      //       detail: res.data.message,
+      //       severity: "success",
+      //       summary: "info",
+      //     });
+      //    router.push("/meals")
+      //   }
+      // } catch (err) {
+      //   console.log(err, "ERROR");
+      // }
     };
 
     const stepChanged = (step: any) => {
@@ -88,9 +114,11 @@ export default defineComponent({
 
         case "fourthQuestion":
           step = 4;
+
           break;
 
         case "fifthQuestion":
+          handleSubmit(handleFormSubmit)();
           break;
       }
 
@@ -163,7 +191,7 @@ export default defineComponent({
       },
       {
         key: "thirdQuestion",
-        label: "second",
+        label: "third",
         hideStep: false,
         moveToStepHandler: (step: any) => moveToStepHandler(2, step),
         backHandler: () => goBack(),
@@ -171,7 +199,7 @@ export default defineComponent({
       },
       {
         key: "fourthQuestion",
-        label: "second",
+        label: "fourth",
         hideStep: false,
         moveToStepHandler: (step: any) => moveToStepHandler(3, step),
         backHandler: () => goBack(),
@@ -179,9 +207,9 @@ export default defineComponent({
       },
       {
         key: "fifthQuestion",
-        label: "third",
+        label: "fifth",
         hideStep: false,
-        nextLabel: "what??",
+        nextLabel: "Submit results",
         moveToStepHandler: (step: any) => moveToStepHandler(4, step),
         backHandler: () => goBack(),
         nextHandler: () => goNext(),

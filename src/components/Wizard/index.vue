@@ -1,5 +1,5 @@
 <template>
-  <div class="vue-wizard">
+  <div class="vue-wizard card" style="height: 400px; position: relative">
     <WizardSteps
       :wizardData="wizardData"
       :step="step"
@@ -22,7 +22,16 @@
       >
         <slot :name="stepData.key"></slot>
       </div>
+    </div>
 
+    <div
+      :style="{
+        position: 'absolute',
+        bottom: '0',
+        padding: '1rem',
+        marginTop: isMobile ? '2rem' : '',
+      }"
+    >
       <WizardButtons
         :wizardData="wizardData"
         :step="step"
@@ -46,6 +55,7 @@ import { defineComponent, ref, computed, onMounted, PropType } from "vue";
 import WizardButtons from "./WizardButtons.vue";
 import WizardSteps from "./WizardSteps.vue";
 import ProgressSpinner from "primevue/progressspinner";
+import useDeviceDetect from "@/hooks/useDeviceDetect";
 
 interface Step {
   key: string;
@@ -73,6 +83,7 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const stepIndex = ref(0);
+    const isMobile = useDeviceDetect();
 
     const goBack = () => {
       if (stepIndex.value - 1 >= 0) {
@@ -180,6 +191,7 @@ export default defineComponent({
       step,
       stepKey,
       stepsNumber,
+      isMobile,
       goNext,
       goBack,
       moveToStep,

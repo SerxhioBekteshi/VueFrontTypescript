@@ -1,6 +1,7 @@
 <template>
   <div class="wizard-steps__steps-container">
     <div
+      v-if="!isMobile"
       class="wizard-steps__step_icon"
       :class="pointerClassIcon(step, 'back')"
       @click="!processing ? backClicked() : null"
@@ -12,13 +13,16 @@
       ></i>
     </div>
 
-    <div class="wizard-steps__steps">
+    <div
+      class="wizard-steps__steps"
+      :style="{ width: isMobile ? '100%' : '80%' }"
+    >
       <div v-for="(stepData, index) in visibleSteps" :key="index">
         <div
           class="wizard-steps__step_item"
           :class="pointerClassItem(step, index)"
           @click="clickStep(getStepIndex(step), index)"
-          :key="`step_${stepData.key}_${index}`"
+          :key="`step_${stepData.key}`"
         >
           <div
             class="wizard-steps__step_round"
@@ -37,11 +41,11 @@
           </div>
         </div>
 
-        <div
-          :key="`step_label_${stepData.key}`"
-          class="wizard-steps__step_label text-wrap"
+        <!-- <div
+          class="wizard-steps__step_label"
           :class="pointerClassItem(step, index)"
           @click="clickStep(getStepIndex(step), index)"
+          :key="`step_label_${stepData.key}`"
         >
           {{ stepData.label }}
         </div>
@@ -51,11 +55,12 @@
           :key="`step_seperator_${stepData.key}`"
           class="wizard-steps__step_separator"
           :class="classStatus(step, index, stepData)"
-        ></div>
+        ></div> -->
       </div>
     </div>
 
     <div
+      v-if="!isMobile"
       class="wizard-steps__step_icon"
       :class="pointerClassIcon(step, 'next')"
       @click="!processing ? nextClicked() : null"
@@ -71,7 +76,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from "vue";
-
+import useDeviceDetect from "@/hooks/useDeviceDetect";
 interface IStep {
   key: string;
   label: string;
@@ -93,6 +98,7 @@ export default defineComponent({
   },
   emits: ["moveToStep"],
   setup(props, { emit }) {
+    const isMobile = useDeviceDetect();
     const visibleSteps = computed(() => {
       if (!props.wizardData) return [];
       return props.wizardData.filter((x: any) => !x.hideStep);
@@ -157,6 +163,7 @@ export default defineComponent({
       classStatus,
       getStepIndex,
       visibleSteps,
+      isMobile,
     };
   },
 });
@@ -175,6 +182,8 @@ export default defineComponent({
   .wizard-steps__step_icon {
     display: flex;
     align-items: center;
+    justify-content: center;
+
     color: #676767;
 
     &.clickable:hover {
@@ -186,9 +195,9 @@ export default defineComponent({
   }
 
   .wizard-steps__steps {
-    width: 80%;
     display: flex;
-    justify-content: center;
+    flex-wrap: wrap;
+    justify-content: space-between;
     align-items: center;
     gap: 8px;
     color: #676767;
@@ -207,21 +216,21 @@ export default defineComponent({
         width: 40px;
         height: 40px;
         border-radius: 50px;
-        border: 2px solid #676767;
-        background-color: #ffffff;
+        border: 2px solid var(--primary-color);
+        background-color: var(--white);
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 600;
 
         &.active {
-          background-color: #b39ddb;
-          border: 2px solid #7e57c2;
+          background-color: var(--indigo-200);
+          border: 2px solid var(--purple-400);
           color: white;
         }
         &.done {
-          border: 2px solid pink;
-          color: purple;
+          border: 2px solid var(--purple-400);
+          color: var(--red-800);
         }
       }
     }
@@ -243,6 +252,7 @@ export default defineComponent({
       flex-shrink: 1;
       max-width: 100px;
       font-weight: 600;
+      text-wrap: wrap;
 
       &.clickable:hover {
         cursor: pointer;
