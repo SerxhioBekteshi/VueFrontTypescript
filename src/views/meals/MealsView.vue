@@ -524,6 +524,7 @@ export default defineComponent({
     });
 
     onMounted(() => {
+      console.log(ability.rules, 'RULESs')
       if (profile.value.role === eRoles.User) getQuizResults();
       else fetchMeals();
     });

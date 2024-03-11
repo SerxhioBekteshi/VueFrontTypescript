@@ -66,7 +66,6 @@ export default defineComponent({
       // }
     );
 
-    console.log(value.value);
     const toast = useToast();
 
     const selectOptions = ref<any[]>(props.options);

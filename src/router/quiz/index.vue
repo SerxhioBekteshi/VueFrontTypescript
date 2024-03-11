@@ -90,12 +90,13 @@ export default defineComponent({
             summary: "info",
           });
           isProccessing.value = false;
-          const updatedAbility = await defineAbilityFor();
-          ability.update(updatedAbility.rules);
-          router.push({
-            path: "/meals",
-            query: { fromQuiz: "fromQuizResults" },
-          });
+          window.location.reload()
+          // const updatedAbility = await defineAbilityFor();
+          // ability.update(updatedAbility.rules);
+          // router.push({
+          //   path: "/meals",
+            // query: { fromQuiz: "fromQuizResults" },
+          // });
         }
       } catch (err) {
         console.log(err, "Error in quiz results post");
@@ -241,6 +242,12 @@ export default defineComponent({
     onMounted(() => {
       getQuiz();
     });
+
+    //this will be since i might be coming from the login with token page confirmation
+    //get the user permissions
+    // onMounted(() => {
+
+    // })
 
     return {
       wizardRef,

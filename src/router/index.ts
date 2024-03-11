@@ -18,7 +18,6 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const requiredPermissions: any = to.meta.permissions;
   const abilities = useAbility();
-  const toast = useToast();
   const store = useStore();
   const isLoggedIn = computed(() => store.state.user.user);
 
@@ -30,12 +29,6 @@ router.beforeEach((to, from, next) => {
 
   if (!isLoggedIn.value && to.path !== "/") {
     next("/");
-    toast.open({
-      message: "Cant access certain routes if not logged in",
-      type: "error",
-      position: "top-right",
-      duration: 3000,
-    });
     return;
   }
 

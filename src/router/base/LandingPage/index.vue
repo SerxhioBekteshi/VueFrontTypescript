@@ -33,7 +33,7 @@ import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "LandingPage",
-  components: {},
+  components: { Button },
   setup() {
     const router = useRouter();
 

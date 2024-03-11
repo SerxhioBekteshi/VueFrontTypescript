@@ -66,7 +66,7 @@
       <Button
         @click="logoutAndNavigate"
         class="btn btn-primary"
-        style="{ width: 241px, height: 56px }"
+        style="width: 241px; height: 56px;"
       >
         Go to login page
       </Button>
@@ -124,11 +124,13 @@ export default defineComponent({
             });
 
             if (res.data) {
-              console.log(res.data, "RES DATA");
               ability.update([
                 ...ability.rules,
                 { action: "read", subject: "quiz layout" },
               ]);
+
+              console.log(res.data.user)
+
               setTimeout(() => {
                 AuthManager.loginWithToken(
                   res.data.user,
@@ -136,13 +138,10 @@ export default defineComponent({
                   res.data.refresh_token,
                   router,
                   store
-
                   // res.data.refresh_token,
                   // dispatch
                 );
               }, 3000);
-              const updatedAbility = await defineAbilityFor();
-              ability.update(updatedAbility.rules);
               validToken.value = true;
             }
           } catch (err: any) {

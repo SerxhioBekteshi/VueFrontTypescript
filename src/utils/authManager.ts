@@ -56,8 +56,6 @@ class AuthManager {
     if (user) {
       JwtManager.setAccessToken(accessToken);
       // JwtManager.setRefreshToken(refreshToken);
-
-      console.log(user, "USER");
       store.commit(
         eMutationTypes.SET_USER,
         this.handleUserDataBasedOnRole(user)
