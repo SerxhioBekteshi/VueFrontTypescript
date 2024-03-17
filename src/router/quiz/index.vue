@@ -56,6 +56,8 @@ import Wizard from "@/components/Wizard/index.vue";
 import { getKeyByValue } from "@/utils/functions";
 import { useAbility } from "@casl/vue";
 import { defineAbilityFor } from "@/initializers/ability";
+import AuthManager from "@/utils/authManager";
+import { eMutationTypes } from "@/assets/enums/eMutationTypes";
 
 export interface StepArray {
   fieldName: string;
@@ -75,6 +77,15 @@ export default defineComponent({
     const router = useRouter();
     const { handleSubmit } = useForm();
     const ability = useAbility();
+    const store = useStore();
+
+    const handleAfterQuizSubmissionAftermath = async () => {
+      const currentUser: any = await AuthManager.getUserData();
+      store.commit(eMutationTypes.SET_USER, currentUser);
+      const updatedAbility = await defineAbilityFor();
+      ability.update(updatedAbility.rules);
+      console.log(updatedAbility.rules, "UPDATED ");
+    };
 
     const handleFormSubmit = async (data: any) => {
       isProccessing.value = true;
@@ -90,13 +101,16 @@ export default defineComponent({
             summary: "info",
           });
           isProccessing.value = false;
-          window.location.reload()
+          await handleAfterQuizSubmissionAftermath();
           // const updatedAbility = await defineAbilityFor();
+          // console.log(
+          //   updatedAbility.rules,
+          //   "DO MARR VETEM READ LAYOUT QUIZ SHIFE"
+          // );
           // ability.update(updatedAbility.rules);
-          // router.push({
-          //   path: "/meals",
-            // query: { fromQuiz: "fromQuizResults" },
-          // });
+          router.push({
+            path: "/meals",
+          });
         }
       } catch (err) {
         console.log(err, "Error in quiz results post");

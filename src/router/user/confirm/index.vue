@@ -66,7 +66,7 @@
       <Button
         @click="logoutAndNavigate"
         class="btn btn-primary"
-        style="width: 241px; height: 56px;"
+        style="width: 241px; height: 56px"
       >
         Go to login page
       </Button>
@@ -84,7 +84,6 @@ import AuthManager from "@/utils/authManager";
 import Button from "primevue/button";
 import { useStore } from "vuex";
 import { useAbility } from "@casl/vue";
-import { defineAbilityFor } from "@/initializers/ability";
 
 export default defineComponent({
   name: "ConfirmEmailView",
@@ -128,8 +127,6 @@ export default defineComponent({
                 ...ability.rules,
                 { action: "read", subject: "quiz layout" },
               ]);
-
-              console.log(res.data.user)
 
               setTimeout(() => {
                 AuthManager.loginWithToken(

@@ -465,7 +465,6 @@ export default defineComponent({
 
     const onEditClick = (data: IMeal) => {
       formDrawerMode.value = eFormMode.Edit;
-      console.log(data, "DATA");
       formData.value = data;
     };
 
@@ -524,7 +523,6 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      console.log(ability.rules, 'RULESs')
       if (profile.value.role === eRoles.User) getQuizResults();
       else fetchMeals();
     });

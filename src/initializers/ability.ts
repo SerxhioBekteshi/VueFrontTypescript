@@ -25,17 +25,16 @@ export const defineAbilityFor = async () => {
   const { can, build } = new AbilityBuilder(createMongoAbility);
 
   const userPermissions: any = store?.state;
-
-  console.log(userPermissions, "USER PERMISSIOSN")
   const accessPermissions = userPermissions?.user?.user?.accessPermissions;
 
   // acl.buildAbility(accessPermissions);
 
-  if(userPermissions?.user?.user?.role === eRoles.User && !userPermissions?.user?.user?.quizFulfilled) {
-    can("read", "quiz layout");
-    return build();
-  }
-  else if (accessPermissions) {
+  // if(userPermissions?.user?.user?.role === eRoles.User && !userPermissions?.user?.user?.quizFulfilled) {
+  //   can("read", "quiz layout");
+  //   return build();
+  // }
+  // else
+  if (accessPermissions) {
     // Dynamically define abilities based on fetched permissions
     accessPermissions.forEach((permission: any) => {
       const { action, subject } = permission;

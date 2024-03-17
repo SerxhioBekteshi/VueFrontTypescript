@@ -21,7 +21,6 @@ const handleResponseMessage = (
   notificationType: any,
   useToast: any
 ) => {
-  console.log(response, "awdawdawd");
   const $toast = useToast();
   if (response === "jwt expired") {
     clearSession();

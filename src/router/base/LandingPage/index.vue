@@ -1,4 +1,5 @@
 <template>
+  <Header />
   <div>
     <div
       :style="{
@@ -23,17 +24,40 @@
         severity="help"
       />
     </div>
+    <!-- <HeroSection /> -->
+
+    <!-- <FeatureSection />
+
+    <DownloadSection />
+
+    <FaqSection />
+
+    <SubscribeSection /> -->
   </div>
+  <Footer />
 </template>
 
 <script lang="ts">
 import Button from "primevue/button";
 import { defineComponent } from "vue";
 import { useRouter } from "vue-router";
+import FaqSection from "../../../views/sections/FaqSection.vue";
+import FeatureSection from "../../../views/sections/FeatureSection.vue";
+import DownloadSection from "../../../views/sections/DownloadSection.vue";
+import Footer from "./Footer.vue";
+import Header from "./Header.vue";
 
 export default defineComponent({
   name: "LandingPage",
-  components: { Button },
+  components: {
+    // HeroSection,
+    // Header,
+    // Footer,
+    // FaqSection,
+    // FeatureSection,
+    // DownloadSection,
+    Button,
+  },
   setup() {
     const router = useRouter();
 

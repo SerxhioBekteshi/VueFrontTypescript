@@ -13,6 +13,7 @@
     "@paypal/paypal-js": "^7.1.0",
     "@paypal/sdk-client": "^4.0.177",
     "@reduxjs/toolkit": "^1.9.5",
+    "@tailwindcss/forms": "^0.5.7",
     "@types/yup": "^0.32.0",
     "@vue-stripe/vue-stripe": "^4.5.0",
     "@vuelidate/core": "^2.0.2",
@@ -37,6 +38,7 @@
     "vue": "^3.3.4",
     "vue-router": "^4.2.2",
     "vue-toast-notification": "^3.1.1",
+    "vue3-smooth-scroll": "^0.8.1",
     "vuedraggable": "^4.1.0",
     "vuex": "^4.1.0",
     "yup": "^1.2.0"
@@ -59,6 +61,7 @@
     "eslint-plugin-vue": "^8.0.3",
     "node-sass": "^9.0.0",
     "sass-loader": "^13.3.2",
+    "tailwindcss": "^3.4.1",
     "typescript": "~4.5.5",
     "vite": "^4.2.1"
   }

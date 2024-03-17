@@ -71,8 +71,6 @@ export default defineComponent({
     };
 
     const handleFormSubmit = async (data: any) => {
-      console.log(data);
-
       // try {
       //   const res: any = await axios.post("/quizResult", {
       //     quizResult: data,

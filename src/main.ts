@@ -11,12 +11,12 @@ import "primeflex/primeflex.css";
 import "@/assets/styles.scss";
 import Tooltip from "primevue/tooltip";
 import ToastService from "primevue/toastservice";
-// import { createRedux } from "./store/redux/storePlugin";
 import initApp from "./utils/functions";
 import { defineAbilityFor } from "./initializers/ability";
 // import { WebsocketMixin } from "./hooks/userWebSocket/socketPlugin";
 import { abilitiesPlugin } from "@casl/vue";
 import vuexPlugin from "./store/vuexStore/vuexPlugin";
+import "./assets/tailwindStyles.css";
 
 // (async () => {
 //   // const appStore = await initApp();
