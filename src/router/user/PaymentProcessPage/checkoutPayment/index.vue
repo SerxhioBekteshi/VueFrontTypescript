@@ -76,6 +76,7 @@ export default defineComponent({
           items: props.items,
         });
 
+        console.log(response, "RESPONSE");
         if (response) {
           return response.data.id;
         }
@@ -93,9 +94,7 @@ export default defineComponent({
     const onApprove = async (data: any, actions: any) => {
       try {
         const details = await actions.order.capture();
-
         if (details) {
-          console.log(details);
           toast.add({
             life: 3000,
             detail: `Order submitted successfully to your PayPal account: ${details.id}`,
@@ -104,7 +103,7 @@ export default defineComponent({
           });
 
           //here i can store the details to a table
-          storeDetailsToDb(details);
+          await storeDetailsToDb(details);
           checkoutLink.value = details.links[0].href;
         }
       } catch (error: any) {
@@ -118,10 +117,18 @@ export default defineComponent({
     };
 
     const storeDetailsToDb = async (details: any) => {
-      console.log(details, "DETAILS ");
-      const res: any = await axios.post("/order", details);
-      if (res && res.data) {
-        console.log(res, "ORDER LOG");
+      try {
+        const res: any = await axios.post("/order", details);
+        if (res && res.data) {
+          toast.add({
+            life: 3000,
+            detail: `Order fully completed`,
+            severity: "success",
+            summary: "",
+          });
+        }
+      } catch (err) {
+        console.log("what");
       }
     };
 

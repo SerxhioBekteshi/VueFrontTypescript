@@ -218,6 +218,7 @@ import CellNestedObject from "../table/CellNestedObject.vue";
 import { eFormMode } from "@/assets/enums/EFormMode";
 import eColumnType from "@/assets/enums/eColumnType";
 import InlineMessage from "primevue/inlinemessage";
+import IFilter from "@/interfaces/table/IFilter";
 interface Action {
   component: any;
   props: Record<string, unknown>;
@@ -399,19 +400,25 @@ export default defineComponent({
     const fetchData = async () => {
       dataLoading.value = true;
       try {
+        const filters: IFilter[] = [];
+
+        if (props.keyWhereFilter) {
+          const filterObject = {
+            columnName: props.keyWhereFilter,
+            operation: eFilterOperator.Equal,
+            value: props.controller?.split("/")[1],
+          };
+
+          filters.push(filterObject);
+        }
+
         const res = await axios.post(
           `/table/${props.controller?.split("/")[0]}`,
           {
             page: currentPage.value,
             pageSize: pageSize.value,
             search: searchValue.value,
-            filters: [
-              {
-                columnName: props.keyWhereFilter,
-                operation: eFilterOperator.Equal,
-                value: props.controller?.split("/")[1],
-              },
-            ],
+            filters: filters,
           }
         );
         if (res !== null) {

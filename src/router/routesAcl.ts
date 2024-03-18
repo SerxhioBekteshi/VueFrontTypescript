@@ -10,6 +10,7 @@ import Orders from "./orders/index.vue";
 import OrderDetails from "./orderDetails/index.vue";
 import Meals from "./meals/index.vue";
 import Users from "./users/index.vue";
+import PayemntProcessPage from "./user/PaymentProcessPage/index.vue";
 
 const aclRoutes = [
   {
@@ -88,6 +89,11 @@ const aclRoutes = [
         name: "Users",
         component: Users,
         meta: { permissions: { action: "read", subject: "users" } },
+      },
+      {
+        path: "payments/paypal",
+        name: "PaymentProcessPage",
+        component: PayemntProcessPage,
       },
     ],
   },

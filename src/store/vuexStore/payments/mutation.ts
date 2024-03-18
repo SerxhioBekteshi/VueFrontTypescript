@@ -5,9 +5,9 @@ import { PaymentState } from ".";
 
 export const mutations: MutationTree<PaymentState> = {
   [eMutationTypes.SET_PAYMENT](state, payload: IPaymentState) {
-    state.payment = payload;
+    state.payment.push(payload);
   },
   [eMutationTypes.CLEAR_PAYMENT](state) {
-    state.payment = null;
+    state.payment = [];
   },
 };

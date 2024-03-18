@@ -21,7 +21,7 @@ import { useRouter } from "vue-router";
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
-  name: "AdminOrders",
+  name: "Orders",
   components: { TableData },
   setup() {
     const router = useRouter();

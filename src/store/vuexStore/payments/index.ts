@@ -6,11 +6,11 @@ import { getters } from "./getters";
 import { mutations } from "./mutation";
 
 export interface PaymentState {
-  payment: IPaymentState | null;
+  payment: IPaymentState[];
 }
 
 const state: PaymentState = {
-  payment: null,
+  payment: [],
 };
 
 export const paymentStore: Module<PaymentState, RootState> = {
