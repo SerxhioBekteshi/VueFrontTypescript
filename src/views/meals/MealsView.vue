@@ -267,15 +267,27 @@
                             slotProps.data.ingredients.length !== 0
                           "
                         >
-                          <div
+                          <main
+                            class="leaderboard_profiles"
                             v-for="ingredient in slotProps.data.ingredients"
                             v-bind:key="ingredient.id"
                           >
-                            <ul>
-                              <li>ingredient: {{ ingredient.name }}</li>
-                              <li>amount: {{ ingredient.portion }}</li>
-                            </ul>
-                          </div>
+                            <article class="leaderboard__profile">
+                              <!-- <img
+                                src="https://randomuser.me/api/portraits/men/32.jpg"
+                                alt="Mark Zuckerberg"
+                                class="leaderboard__picture"
+                              /> -->
+                              <span class="leaderboard__name">{{
+                                ingredient.name
+                              }}</span>
+                              <span class="leaderboard__value"
+                                >{{ ingredient.portion }} g<span
+                                  >Amount</span
+                                ></span
+                              >
+                            </article>
+                          </main>
                         </div>
                         <div v-else>
                           <InlineMessage style="width: 100%" severity="error">
@@ -393,7 +405,6 @@ import IMeal from "@/interfaces/database/IMeal";
 import DataViewLayoutOptions from "primevue/dataviewlayoutoptions";
 import MealsSkeleton from "./MealsSkeleton.vue";
 import { useRouter } from "vue-router";
-import { setPaymentData } from "@/store/stores/payment.store";
 import ImageForm from "@/components/formController/ImageForm.vue";
 import { mealSchema, modalOrderSchema } from "@/utils/validationSchemas";
 import { useAbility } from "@casl/vue";
@@ -437,7 +448,7 @@ export default defineComponent({
     const currentPage = ref<number>(1);
     const pageSize = ref<number>(5);
     const totalItems = ref<number>(0);
-    const isLoading = ref<boolean>(false);
+    const isLoading = ref<boolean>(true);
     const searchValue = ref<string>("");
     const formData = ref<IMeal>();
     const rate = ref<any>();
@@ -478,7 +489,6 @@ export default defineComponent({
     };
 
     const fetchMeals = async () => {
-      isLoading.value = true;
       try {
         let formattedFilters;
         if (profile.value.role === eRoles.User)
@@ -628,7 +638,7 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .image-wrapper {
   width: 100px;
   height: 100px;
@@ -682,5 +692,125 @@ export default defineComponent({
     gap: 1rem;
     padding-block: 3rem;
   }
+}
+
+.leaderboard {
+  max-width: 490px;
+  width: 100%;
+  border-radius: 12px;
+
+  header {
+    --start: 15%;
+
+    height: 130px;
+    background-image: repeating-radial-gradient(
+        circle at var(--start),
+        transparent 0%,
+        transparent 10%,
+        rgba(54, 89, 219, 0.33) 10%,
+        rgba(54, 89, 219, 0.33) 17%
+      ),
+      linear-gradient(to right, #5b7cfa, #3659db);
+    color: #fff;
+    position: relative;
+    border-radius: 12px 12px 0 0;
+    overflow: hidden;
+
+    .leaderboard__title {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      right: calc(var(--start) * 0.75);
+      transform: translateY(-50%);
+      text-transform: uppercase;
+      margin: 0;
+
+      span {
+        display: block;
+      }
+
+      &--top {
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: 6.5px;
+      }
+
+      &--bottom {
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 3.55px;
+        opacity: 0.65;
+        transform: translateY(-2px);
+      }
+    }
+
+    .leaderboard__icon {
+      fill: #fff;
+      opacity: 0.35;
+      width: 50px;
+      position: absolute;
+      top: 50%;
+      left: var(--start);
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  &__profiles {
+    background-color: black;
+    border-radius: 0 0 12px 12px;
+    display: grid;
+    row-gap: 8px;
+  }
+
+  &__profile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px 10px 10px;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 5px 7px -1px rgba(51, 51, 51, 0.23);
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.7, 0.98, 0.86, 0.98),
+      box-shadow 0.25s cubic-bezier(0.7, 0.98, 0.86, 0.98);
+    background-color: #fff;
+
+    &:hover {
+      transform: scale(0.8);
+    }
+  }
+
+  &__picture {
+    max-width: 100%;
+    width: 60px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 10px #ebeef3, 0 0 0 22px #f3f4f6;
+  }
+
+  &__name {
+    color: #979cb0;
+    font-weight: 600;
+    font-size: 20px;
+    letter-spacing: 0.64px;
+    margin-left: 12px;
+  }
+
+  &__value {
+    color: var(--red-300);
+    font-weight: 700;
+    font-size: 24px;
+    text-align: right;
+
+    & > span {
+      opacity: 0.8;
+      font-weight: 600;
+      font-size: 12px;
+      margin-left: 3px;
+    }
+  }
+}
+
+.leaderboard {
+  box-shadow: 0 0 40px -10px rgba(0, 0, 0, 0.4);
 }
 </style>

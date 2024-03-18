@@ -76,7 +76,6 @@ export default defineComponent({
           items: props.items,
         });
 
-        console.log(response, "RESPONSE");
         if (response) {
           return response.data.id;
         }
@@ -94,6 +93,7 @@ export default defineComponent({
     const onApprove = async (data: any, actions: any) => {
       try {
         const details = await actions.order.capture();
+
         if (details) {
           toast.add({
             life: 3000,
@@ -103,8 +103,10 @@ export default defineComponent({
           });
 
           //here i can store the details to a table
-          await storeDetailsToDb(details);
-          checkoutLink.value = details.links[0].href;
+          const resyy: any = await storeDetailsToDb(details);
+          if (resyy) {
+            checkoutLink.value = details.links[0].href;
+          }
         }
       } catch (error: any) {
         toast.add({
