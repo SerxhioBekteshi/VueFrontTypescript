@@ -1,73 +1,171 @@
-<script setup>
-import { ref } from "vue";
-import Swal from "sweetalert2";
+<script lang="ts">
+import { defineComponent, ref } from "vue";
+import { features } from "../../utils/layoutData";
+import Button from "primevue/button";
 
-let email = ref("");
-let emailError = ref(false);
-const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+export default defineComponent({
+  name: "SubscribeSection",
+  components: { Button },
+  setup() {
+    const isOpen = ref(1);
 
-let handleSubmit = () => {
-  if (!email.value || !emailRegex.test(email.value)) {
-    emailError.value = true;
-  } else {
-    console.log(emailRegex.test(email.value));
-    Swal.fire({
-      icon: "success",
-      title: "Thank You",
-      text: `${email.value} subscribed to our newsletter!`,
-    });
-  }
-};
+    return {
+      isOpen,
+      features,
+    };
+  },
+});
 </script>
 
 <template>
-  <!-- Newsletter Section Start -->
-  <div id="subscribe" class="bg-theme-primary mt-10">
-    <div class="container w-full lg:w-2/5 mx-auto px-5">
-      <section class="py-16">
-        <h4
-          class="text-sm tracking-widest uppercase text-center text-white font-theme-heading"
-        >
-          35,000+ Already Joined
-        </h4>
-        <h2
-          class="text-3xl md:text-4xl font-medium text-center text-white mt-9 mb-10 font-theme-heading"
-        >
-          Stay up-to-date with what we'r doing
-        </h2>
+  <div>
+    <div class="text-900 font-bold text-6xl mb-4 text-center">
+      Pricing Plans
+    </div>
+    <div class="text-700 text-xl mb-6 text-center line-height-3">
+      Lorem ipsum dolor sit, amet consectetur adipisicing elit. Velit numquam
+      eligendi quos.
+    </div>
 
-        <form @submit.prevent="handleSubmit()">
+    <div class="grid">
+      <div class="col-12 lg:col-4">
+        <div class="p-3 h-full">
           <div
-            class="relative flex flex-col items-center lg:flex-row justify-center lg:space-x-3"
+            class="shadow-2 p-3 h-full flex flex-column surface-card"
+            style="border-radius: 6px"
           >
-            <div class="relative w-full lg:mb-0 font-theme-content">
-              <input
-                v-model="email"
-                @input="emailError = false"
-                class="w-full py-3 px-5 text-sm text-gray-600 border-0 shadow-md rounded focus:ring-4 focus:ring-blue-300"
-                type="text"
-                name="newsletter_email"
-                placeholder="Enter your email address"
-              />
-              <div v-show="emailError">
-                <img
-                  class="absolute right-3 top-3"
-                  src="/images/icon-error.svg"
-                  alt="Error Icon"
-                />
-                <div
-                  class="absolute w-full text-xs italic px-2 py-1 bg-theme-secondary text-white rounded"
-                >
-                  Whosps, make sure it's an email
-                </div>
-              </div>
+            <div class="text-900 font-medium text-xl mb-2">Basic</div>
+            <div class="text-600">Plan description</div>
+            <hr
+              class="my-3 mx-0 border-top-1 border-bottom-none surface-border"
+            />
+            <div class="flex align-items-center">
+              <span class="font-bold text-2xl text-900">$9</span>
+              <span class="ml-2 font-medium text-600">per month</span>
             </div>
-
-            <Button type="submit" btn-type="secondary">Subscribe</Button>
+            <hr
+              class="my-3 mx-0 border-top-1 border-bottom-none surface-border"
+            />
+            <ul class="list-none p-0 m-0 flex-grow-1">
+              <li class="flex align-items-center mb-3">
+                <i class="pi pi-check-circle text-green-500 mr-2" />
+                <span>Arcu vitae elementum</span>
+              </li>
+              <li class="flex align-items-center mb-3">
+                <i class="pi pi-check-circle text-green-500 mr-2" />
+                <span>Dui faucibus in ornare</span>
+              </li>
+              <li class="flex align-items-center mb-3">
+                <i class="pi pi-check-circle text-green-500 mr-2" />
+                <span>Morbi tincidunt augue</span>
+              </li>
+            </ul>
+            <hr
+              class="mb-3 mx-0 border-top-1 border-bottom-none surface-border mt-auto"
+            />
+            <Button label="Buy Now" class="px-3 py-2 w-full mt-auto" />
           </div>
-        </form>
-      </section>
+        </div>
+      </div>
+
+      <div class="col-12 lg:col-4">
+        <div class="p-3 h-full">
+          <div
+            class="shadow-2 p-3 h-full flex flex-column surface-card"
+            style="border-radius: 6px"
+          >
+            <div class="text-900 font-medium text-xl mb-2">Premium</div>
+            <div class="text-600">Plan description</div>
+            <hr
+              class="my-3 mx-0 border-top-1 border-bottom-none surface-border"
+            />
+            <div class="flex align-items-center">
+              <span class="font-bold text-2xl text-900">$29</span>
+              <span class="ml-2 font-medium text-600">per month</span>
+            </div>
+            <hr
+              class="my-3 mx-0 border-top-1 border-bottom-none surface-border"
+            />
+            <ul class="list-none p-0 m-0 flex-grow-1">
+              <li class="flex align-items-center mb-3">
+                <i class="pi pi-check-circle text-green-500 mr-2" />
+                <span>Arcu vitae elementum</span>
+              </li>
+              <li class="flex align-items-center mb-3">
+                <i class="pi pi-check-circle text-green-500 mr-2" />
+                <span>Dui faucibus in ornare</span>
+              </li>
+              <li class="flex align-items-center mb-3">
+                <i class="pi pi-check-circle text-green-500 mr-2" />
+                <span>Morbi tincidunt augue</span>
+              </li>
+              <li class="flex align-items-center mb-3">
+                <i class="pi pi-check-circle text-green-500 mr-2" />
+                <span>Duis ultricies lacus sed</span>
+              </li>
+            </ul>
+            <hr
+              class="mb-3 mx-0 border-top-1 border-bottom-none surface-border"
+            />
+            <Button label="Buy Now" class="px-3 py-2 w-full" />
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 lg:col-4">
+        <div class="p-3 h-full">
+          <div
+            class="shadow-2 p-3 flex flex-column surface-card"
+            style="border-radius: 6px"
+          >
+            <div class="text-900 font-medium text-xl mb-2">Enterprise</div>
+            <div class="text-600">Plan description</div>
+            <hr
+              class="my-3 mx-0 border-top-1 border-bottom-none surface-border"
+            />
+            <div class="flex align-items-center">
+              <span class="font-bold text-2xl text-900">$49</span>
+              <span class="ml-2 font-medium text-600">per month</span>
+            </div>
+            <hr
+              class="my-3 mx-0 border-top-1 border-bottom-none surface-border"
+            />
+            <ul class="list-none p-0 m-0 flex-grow-1">
+              <li class="flex align-items-center mb-3">
+                <i class="pi pi-check-circle text-green-500 mr-2" />
+                <span>Arcu vitae elementum</span>
+              </li>
+              <li class="flex align-items-center mb-3">
+                <i class="pi pi-check-circle text-green-500 mr-2" />
+                <span>Dui faucibus in ornare</span>
+              </li>
+              <li class="flex align-items-center mb-3">
+                <i class="pi pi-check-circle text-green-500 mr-2" />
+                <span>Morbi tincidunt augue</span>
+              </li>
+              <li class="flex align-items-center mb-3">
+                <i class="pi pi-check-circle text-green-500 mr-2" />
+                <span>Duis ultricies lacus sed</span>
+              </li>
+              <li class="flex align-items-center mb-3">
+                <i class="pi pi-check-circle text-green-500 mr-2" />
+                <span>Imperdiet proin</span>
+              </li>
+              <li class="flex align-items-center mb-3">
+                <i class="pi pi-check-circle text-green-500 mr-2" />
+                <span>Nisi scelerisque</span>
+              </li>
+            </ul>
+            <hr
+              class="mb-3 mx-0 border-top-1 border-bottom-none surface-border"
+            />
+            <Button
+              label="Buy Now"
+              class="px-3 py-2 w-full ui-button-outlined"
+            />
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <!-- Newsletter Section End -->
 </template>

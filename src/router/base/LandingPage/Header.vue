@@ -32,7 +32,7 @@ let toggleMobileNav = () => {
         </button>
 
         <!-- Desktop Menu -->
-        <ul
+        <!-- <ul
           class="space-x-10 font-theme-heading font-medium items-center hidden md:flex flex-col space-y-7 md:space-y-0 md:flex-row"
         >
           <li
@@ -55,7 +55,7 @@ let toggleMobileNav = () => {
           >
             <a href="#download-section" v-smooth-scroll>Download</a>
           </li>
-        </ul>
+        </ul> -->
       </nav>
     </header>
 

@@ -282,7 +282,7 @@
                                 ingredient.name
                               }}</span>
                               <span class="leaderboard__value"
-                                >{{ ingredient.portion }} g<span
+                                >{{ ingredient.portion }}g<span
                                   >Amount</span
                                 ></span
                               >

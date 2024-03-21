@@ -24,15 +24,15 @@
         severity="help"
       />
     </div>
-    <!-- <HeroSection /> -->
+    <HeroSection />
 
-    <!-- <FeatureSection />
+    <FeatureSection />
+
+    <SubscribeSection />
 
     <DownloadSection />
 
     <FaqSection />
-
-    <SubscribeSection /> -->
   </div>
   <Footer />
 </template>
@@ -42,20 +42,24 @@ import Button from "primevue/button";
 import { defineComponent } from "vue";
 import { useRouter } from "vue-router";
 import FaqSection from "../../../views/sections/FaqSection.vue";
+import HeroSection from "../../../views/sections/HeroSection.vue";
 import FeatureSection from "../../../views/sections/FeatureSection.vue";
+import SubscribeSection from "../../../views/sections/SubscribeSection.vue";
 import DownloadSection from "../../../views/sections/DownloadSection.vue";
+
 import Footer from "./Footer.vue";
-import Header from "./Header.vue";
+// import Header from "./Header.vue";
 
 export default defineComponent({
   name: "LandingPage",
   components: {
-    // HeroSection,
+    HeroSection,
     // Header,
-    // Footer,
-    // FaqSection,
-    // FeatureSection,
-    // DownloadSection,
+    Footer,
+    FaqSection,
+    FeatureSection,
+    SubscribeSection,
+    DownloadSection,
     Button,
   },
   setup() {

@@ -17,84 +17,94 @@ export default defineComponent({
 </script>
 
 <template>
-  <!-- Features Section Start -->
-  <div id="features" class="container mx-auto px-5">
-    <section class="py-16">
-      <div class="w-4/5 md:w-3/5 mx-auto">
-        <h2
-          class="text-3xl md:text-4xl font-semibold font-theme-heading text-center"
+  <div class="surface-section text-center">
+    <div class="mb-3 font-bold text-2xl">
+      <span class="text-900">One Product, </span>
+      <span class="text-blue-600">Many Solutions</span>
+    </div>
+    <div class="text-700 text-sm mb-6">
+      Ac turpis egestas maecenas pharetra convallis posuere morbi leo urna.
+    </div>
+    <div class="grid">
+      <div class="col-12 md:col-4 mb-4 px-5">
+        <span
+          class="p-3 shadow-2 mb-3 inline-block surface-card"
+          style="border-radius: 10px"
         >
-          Features
-        </h2>
-        <p
-          class="text-theme-grayish-blue text-center mt-7 font-theme-content text-lg"
+          <i class="pi pi-desktop text-4xl text-blue-500" />
+        </span>
+        <div class="text-900 mb-3 font-medium">Built for Developers</div>
+        <span class="text-700 text-sm line-height-3"
+          >Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+          dolore eu fugiat nulla pariatur.</span
         >
-          Our aim is to make it quick and easy for you to access your favourite
-          websites. Your bookmarks sync between your devices so you can access
-          them on the go.
-        </p>
       </div>
-
-      <div class="mt-10">
-        <ul
-          class="flex flex-col items-center md:flex-row justify-center font-theme-heading"
+      <div class="col-12 md:col-4 mb-4 px-5">
+        <span
+          class="p-3 shadow-2 mb-3 inline-block surface-card"
+          style="border-radius: 10px"
         >
-          <li
-            v-for="feature in features"
-            :key="feature.id"
-            :class="
-              isOpen === feature.id
-                ? 'md:border-b-4 md:border-theme-secondary'
-                : ''
-            "
-            class="w-full md:w-56 cursor-pointer hover:text-theme-secondary transition duration-200 border-b-2 border-t-2 md:border-t-0 flex justify-center"
-          >
-            <a
-              @click.prevent="isOpen = feature.id"
-              href="#"
-              :class="isOpen === feature.id ? ' border-theme-secondary' : ''"
-              class="py-5 md:border-b-0 border-b-4"
-              >{{ feature.name }}</a
-            >
-          </li>
-        </ul>
+          <i class="pi pi-lock text-4xl text-blue-500" />
+        </span>
+        <div class="text-900 mb-3 font-medium">End-to-End Encryption</div>
+        <span class="text-700 text-sm line-height-3"
+          >Risus nec feugiat in fermentum posuere urna nec. Posuere sollicitudin
+          aliquam ultrices sagittis.</span
+        >
       </div>
-
-      <div class="mt-16">
-        <!-- Tab Content -->
-        <template v-for="feature in features" :key="feature.id">
-          <div
-            v-show="isOpen === feature.id"
-            class="grid gap-32 lg:grid-cols-2 items-center"
-          >
-            <div class="relative">
-              <img class="z-10 w-full" :src="feature.details.imageUrl" />
-              <div
-                class="-z-10 bg-theme-primary h-52 w-96 sm:h-80 sm:w-full rounded-r-full absolute -left-56 -bottom-16"
-              ></div>
-            </div>
-            <div>
-              <h3
-                class="font-theme-heading text-2xl md:text-3xl font-medium text-center lg:text-left"
-              >
-                {{ feature.details.title }}
-              </h3>
-              <p
-                class="mt-7 font-theme-content text-lg text-theme-grayish-blue text-center lg:text-left"
-              >
-                {{ feature.details.description }}
-              </p>
-              <div class="flex justify-center lg:justify-start mt-7">
-                <LinkButton btn-type="primary" :link="feature.details.link"
-                  >More Info</LinkButton
-                >
-              </div>
-            </div>
-          </div>
-        </template>
-        <!-- Tab Content -->
+      <div class="col-12 md:col-4 mb-4 px-5">
+        <span
+          class="p-3 shadow-2 mb-3 inline-block surface-card"
+          style="border-radius: 10px"
+        >
+          <i class="pi pi-check-circle text-4xl text-blue-500" />
+        </span>
+        <div class="text-900 mb-3 font-medium">Easy to Use</div>
+        <span class="text-700 text-sm line-height-3"
+          >Ornare suspendisse sed nisi lacus sed viverra tellus. Neque volutpat
+          ac tincidunt vitae semper.</span
+        >
       </div>
-    </section>
+      <div class="col-12 md:col-4 mb-4 px-5">
+        <span
+          class="p-3 shadow-2 mb-3 inline-block surface-card"
+          style="border-radius: 10px"
+        >
+          <i class="pi pi-globe text-4xl text-blue-500" />
+        </span>
+        <div class="text-900 mb-3 font-medium">Fast &amp; Global Support</div>
+        <span class="text-700 text-sm line-height-3"
+          >Fermentum et sollicitudin ac orci phasellus egestas tellus rutrum
+          tellus.</span
+        >
+      </div>
+      <div class="col-12 md:col-4 mb-4 px-5">
+        <span
+          class="p-3 shadow-2 mb-3 inline-block surface-card"
+          style="border-radius: 10px"
+        >
+          <i class="pi pi-github text-4xl text-blue-500" />
+        </span>
+        <div class="text-900 mb-3 font-medium">Open Source</div>
+        <span class="text-700 text-sm line-height-3"
+          >Nec tincidunt praesent semper feugiat. Sed adipiscing diam donec
+          adipiscing tristique risus nec feugiat.
+        </span>
+      </div>
+      <div class="col-12 md:col-4 md:mb-4 mb-0 px-3">
+        <span
+          class="p-3 shadow-2 mb-3 inline-block surface-card"
+          style="border-radius: 10px"
+        >
+          <i class="pi pi-shield text-4xl text-blue-500" />
+        </span>
+        <div class="text-900 mb-3 font-medium">Trusted Securitty</div>
+        <span class="text-700 text-sm line-height-3"
+          >Mattis rhoncus urna neque viverra justo nec ultrices. Id cursus metus
+          aliquam eleifend.</span
+        >
+      </div>
+    </div>
   </div>
   <!-- Features Section End -->
 </template>

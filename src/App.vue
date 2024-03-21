@@ -44,7 +44,7 @@ export default defineComponent({
             console.log("connection.value");
             provide(WebsocketContextKey, connection.value);
           } catch (error) {
-            console.error("WebsocketProvider.start", error);
+            console.error("WebsocketProvider.start error", error);
           }
         }
       }
