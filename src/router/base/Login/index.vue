@@ -224,6 +224,7 @@ import Toast from "primevue/toast";
 import Image from "primevue/image";
 import Checkbox from "primevue/checkbox";
 import Modal from "@/components/Modal.vue";
+import eHttpResponse from "@/assets/enums/eHttpResponse";
 
 export default defineComponent({
   name: "LoginView",
@@ -280,9 +281,22 @@ export default defineComponent({
           email: inputEmail.value,
         });
 
-        console.log("RES?????");
+        if (res && res.status === eHttpResponse.Ok) {
+          toast.add({
+            life: 3000,
+            detail: "A password email reset link was sent to your email",
+            severity: "success",
+            summary: "Reset password link",
+          });
+          openModal.value = false;
+        }
       } catch (err: any) {
-        console.log(err, "ERR");
+        toast.add({
+          life: 3000,
+          detail: err.message,
+          severity: "error",
+          summary: "Error",
+        });
       }
     };
 

@@ -3,6 +3,7 @@ import RegisterView from "./Register/index.vue";
 import RegisterProviderView from "./RegisterProvider/index.vue";
 import LoginView from "./Login/index.vue";
 import ConfirmEmailView from "../user/confirm/index.vue";
+import ResetPasswordView from "./ResetPassword/index.vue";
 import NotFoundRoutePage from "./404pageError.vue";
 
 const baseRoutes = [
@@ -30,6 +31,11 @@ const baseRoutes = [
     path: "/confirm",
     name: "ConfirmEmailView",
     component: ConfirmEmailView,
+  },
+  {
+    path: "/resetpassword",
+    name: "ResetPasswordView",
+    component: ResetPasswordView,
   },
   {
     path: "/404NotFound",

@@ -19,7 +19,7 @@ export function getNameById(myObject: any, id: number) {
 }
 
 const reverseString = (str: any) => {
-  return str.split("").reverse().join("");
+  return str && str.split("").reverse().join("");
 };
 
 export const groupDigital = (num: any) => {
@@ -32,7 +32,7 @@ export const groupDigital = (num: any) => {
   };
 
   const str = num + emptyStr;
-  const [integer, decimal] = str.split(".");
+  const [integer, decimal] = str && str.split(".");
 
   const conversed = reverseString(integer);
 
@@ -72,7 +72,7 @@ export const calculateFiltersForMeal = (array: any) => {
         });
       });
     } else if (typeof value === "string" && value.includes("-")) {
-      const [valueStart, valueEnd] = value.split("-");
+      const [valueStart, valueEnd] = value && value.split("-");
       formattedArray.push({
         columnName,
         value: Number(valueStart),

@@ -16,14 +16,6 @@
     </div>
     <div v-else-if="cellColumn.propertyType === eColumnType.Boolean">
       <InputSwitch :modelValue="cellValue" disabled />
-      <!-- <span>
-        <i
-          :class="{
-            'pi pi-check-circle text-green-500': cellValue,
-            'pi pi-times-circle text-red-400': !cellValue,
-          }"
-        ></i>
-      </span> -->
     </div>
     <div v-else-if="cellColumn.propertyType === eColumnType.Image">
       <div v-if="cellValue" class="image-wrapper">
@@ -52,7 +44,6 @@
       >
     </div>
     <div v-else-if="cellColumn.propertyType === eColumnType.Object">
-      <!-- <ScrollPanel v-tooltip="'Double click for more'" style="height: 50px"> -->
       <div
         class="cursor-pointer"
         @dblclick="
@@ -61,18 +52,13 @@
           }
         "
       >
-        <Tag value="Double click for more" severity="warning" />
-        <!-- <ul>
-            <li v-for="(value, key) in cellValue" :key="key">
-              {{ key }}:
-              <CellNestedObject :nestedObject="value" />
-            </li>
-          </ul> -->
+        <Tag
+          value="Double click for more"
+          style="background-color: var(--green-400)"
+        />
       </div>
-      <!-- </ScrollPanel> -->
     </div>
     <div v-else-if="cellColumn.propertyType === eColumnType.Array">
-      <!-- <ScrollPanel v-tooltip="'Double click for more'" style="height: 50px"> -->
       <div
         class="cursor-pointer"
         @dblclick="
@@ -81,16 +67,11 @@
           }
         "
       >
-        <Tag value="Double click for more" severity="warning" />
-
-        <!-- <ul v-tooltip v-for="(obj, index) in cellValue" :key="index">
-          <li v-for="(value, key) in obj" :key="key">
-            {{ key }}:
-          <CellNestedObject :nestedObject="value" /> 
-          </li>
-        </ul> -->
+        <Tag
+          value="Double click for more"
+          style="background-color: var(--green-400)"
+        />
       </div>
-      <!-- </ScrollPanel> -->
     </div>
 
     <div v-else>
@@ -108,8 +89,6 @@ import { PropType, defineComponent } from "vue";
 import InlineMessage from "primevue/inlinemessage";
 import Tag from "primevue/tag";
 import { eOrderStatus } from "@/assets/enums/eOrderStatusType";
-// import CellNestedObject from "./CellNestedObject.vue";
-// import ScrollPanel from "primevue/scrollpanel";
 import TableCellActions from "./TableCellActions.vue";
 import InputSwitch from "primevue/inputswitch";
 
@@ -118,8 +97,6 @@ export default defineComponent({
   components: {
     InlineMessage,
     Tag,
-    // CellNestedObject,
-    // ScrollPanel,
     TableCellActions,
     InputSwitch,
   },

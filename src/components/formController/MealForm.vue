@@ -80,84 +80,64 @@
       <div
         style="
           display: flex;
+          border-radius: 1rem;
           flex-direction: column;
-          gap: 1rem;
-          margin-top: 1rem;
+          padding-block: 1rem;
+          background-color: var(--cyan-50);
         "
       >
         <FieldArray name="ingredients" v-slot="{ fields, push, remove }">
+          <div style="margin-left: 1rem; margin-block: 0.5rem">
+            <strong> Add ingredients </strong>
+          </div>
           <fieldset
             v-for="(field, idx) in fields"
             :key="field.key"
             class="ingredients"
           >
-            <div>
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-                  background-color: #f5f5f5;
-                  padding-inline: 1rem;
-                  border-top-left-radius: 1rem;
-                  border-top-right-radius: 1rem;
-                "
-              >
-                <legend style="margin-block: 1.75rem">
-                  Ingredient {{ idx + 1 }}
-                </legend>
+            <div style="display: flex; justify-content: space-between">
+              <div style="display: flex">
                 <div>
-                  <Button
-                    icon="pi pi-trash"
-                    rounded
-                    text
-                    size="small"
-                    severity="danger"
-                    @click="remove(idx)"
-                    :disabled="fields.length <= 1"
+                  <InputText
+                    :name="`ingredients[${idx}].name`"
+                    :label="'Name'"
+                    :id="`name_${idx}`"
+                    :placeholder="'Ingredient name'"
+                  />
+                </div>
+
+                <div>
+                  <InputNumber
+                    :name="`ingredients[${idx}].portion`"
+                    :label="'Portion'"
+                    :id="`portion_${idx}`"
+                    :placeholder="'Portion'"
                   />
                 </div>
               </div>
-              <div class="grid" style="margin-top: 1rem; padding-inline: 1rem">
-                <div
-                  class="col-12"
-                  :style="{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '2rem',
-                  }"
-                >
-                  <div>
-                    <InputText
-                      :name="`ingredients[${idx}].name`"
-                      :label="'Enter the ingredient name'"
-                      :id="`name_${idx}`"
-                      :placeholder="'Ingredient name'"
-                    />
-                  </div>
 
-                  <div>
-                    <InputNumber
-                      :name="`ingredients[${idx}].portion`"
-                      :label="'Enter the portion'"
-                      :id="`portion_${idx}`"
-                      :placeholder="'Portion'"
-                    />
-                  </div>
-                </div>
+              <div>
+                <Button
+                  icon="pi pi-trash"
+                  rounded
+                  text
+                  size="small"
+                  severity="danger"
+                  @click="remove(idx)"
+                  :disabled="fields.length <= 1"
+                />
               </div>
             </div>
           </fieldset>
 
-          <div style="margin-top: 1rem">
+          <div style="margin-left: 1rem; margin-top: 0.5rem">
             <Button
-              severity="info"
+              label="+ new ingredient"
+              link
               size="small"
               style="width: fit-content"
               @click="push({ portion: '', name: '' })"
-            >
-              Add ingredient
-            </Button>
+            />
           </div>
         </FieldArray>
       </div>
@@ -228,10 +208,9 @@ export default defineComponent({
 }
 
 .ingredients {
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
   border: 1px solid transparent;
-  border-top-color: rgba(0, 0, 0, 0.1) !important;
+  border-top-color: rgba(0, 0, 0, 0) !important;
   border-radius: 1rem;
-  padding: 0rem !important;
+  padding: 1rem !important;
 }
 </style>

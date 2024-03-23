@@ -218,18 +218,37 @@
                       :severity="getSeverity(slotProps.data)"
                       >HSTOCK</Tag
                     >
-                    <Button
-                      icon="pi pi-upload"
-                      severity="warning"
-                      rounded
-                      outlined
-                      size="small"
-                      v-if="ability.can('upload', 'meals')"
-                      @click="
-                        () =>
-                          onUploadClick(slotProps.data.id, slotProps.data.image)
-                      "
-                    />
+                    <div
+                      class="flex align-items-center justify-content-center gap-2"
+                    >
+                      <Button
+                        icon="pi pi-upload"
+                        severity="warning"
+                        rounded
+                        outlined
+                        size="small"
+                        v-if="ability.can('upload', 'meals')"
+                        @click="
+                          () =>
+                            onUploadClick(
+                              slotProps.data.id,
+                              slotProps.data.image
+                            )
+                        "
+                      />
+                      <Button
+                        icon="pi pi-shopping-bag"
+                        style="color: var(--teal-400)"
+                        rounded
+                        outlined
+                        size="small"
+                        v-if="ability.can('edit', 'meals')"
+                        @click="
+                          () =>
+                            updateStock(slotProps.data.id, slotProps.data.image)
+                        "
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -760,6 +779,7 @@ export default defineComponent({
     border-radius: 0 0 12px 12px;
     display: grid;
     row-gap: 8px;
+    column-gap: 1rem;
   }
 
   &__profile {

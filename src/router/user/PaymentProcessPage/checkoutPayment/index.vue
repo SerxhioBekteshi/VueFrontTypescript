@@ -22,6 +22,7 @@ import Toast from "primevue/toast";
 import { useToast } from "primevue/usetoast";
 import axios from "axios";
 import { useRouter } from "vue-router";
+import IMeal from "@/interfaces/database/IMeal";
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
@@ -119,6 +120,12 @@ export default defineComponent({
     };
 
     const storeDetailsToDb = async (details: any) => {
+      const mealIds = props.items?.map((meal: IMeal) => {
+        return meal.id;
+      });
+
+      details.mealIds = mealIds;
+      console.log(mealIds, "MEAL IDS");
       try {
         const res: any = await axios.post("/order", details);
         if (res && res.data) {

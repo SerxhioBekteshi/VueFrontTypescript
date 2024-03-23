@@ -9,11 +9,8 @@ export const modalOrderSchema = yup.object().shape({
 export const mealSchema = yup.object().shape({
   ingredients: yup.array().of(
     yup.object().shape({
-      name: yup.string().required("Ingredient name is required").label("Name"),
-      portion: yup
-        .number()
-        .required("Ingredient portion is required")
-        .label("Portion"),
+      name: yup.string().required("Name is required").label("Name"),
+      portion: yup.number().required("Portion is required").label("Portion"),
     })
   ),
   name: yup.string().required("Name is required").label("Name"),
@@ -37,7 +34,10 @@ export const mealSchema = yup.object().shape({
 export const questionValidationSchema = yup.object().shape({
   question: yup.string().required("Question is required").label("question"),
   order: yup.number().required("Order is required").label("Order"),
-  fieldName: yup.string().required("Field name is required").label("Field Name"),
+  fieldName: yup
+    .string()
+    .required("Field name is required")
+    .label("Field Name"),
   questionOptions: yup
     .array()
     .of(
@@ -57,6 +57,31 @@ export const passwordValidationSchema = yup.object().shape({
     .string()
     .required("Current Password is required")
     .min(8, "Current Password must be at least 8 characters long"),
+  password: yup
+    .string()
+    .required("New Password is required")
+    .min(8, "New Password must be at least 8 characters long")
+    .matches(/[a-z]/, "Password must contain at least one lowercase letter.")
+    .matches(/[A-Z]/, "Password must contain at least one uppercase letter.")
+    .matches(
+      /[!@#$%^&*()_+{}|:<>?~]/,
+      "Password must contain at least one special character."
+    )
+    .matches(/[0-9]/, "Password must contain at least one number"),
+  passwordConfirm: yup
+    .string()
+    .required("Confirm New Password is required")
+    .min(8, "Confirm New Password must be at least 8 characters long")
+    .test(
+      "passwords-match",
+      "Confirm new password must match with new password",
+      function (value) {
+        return value === this.parent.password;
+      }
+    ),
+});
+
+export const resetPasswordValidationSchema = yup.object().shape({
   password: yup
     .string()
     .required("New Password is required")

@@ -16,7 +16,6 @@ import { defineAbilityFor } from "./initializers/ability";
 // import { WebsocketMixin } from "./hooks/userWebSocket/socketPlugin";
 import { abilitiesPlugin } from "@casl/vue";
 import vuexPlugin from "./store/vuexStore/vuexPlugin";
-import "./assets/tailwindStyles.css";
 
 // (async () => {
 //   // const appStore = await initApp();

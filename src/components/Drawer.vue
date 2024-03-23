@@ -18,7 +18,11 @@
         style="font-size: 1rem"
       ></i>
     </template>
-    <slot></slot>
+    <div class="body">
+      <!-- <ScrollPanel style="width: 100%; height: 100%"> -->
+      <slot></slot>
+      <!-- </ScrollPanel> -->
+    </div>
     <div class="actions">
       <div class="actionsAlign">
         <div v-for="(action, index) in actions" :key="index">
@@ -34,6 +38,7 @@
 import Sidebar from "primevue/sidebar";
 import Button from "primevue/button";
 import { defineComponent } from "vue";
+import ScrollPanel from "primevue/scrollpanel";
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
@@ -46,6 +51,7 @@ export default defineComponent({
   components: {
     Sidebar,
     Button,
+    ScrollPanel,
   },
   methods: {
     handleDrawerClose(): void {
@@ -70,7 +76,8 @@ interface Action {
 .actions {
   position: absolute;
   bottom: 0;
-  margin-bottom: 1rem;
+  background-color: white;
+  width: 100%;
 }
 
 .actionsAlign {
@@ -81,5 +88,10 @@ interface Action {
 
 .p-sidebar-header-content {
   width: 100%;
+}
+
+.body {
+  max-height: calc(100% - 3rem);
+  overflow-y: auto;
 }
 </style>

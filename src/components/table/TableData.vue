@@ -157,29 +157,10 @@
     </div>
     <div v-else>
       <div v-if="modalViewRenderType === eColumnType.Object">
-        <ul>
-          <li v-for="(value, key) in fieldModalToShow" :key="key">
-            {{ key }}:
-            <CellNestedObject :nestedObject="value" />
-          </li>
-        </ul>
+        <DynamicObject :items="fieldModalToShow" />
       </div>
       <div v-else-if="modalViewRenderType === eColumnType.Array">
-        <div
-          v-if="
-            Array.isArray(fieldModalToShow) && fieldModalToShow.length === 0
-          "
-          style="display: flex; justify-content: center"
-        >
-          <InlineMessage severity="error"
-            >No data available for this cell to view</InlineMessage
-          >
-        </div>
-        <ul v-for="(obj, index) in fieldModalToShow" :key="index">
-          <li v-for="(value, key) in obj" :key="key">
-            <CellNestedObject :nestedObject="value" />
-          </li>
-        </ul>
+        <DynamicObject :items="fieldModalToShow" />
       </div>
     </div>
   </Modal>
@@ -214,11 +195,10 @@ import CellEditor from "@/components/table/CellEditor.vue";
 import { eFilterOperator } from "@/assets/enums/eFilterOperator";
 import TablePaginator from "./TablePaginator.vue";
 import ISelectColumn from "@/interfaces/database/ISelectColumn";
-import CellNestedObject from "../table/CellNestedObject.vue";
 import { eFormMode } from "@/assets/enums/EFormMode";
 import eColumnType from "@/assets/enums/eColumnType";
-import InlineMessage from "primevue/inlinemessage";
 import IFilter from "@/interfaces/table/IFilter";
+import DynamicObject from "./DynamicObject.vue";
 interface Action {
   component: any;
   props: Record<string, unknown>;
@@ -238,10 +218,9 @@ export default defineComponent({
     Skeleton,
     ProgressSpinner,
     // CellEditor,
+    DynamicObject,
     Button,
-    InlineMessage,
     TablePaginator,
-    CellNestedObject,
   },
   props: {
     controller: { type: String },
@@ -300,6 +279,7 @@ export default defineComponent({
     const handleDoubleClick = (cellValue: any, type: any) => {
       modalInformation.value = eFormMode.View;
       fieldModalToShow.value = cellValue;
+      console.log(cellValue, "CELL VALUE");
       modalViewRenderType.value = type;
       openModal.value = true;
     };
