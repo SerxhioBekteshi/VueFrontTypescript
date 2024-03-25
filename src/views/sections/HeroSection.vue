@@ -18,7 +18,7 @@
       </section>
     </div>
     <div class="col-12 md:col-6 overflow-hidden">
-      <Image
+      <img
         preview
         src="../../assets/logo.png"
         alt="Image"
@@ -38,7 +38,7 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "HeroSection",
-  components: { Button, Image },
+  components: { Button },
   setup() {
     return {};
   },

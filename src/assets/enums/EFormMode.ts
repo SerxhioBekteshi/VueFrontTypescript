@@ -4,4 +4,5 @@ export enum eFormMode {
   Upload = "Upload",
   View = "View",
   Delete = "Delete",
+  Custom = "Custom",
 }

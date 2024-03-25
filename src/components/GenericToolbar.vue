@@ -1,5 +1,5 @@
 <template>
-  <div
+  <!-- <div
     style="
       display: flex;
       justify-content: space-between;
@@ -61,6 +61,79 @@
         ></component>
       </div>
     </div>
+  </div> -->
+
+  <div>
+    <Toolbar>
+      <template #start>
+        <!-- <Button icon="pi pi-plus" class="mr-2" severity="secondary" /> -->
+        <Button
+          v-if="showExport"
+          icon="pi pi-upload"
+          style="
+            background-color: var(--green-500);
+            border-color: var(--green-500);
+          "
+          class="mr-3"
+        />
+        <div v-if="customComponent">
+          <component
+            :is="customComponent.component"
+            v-bind="customComponent.props"
+            @update:modelValue="$emit('update:modelValue', $event)"
+          ></component>
+        </div>
+      </template>
+
+      <template #center>
+        <div v-if="showSearch">
+          <div class="p-inputgroup flex-1">
+            <InputPV
+              :value="value"
+              @change="$emit('change', $event)"
+              placeholder="Search"
+            />
+            <Button
+              icon="pi pi-search"
+              severity="secondary"
+              outlined
+              disabled
+            />
+          </div>
+        </div>
+      </template>
+
+      <template #end>
+        <div v-if="showAddBt">
+          <div v-if="actionButton">
+            <component
+              :is="actionButton.component"
+              v-bind="actionButton.props"
+            ></component>
+          </div>
+          <div v-else>
+            <Button
+              icon="pi pi-plus"
+              label="Insert"
+              severity="primary"
+              @click="$emit('insert-clicked')"
+            />
+          </div>
+        </div>
+      </template>
+    </Toolbar>
+
+    <div v-if="toggleColumnsVisibility" style="width: 100%; margin-top: 1rem">
+      <MultiSelect
+        :modelValue="selectedColumns"
+        :options="selectColumns?.columns"
+        optionLabel="title"
+        @update:modelValue="onToggle"
+        display="chip"
+        placeholder="Select Columns"
+        emptyMessage="No results found"
+      />
+    </div>
   </div>
 </template>
 
@@ -69,9 +142,11 @@ import ISelectColumn from "@/interfaces/database/ISelectColumn";
 import IColumn from "@/interfaces/table/IColumn";
 import Button from "primevue/button";
 import DataViewLayoutOptions from "primevue/dataviewlayoutoptions";
+import InputText from "primevue/inputtext";
 import InputPV from "primevue/inputtext";
 import MultiSelect from "primevue/multiselect";
-import { defineComponent, markRaw, ref } from "vue";
+import Toolbar from "primevue/toolbar";
+import { defineComponent, ref } from "vue";
 
 interface Action {
   component: any;
@@ -85,7 +160,14 @@ interface Layout {
 
 export default defineComponent({
   name: "GenericToolbar",
-  components: { Button, InputPV, DataViewLayoutOptions, MultiSelect },
+  components: {
+    Button,
+    InputPV,
+    DataViewLayoutOptions,
+    MultiSelect,
+    Toolbar,
+    InputText,
+  },
   props: {
     selectColumns: { type: Object as () => ISelectColumn },
     controller: String,

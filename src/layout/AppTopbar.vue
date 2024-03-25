@@ -21,10 +21,10 @@
 
     <div class="layout-topbar-menu" :class="topbarMenuClasses">
       <div class="flex align-items-center">
-        <NotificationIcon :icon="'pi pi-circle'" />
+        <NotificationIcon :icon="'pi pi-circle'" v-tooltip="'Notifications'" />
       </div>
       <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
-        <i class="pi pi-calendar"></i>
+        <i class="pi pi-calendar" v-tooltip="'Show date'"></i>
         <span>Calendar</span>
       </button>
       <button
@@ -35,11 +35,7 @@
         <i class="pi pi-user"></i>
         <span>Profile</span>
       </button>
-      <button
-        @click="onLogoutClick()"
-        v-tooltip="'Log out'"
-        class="p-link layout-topbar-button"
-      >
+      <button @click="onLogoutClick()" class="p-link layout-topbar-button">
         <i class="pi pi-sign-out"></i>
         <span>Log out</span>
       </button>
@@ -61,10 +57,10 @@ import { useLayout } from "@/layout/composables/layout";
 import { useRouter } from "vue-router";
 import Menu from "primevue/menu";
 // import JwtManager from "../utils/jwtManager";
-import { useDispatch } from "@/store/redux/helpers";
 import AuthManager from "@/utils/authManager";
 import NotificationIcon from "@/components/NotificationIcon.vue";
 import { useStore } from "vuex";
+import Calendar from "primevue/calendar";
 
 export default defineComponent({
   name: "AppTopbar",
@@ -77,9 +73,8 @@ export default defineComponent({
     const topbarMenuActive = ref<boolean>(false);
     const router = useRouter();
     const menu = ref<any>();
+    const showCalendar = ref<boolean>(false);
     const store = useStore();
-
-    const dispatch = useDispatch();
 
     onMounted(() => {
       bindOutsideClickListener();
@@ -98,6 +93,11 @@ export default defineComponent({
     const onTopBarMenuButton = () => {
       topbarMenuActive.value = !topbarMenuActive.value;
     };
+
+    const onCalendarIconClick = () => {
+      showCalendar.value = true;
+    };
+
     const onLogoutClick = () => {
       // topbarMenuActive.value = false;
       AuthManager.logout(store);

@@ -6,6 +6,10 @@ export const modalOrderSchema = yup.object().shape({
   quantity: yup.number().required("Quantity is required").label("Quantity"),
 });
 
+export const stockOrderSchema = yup.object().shape({
+  stock: yup.number().required("stock is required").label("Stock"),
+});
+
 export const mealSchema = yup.object().shape({
   ingredients: yup.array().of(
     yup.object().shape({

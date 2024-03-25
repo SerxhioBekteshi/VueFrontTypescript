@@ -83,6 +83,7 @@
           border-radius: 1rem;
           flex-direction: column;
           padding-block: 1rem;
+          margin-block: 0.5rem;
           background-color: var(--cyan-50);
         "
       >

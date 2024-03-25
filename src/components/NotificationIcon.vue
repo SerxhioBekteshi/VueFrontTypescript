@@ -155,7 +155,12 @@ export default defineComponent({
           getAllNotifications();
         }
       } catch (err: any) {
-        console.log(err, "ERROR");
+        toast.add({
+          life: 3000,
+          detail: err?.message,
+          severity: "error",
+          summary: "Error notification delete",
+        });
       }
     };
 
@@ -163,7 +168,8 @@ export default defineComponent({
       return (
         notifications.value &&
         notifications.value.filter((notification: any) => {
-          return !notification.msg.seen;
+          console.log(notification);
+          return !notification?.msg?.seen;
         }).length
       );
     });
@@ -216,7 +222,7 @@ export default defineComponent({
             life: 3000,
             detail: notification.message,
             severity: "info",
-            summary: "New registration",
+            summary: notification.title,
           });
         };
 

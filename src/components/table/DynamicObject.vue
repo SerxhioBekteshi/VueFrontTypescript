@@ -1,6 +1,12 @@
 <template>
   <div class="card flex flex-column align-items-center gap-3">
-    <Button type="button" label="Toggle All" text @click="toggleAll" />
+    <Button
+      v-if="shouldShowToggle"
+      type="button"
+      label="Toggle All"
+      text
+      @click="toggleAll"
+    />
     <PanelMenu
       v-model:expandedKeys="expandedKeys"
       :model="items"
@@ -18,6 +24,7 @@ import Button from "primevue/button";
 export default defineComponent({
   props: {
     items: { type: Array as () => MenuItem[], required: true },
+    shouldShowToggle: { type: Boolean, default: true },
   },
   components: {
     PanelMenu,

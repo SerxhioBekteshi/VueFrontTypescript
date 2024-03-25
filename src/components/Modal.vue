@@ -4,11 +4,12 @@
     ref="target"
     v-bind:visible="openModal"
     position="top"
-    :modal="true"
     :header="title"
     :draggable="true"
     :closable="true"
     :style="{ width: '50rem', marginTop: '5rem' }"
+    :modal="true"
+    :dismissableMask="true"
     :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
   >
     <template #closeicon>

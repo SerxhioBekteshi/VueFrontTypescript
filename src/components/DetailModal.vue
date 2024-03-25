@@ -63,6 +63,7 @@ export default defineComponent({
 
     const handleFormSubmit = async (data: any) => {
       let res: any = null;
+      console.log(data, "DATA");
       try {
         if (props.modeDrawer && props.controller) {
           if (props.modeDrawer === eFormMode.Add.toString()) {

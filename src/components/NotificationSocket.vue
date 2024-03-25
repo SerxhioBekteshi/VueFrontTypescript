@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="item"
     :class="`notification-item border-2 border-green-400 border-round cursor-pointer m-1 ${
       item?.seen === false ? 'bg-green-100 cursor-pointer unread m-1 ' : ''
     }`"

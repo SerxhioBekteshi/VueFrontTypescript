@@ -1,4 +1,5 @@
 import { IIngredients } from "./IIngredients";
+import { INutritionValues } from "./INutritionValues";
 
 export default interface IMeal {
   id: number;
@@ -12,4 +13,7 @@ export default interface IMeal {
   image?: any;
   providerId?: number;
   rating?: number;
+  price?: string;
+  stock?: number;
+  nutritionValues?: INutritionValues[];
 }
