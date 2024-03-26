@@ -1,6 +1,6 @@
 import axios from "axios";
 import * as yup from "yup";
-import debounce from "lodash/debounce";
+// import debounce from "lodash/debounce";
 
 export const modalOrderSchema = yup.object().shape({
   quantity: yup.number().required("Quantity is required").label("Quantity"),

@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { PropType, defineComponent, onMounted, ref } from "vue";
+import { PropType, defineComponent } from "vue";
 // import FloatLabel from "primevue/floatlabel";
 import InputNumber from "@/components/formElements/InputNumber.vue";
 
@@ -26,7 +26,7 @@ export default defineComponent({
   props: {
     mealStock: { type: Object as PropType<IMealStock>, required: true },
   },
-  setup(props, { emit }) {
+  setup() {
     return {};
   },
 });

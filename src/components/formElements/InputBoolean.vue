@@ -21,7 +21,7 @@
 <script lang="ts">
 import { useField } from "vee-validate";
 import ValidationError from "../ValidationError.vue";
-import { PropType, Ref, defineComponent } from "vue";
+import { Ref, defineComponent } from "vue";
 import InputSwitch from "primevue/inputswitch";
 
 export default defineComponent({

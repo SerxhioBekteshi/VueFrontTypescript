@@ -1,9 +1,8 @@
+// import { Dispatch } from '@reduxjs/toolkit';
 
-import { Dispatch } from '@reduxjs/toolkit';
+// class ReduxManager {
+//     dispatch: Dispatch<any> | unknown;
+// }
 
-class ReduxManager {
-    dispatch: Dispatch<any> | unknown;
-}
-
-const reduxManager = new ReduxManager();
-export default reduxManager;
+// const reduxManager = new ReduxManager();
+// export default reduxManager;

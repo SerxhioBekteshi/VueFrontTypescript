@@ -183,7 +183,6 @@ import Toast from "primevue/toast";
 import Button from "primevue/button";
 // import { IShowChangePasswordInput } from "@/interfaces/other/IShowChangePasswordInput";
 import { useField, useForm } from "vee-validate";
-import * as yup from "yup";
 import OverlayPanel from "primevue/overlaypanel";
 import { ICheckPassword } from "@/interfaces/other/ICheckPassword";
 import InputPassword from "@/components/formElements/InputPassword.vue";

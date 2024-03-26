@@ -123,7 +123,7 @@ import IOrderDetails from "@/interfaces/database/IOrderDetails";
 import { RootState } from "@/store/vuexStore/types";
 import axios from "axios";
 import Avatar from "primevue/avatar";
-import Button from "primevue/button";
+// import Button from "primevue/button";
 import Panel from "primevue/panel";
 import { useToast } from "primevue/usetoast";
 import { computed, defineComponent, onMounted, ref } from "vue";
@@ -149,6 +149,7 @@ export default defineComponent({
       orderId.value = parseInt(
         Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
       );
+      console.log(orderId.value);
       if (user.value.role !== eRoleType.Admin) {
         fetchOrderDetails();
       }

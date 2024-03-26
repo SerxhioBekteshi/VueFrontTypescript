@@ -60,7 +60,7 @@
 
 <script lang="ts">
 import InputSelect from "../../components/formElements/InputSelect.vue";
-import { defineComponent, inject, onMounted } from "vue";
+import { defineComponent } from "vue";
 import InputCheckBox from "@/components/formElements/InputCheckBox.vue";
 import InputRadioButton from "@/components/formElements/InputRadioButton.vue";
 import { useField } from "vee-validate";

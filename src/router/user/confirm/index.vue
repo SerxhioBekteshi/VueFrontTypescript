@@ -75,7 +75,7 @@
 </template>
 
 <script lang="ts">
-import { ref, onMounted, watch, defineComponent } from "vue";
+import { ref, onMounted, defineComponent } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import AuthManager from "@/utils/authManager";

@@ -151,7 +151,7 @@
 
 <script lang="ts">
 import Button from "primevue/button";
-import { PropType, defineComponent, onMounted, ref, shallowRef } from "vue";
+import { PropType, defineComponent } from "vue";
 import IMeal from "@/interfaces/database/IMeal";
 import { useAbility } from "@casl/vue";
 import Rate from "@/components/formElements/Rate.vue";

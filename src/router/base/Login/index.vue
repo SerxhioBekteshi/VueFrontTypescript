@@ -221,7 +221,7 @@ import { eRoles } from "@/assets/enums/eRoles";
 import axios from "axios";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
-import Image from "primevue/image";
+// import Image from "primevue/image";
 import Checkbox from "primevue/checkbox";
 import Modal from "@/components/Modal.vue";
 import eHttpResponse from "@/assets/enums/eHttpResponse";

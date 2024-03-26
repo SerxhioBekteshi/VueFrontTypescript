@@ -1,48 +1,13 @@
 <script setup>
-import { computed, watch, ref, onMounted, onBeforeUnmount } from "vue";
+import { computed, watch, ref } from "vue";
 import AppTopbar from "./AppTopbar.vue";
 import AppFooter from "./AppFooter.vue";
 import AppSidebar from "./AppSidebar.vue";
 import AppConfig from "./AppConfig.vue";
 import { useLayout } from "@/layout/composables/layout";
-// import useNotification from "@/hooks/useNotification/index.ts";
-import { useToast } from "primevue/usetoast";
-import Toast from "primevue/toast";
-import eRoles from "@/assets/enums/eRoles.ts";
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
-// const {
-//   socket,
-//   notifications,
-//   connectSocket,
-//   disconnectSocket,
-//   addNotification,
-// } = useNotification();
-
-const toast = useToast();
 
 const outsideClickListener = ref(null);
-
-// onMounted(() => {
-//   connectSocket();
-//   const profile = useReduxSelector((state) => state.user);
-
-//   socket.on("AppNotification", (notification) => {
-//     // addNotification(notification);
-
-//     if (profile.value.role === eRoles.Admin) {
-//       toast.add({
-//         life: 3000,
-//         detail: notification.message,
-//         severity: "info",
-//         summary: "Pop up",
-//       });
-//     }
-//   });
-// });
-
-// onBeforeUnmount(() => {
-//   disconnectSocket();
-// });
 
 watch(isSidebarActive, (newVal) => {
   if (newVal) {
@@ -110,10 +75,9 @@ const isOutsideClicked = (event) => {
       </div>
       <app-footer></app-footer>
     </div>
-    <!-- <app-config></app-config> -->
+    <app-config></app-config>
     <div class="layout-mask"></div>
   </div>
-  <Toast />
 </template>
 
 <style lang="scss" scoped></style>

@@ -124,7 +124,7 @@ export default defineComponent({
 
     const goNext = async () => {
       let step;
-      let goOn = false;
+      // let goOn = false;
 
       switch (currentStep.value) {
         case "firstQuestion":

@@ -10,7 +10,7 @@
 <script lang="ts">
 import IColumn from "@/interfaces/table/IColumn";
 import Column from "primevue/column";
-import { PropType, defineComponent, ref } from "vue";
+import { PropType, defineComponent } from "vue";
 export default defineComponent({
   name: "TableHeader",
   components: { Column },
@@ -21,7 +21,7 @@ export default defineComponent({
     showDelete: Boolean,
     showCustomRowBt: Boolean,
   },
-  setup(props) {
+  setup() {
     // const calculateColumnWidth = (headerContent: any) => {
     //   const minWidth = 10;
 

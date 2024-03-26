@@ -191,7 +191,7 @@ import TableHeader from "./TableHeader.vue";
 import TableCell from "./TableCell.vue";
 import { useToast } from "primevue/usetoast";
 import ProgressSpinner from "primevue/progressspinner";
-import CellEditor from "@/components/table/CellEditor.vue";
+// import CellEditor from "@/components/table/CellEditor.vue";
 import { eFilterOperator } from "@/assets/enums/eFilterOperator";
 import TablePaginator from "./TablePaginator.vue";
 import ISelectColumn from "@/interfaces/database/ISelectColumn";
@@ -250,24 +250,24 @@ export default defineComponent({
     eFormMode,
     eColumnType,
   },
-  setup(props, { emit }) {
+  setup(props) {
     const toast = useToast();
     const modalInformation = ref<string>("");
     const modalViewRenderType = ref<any>();
 
     const {
       controller,
-      checkbox,
-      actions,
-      showExport = false,
-      showAddBt,
-      showEdit,
-      showDelete,
-      showSearch,
-      showCustomRowBt,
-      keyWhereFilter,
-      selectableRows,
-      toggleColumnsVisibility,
+      // checkbox,
+      // actions,
+      // showExport = false,
+      // showAddBt,
+      // showEdit,
+      // showDelete,
+      // showSearch,
+      // showCustomRowBt,
+      // keyWhereFilter,
+      // selectableRows,
+      // toggleColumnsVisibility,
     } = toRefs(props);
 
     const openModalFunction = (field: any, rowId: number) => {

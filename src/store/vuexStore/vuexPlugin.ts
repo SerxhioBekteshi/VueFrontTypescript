@@ -1,4 +1,4 @@
-import { App, createApp } from "vue";
+import { App } from "vue";
 import store from "./storeModules";
 
 const vuexPlugin = {

@@ -8,8 +8,6 @@ import axios from "axios";
 // import { acl } from ".";
 // import { useStore } from "vuex";
 import store from "@/store/vuexStore/storeModules";
-import eRoleType from "@/assets/enums/eRoleType";
-import { eRoles } from "@/assets/enums/eRoles";
 
 export const fetchUserPermissions = async () => {
   const response = await axios.get(`/user/loggedUser`);

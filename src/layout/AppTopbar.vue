@@ -60,7 +60,7 @@ import Menu from "primevue/menu";
 import AuthManager from "@/utils/authManager";
 import NotificationIcon from "@/components/NotificationIcon.vue";
 import { useStore } from "vuex";
-import Calendar from "primevue/calendar";
+// import Calendar from "primevue/calendar";
 
 export default defineComponent({
   name: "AppTopbar",

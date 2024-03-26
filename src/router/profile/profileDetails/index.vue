@@ -107,7 +107,7 @@ import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
 import ImageForm from "@/components/formController/ImageForm.vue";
 import { profileDetailsSchema } from "@/utils/validationSchemas";
-import { setUser } from "@/store/stores/user.store";
+// import { setUser } from "@/store/stores/user.store";
 import { useStore } from "vuex";
 import { RootState } from "@/store/vuexStore/types";
 

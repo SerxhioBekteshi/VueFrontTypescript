@@ -42,7 +42,6 @@ import { useField } from "vee-validate";
 import ValidationError from "../ValidationError.vue";
 import { PropType, defineComponent, ref } from "vue";
 import InputText from "primevue/inputtext";
-import { inject } from "vue";
 
 export default defineComponent({
   name: "InputPassword",

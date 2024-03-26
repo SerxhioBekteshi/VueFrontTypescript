@@ -29,7 +29,7 @@
 <script lang="ts">
 import { useField } from "vee-validate";
 import ValidationError from "../ValidationError.vue";
-import { PropType, defineComponent, defineProps } from "vue";
+import { defineComponent } from "vue";
 import InputText from "primevue/inputtext";
 
 export default defineComponent({

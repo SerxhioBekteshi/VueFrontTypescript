@@ -121,7 +121,7 @@ export default defineComponent({
   props: {
     icon: { type: String, required: false, default: "pi pi-ellipsis-v" },
   },
-  setup(props) {
+  setup() {
     const notifications = ref<INotificationItem[]>([]);
     const socket: any = useWebSocket();
     // const idsToDelete = ref<number[]>([]);
@@ -129,7 +129,6 @@ export default defineComponent({
     const menu = ref<any>();
     const pageSize = ref<number>(5);
     const isLoading = ref<boolean>(false);
-    const loadMessage = ref<string>("");
 
     const toggle = (event: any) => {
       menu.value.toggle(event);

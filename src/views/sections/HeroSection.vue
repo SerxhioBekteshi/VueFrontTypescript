@@ -32,7 +32,7 @@
 
 <script lang="ts">
 import Button from "primevue/button";
-import Image from "primevue/image";
+// import Image from "primevue/image";
 
 import { defineComponent } from "vue";
 

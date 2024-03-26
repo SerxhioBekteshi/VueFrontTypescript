@@ -27,7 +27,7 @@
 <script setup>
 import { useField } from "vee-validate";
 import ValidationError from "../ValidationError.vue";
-import { defineProps, ref, watch } from "vue";
+import { defineProps } from "vue";
 import InputNumber from "primevue/inputnumber";
 
 const props = defineProps({

@@ -33,7 +33,7 @@
 <script lang="ts">
 import { useField } from "vee-validate";
 import ValidationError from "../ValidationError.vue";
-import { PropType, defineComponent, onMounted, ref, watch } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import Dropdown from "primevue/dropdown";
 import axios from "axios";
 import Toast from "primevue/toast";
