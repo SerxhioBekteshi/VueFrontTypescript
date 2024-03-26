@@ -174,12 +174,17 @@
       </div>
 
       <div>
-        <Button
-          :icon="!isLoading ? 'pi pi-check' : 'pi pi-spinner'"
-          type="submit"
-          label="Login"
-          @click.prevent="handleLoginSubmit"
-        />
+        <Button type="submit" @click.prevent="handleLoginSubmit">
+          <ProgressSpinner
+            v-if="isLoading"
+            style="width: 15px; height: 15px; margin-right: 1rem"
+            strokeWidth="6"
+            fill="var(--surface-ground)"
+            animationDuration=".5s"
+            aria-label="Custom ProgressSpinner"
+          />
+          Login
+        </Button>
       </div>
     </div>
   </div>
@@ -225,6 +230,7 @@ import Toast from "primevue/toast";
 import Checkbox from "primevue/checkbox";
 import Modal from "@/components/Modal.vue";
 import eHttpResponse from "@/assets/enums/eHttpResponse";
+import ProgressSpinner from "primevue/progressspinner";
 
 export default defineComponent({
   name: "LoginView",
@@ -234,6 +240,7 @@ export default defineComponent({
     Button,
     ValidationError,
     Toast,
+    ProgressSpinner,
     // Image,
     Checkbox,
     Modal,
@@ -355,10 +362,10 @@ export default defineComponent({
           AuthManager.handleAfterLoginAfterMath(userResponse, store, router);
           await definePermissionAbilities();
         }
-        isLoading.value = false;
       } catch (err) {
         console.log(err, "ERR");
       }
+      isLoading.value = false;
     };
 
     return {

@@ -193,23 +193,20 @@ const menuPermissionNameValidation = async () => {
 // );
 
 export const permissionSchema = yup.object().shape({
-  name: yup
-    .string()
-    .required("Name is required")
-    .label("Name")
-    .test("menu-permission-name", async function (value) {
-      const validPermissionNames = await menuPermissionNameValidation();
+  name: yup.string().required("Name is required").label("Name"),
+  // .test("menu-permission-name", async function (value) {
+  //   const validPermissionNames = await menuPermissionNameValidation();
 
-      return (
-        validPermissionNames.includes(value) ||
-        this.createError({
-          path: "name",
-          message: `Permission name should equal one of the following values: "${validPermissionNames.join(
-            "----"
-          )}"`,
-        })
-      );
-    }),
+  //   return (
+  //     validPermissionNames.includes(value) ||
+  //     this.createError({
+  //       path: "name",
+  //       message: `Permission name should equal one of the following values: "${validPermissionNames.join(
+  //         "----"
+  //       )}"`,
+  //     })
+  //   );
+  // }),
   roles: yup.array().of(yup.string()).label("Roles"),
   action: yup.string().required("Action is required").label("Action"),
   description: yup.string().notRequired().label("Description"),
