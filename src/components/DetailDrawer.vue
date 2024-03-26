@@ -50,7 +50,7 @@ export default defineComponent({
   enums: {
     eFormMode,
   },
-  setup(props) {
+  setup(props, { emit }) {
     const openDrawer = ref<boolean>(false);
     const toast = useToast();
     const { handleSubmit, resetForm, setFieldError, setErrors } = useForm({
@@ -84,7 +84,12 @@ export default defineComponent({
             data
           );
         }
+        console.log(res, "RES HERE??");
 
+        // if (res && res.status === "201") {
+        //   //some custom action
+        //   emit("");
+        // } else
         if (res && res.data) {
           toast.add({
             life: 3000,

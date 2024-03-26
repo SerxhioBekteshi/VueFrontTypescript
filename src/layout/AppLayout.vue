@@ -8,7 +8,6 @@ import { useLayout } from "@/layout/composables/layout";
 // import useNotification from "@/hooks/useNotification/index.ts";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
-import { useReduxSelector } from "@/store/redux/helpers";
 import eRoles from "@/assets/enums/eRoles.ts";
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 // const {
@@ -111,7 +110,7 @@ const isOutsideClicked = (event) => {
       </div>
       <app-footer></app-footer>
     </div>
-    <app-config></app-config>
+    <!-- <app-config></app-config> -->
     <div class="layout-mask"></div>
   </div>
   <Toast />

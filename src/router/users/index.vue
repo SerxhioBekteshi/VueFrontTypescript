@@ -28,7 +28,6 @@ import { defineComponent, ref } from "vue";
 import TableData from "@/components/table/TableData.vue";
 import { eFormMode } from "@/assets/enums/EFormMode";
 import { permissionSchema } from "@/utils/validationSchemas";
-import DetailDrawer from "@/components/DetailDrawer.vue";
 import axios from "axios";
 import { useAbility } from "@casl/vue";
 

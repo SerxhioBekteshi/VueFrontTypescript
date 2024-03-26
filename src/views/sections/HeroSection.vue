@@ -20,7 +20,7 @@
     <div class="col-12 md:col-6 overflow-hidden">
       <img
         preview
-        src="../../assets/logo.png"
+        src="../../assets/images/login.png"
         alt="Image"
         width="100%"
         class="md:ml-auto block md:h-full"

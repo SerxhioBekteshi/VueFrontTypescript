@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router/index";
 import PrimeVue from "primevue/config";
-import ToastPlugin, { useToast } from "vue-toast-notification";
+import ToastPlugin from "vue-toast-notification";
 import "vue-toast-notification/dist/theme-default.css";
 import "primevue/resources/themes/lara-light-indigo/theme.css";
 import "primevue/resources/primevue.min.css";
@@ -13,7 +13,6 @@ import Tooltip from "primevue/tooltip";
 import ToastService from "primevue/toastservice";
 import initApp from "./utils/functions";
 import { defineAbilityFor } from "./initializers/ability";
-// import { WebsocketMixin } from "./hooks/userWebSocket/socketPlugin";
 import { abilitiesPlugin } from "@casl/vue";
 import vuexPlugin from "./store/vuexStore/vuexPlugin";
 

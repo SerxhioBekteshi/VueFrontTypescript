@@ -86,7 +86,7 @@
     <div class="surface-card p-4 shadow-2 border-round w-full lg:w-6">
       <div class="text-center mb-5">
         <img
-          src="../../../assets/images/login.jpg"
+          src="../../../assets/images/login.png"
           library="primeblocks-app"
           alt="Some logo for login"
           height="50"

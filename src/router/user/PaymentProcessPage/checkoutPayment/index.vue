@@ -1,18 +1,16 @@
 <template>
-  <div>
-    <div v-if="checkoutLink === ''" id="paypal-button-container"></div>
-    <div v-else>
-      <a
-        :href="checkoutLink"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="p-button font-bold"
-      >
-        Checkout order (see it does not work)
-      </a>
-    </div>
-    <Toast />
+  <div v-if="checkoutLink === ''" id="paypal-button-container"></div>
+  <div v-else>
+    <a
+      :href="checkoutLink"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="p-button font-bold"
+    >
+      Checkout order (see it does not work)
+    </a>
   </div>
+  <Toast />
 </template>
 
 <script lang="ts">

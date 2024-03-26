@@ -36,6 +36,7 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                width: 100%;
               "
             >
               <CheckoutPayment
@@ -84,6 +85,7 @@ export default defineComponent({
     const store = useStore<RootState>();
 
     onMounted(() => {
+      isLoading.value = true;
       const payment = computed(() => store.getters.getPaymentInfo);
       if (payment.value && payment.value.length !== 0) {
         let totalsPerItem = payment.value.map((item: any) => {
