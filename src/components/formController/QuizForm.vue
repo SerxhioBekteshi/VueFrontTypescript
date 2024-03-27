@@ -1,10 +1,10 @@
 <template>
   <div>
     <form @onSubmit="(e: any) =>  e.preventDefault()">
-      <div style="margin-block: 3rem">
+      <!-- <div style="margin-block: 3rem">
         <Tag severity="info" style="font-size: 1rem" :value="inputTypeValue">
         </Tag>
-      </div>
+      </div> -->
 
       <div style="margin-bottom: 2rem">
         <InputText
@@ -30,28 +30,45 @@
         />
       </div>
 
-      <div style="display: flex; flex-direction: column; gap: 1rem">
+      <div
+        style="
+          display: flex;
+          border-radius: 1rem;
+          flex-direction: column;
+          padding-block: 1rem;
+          margin-block: 0.5rem;
+          background-color: var(--cyan-50);
+        "
+      >
         <FieldArray name="questionOptions" v-slot="{ fields, push, remove }">
+          <div style="margin-left: 1rem; margin-block: 0.5rem">
+            <strong> Add options </strong>
+          </div>
           <fieldset
             v-for="(field, idx) in fields"
             :key="field.key"
             class="questionOptions"
           >
-            <div>
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-                  background-color: #f5f5f5;
-                  padding-inline: 1rem;
-                  border-top-left-radius: 1rem;
-                  border-top-right-radius: 1rem;
-                "
-              >
-                <legend style="margin-block: 1.75rem">
-                  Option {{ idx + 1 }}
-                </legend>
+            <div style="display: flex; justify-content: space-between">
+              <div style="display: flex">
+                <div>
+                  <InputText
+                    :name="`questionOptions[${idx}].label`"
+                    :label="'Enter the label'"
+                    :id="`label_${idx}`"
+                    :placeholder="'Label'"
+                  />
+                </div>
+
+                <div>
+                  <InputText
+                    :name="`questionOptions[${idx}].value`"
+                    :label="'Enter the value'"
+                    :id="`value_${idx}`"
+                    :placeholder="'Value'"
+                  />
+                </div>
+
                 <div>
                   <Button
                     icon="pi pi-trash"
@@ -64,46 +81,17 @@
                   />
                 </div>
               </div>
-              <div class="grid" style="margin-top: 1rem; padding-inline: 1rem">
-                <div
-                  class="col-12"
-                  :style="{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '2rem',
-                  }"
-                >
-                  <div>
-                    <InputText
-                      :name="`questionOptions[${idx}].label`"
-                      :label="'Enter the label'"
-                      :id="`label_${idx}`"
-                      :placeholder="'Label'"
-                    />
-                  </div>
-
-                  <div>
-                    <InputText
-                      :name="`questionOptions[${idx}].value`"
-                      :label="'Enter the value'"
-                      :id="`value_${idx}`"
-                      :placeholder="'Value'"
-                    />
-                  </div>
-                </div>
-              </div>
             </div>
           </fieldset>
 
-          <div>
+          <div style="margin-left: 1rem; margin-top: 0.5rem">
             <Button
-              severity="info"
+              label="+ new option"
+              link
               size="small"
-              style="margin-top: 1rem, width: fit-content;"
-              @click="push({ label: '', value: '' })"
-            >
-              Add option
-            </Button>
+              style="width: fit-content"
+              @click="push({ portion: '', name: '' })"
+            />
           </div>
         </FieldArray>
       </div>
@@ -112,17 +100,17 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, onMounted } from "vue";
 import InputText from "@/components/formElements/InputText.vue";
 import InputNumber from "@/components/formElements/InputNumber.vue";
 import { inject } from "vue";
 import { FieldArray } from "vee-validate";
 import Button from "primevue/button";
-import Tag from "primevue/tag";
+// import Tag from "primevue/tag";
 
 export default defineComponent({
   name: "QuizForm",
-  components: { InputText, InputNumber, FieldArray, Button, Tag },
+  components: { InputText, InputNumber, FieldArray, Button },
   setup() {
     const veeValidateForm: any = inject("veeValidateForm");
 
@@ -136,10 +124,9 @@ export default defineComponent({
 </script>
 <style scoped>
 .questionOptions {
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
   border: 1px solid transparent;
-  border-top-color: rgba(0, 0, 0, 0.1) !important;
+  border-top-color: rgba(0, 0, 0, 0) !important;
   border-radius: 1rem;
-  padding: 0rem !important;
+  padding: 1rem !important;
 }
 </style>

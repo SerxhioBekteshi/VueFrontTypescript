@@ -42,7 +42,13 @@
     </div>
   </div>
 
-  <Menu ref="menu" id="overlay_menuProfile" :model="items" :popup="true" />
+  <Menu
+    ref="menu"
+    id="overlay_menuProfile"
+    :model="items"
+    :popup="true"
+    @item-click="handleMenuItemClick"
+  />
 </template>
 
 <script lang="ts">
@@ -148,7 +154,7 @@ export default defineComponent({
 
     const items = ref([
       {
-        label: "Navigate",
+        label: "Profile",
         items: [
           {
             label: "Password",
@@ -164,6 +170,18 @@ export default defineComponent({
       },
     ]);
 
+    const handleMenuItemClick = (event) => {
+      if (event.item.to) {
+        // Prevent the default behavior (reload) for menu items with URLs
+        event.originalEvent.preventDefault();
+        router.push(event.item.to);
+        // Handle the click action as needed, for example, using Vue Router to navigate
+        // You can use router.push() or emit an event to notify the parent component
+        // In this example, I'm emitting an event to notify the parent component
+        // Modify this part according to your actual routing setup
+      }
+    };
+
     return {
       onMenuToggle,
       onLogoutClick,
@@ -172,6 +190,7 @@ export default defineComponent({
       menu,
       items,
       topbarMenuClasses,
+      handleMenuItemClick,
     };
   },
 });

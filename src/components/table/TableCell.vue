@@ -15,7 +15,7 @@
       <Tag :value="cellValue" :severity="getSeverity(cellValue)"></Tag>
     </div>
     <div v-else-if="cellColumn.propertyType === eColumnType.Boolean">
-      <InputSwitch :modelValue="cellValue" readonly />
+      <InputSwitch :modelValue="cellValue" readonly disabled />
     </div>
     <div v-else-if="cellColumn.propertyType === eColumnType.Image">
       <div v-if="cellValue" class="image-wrapper">

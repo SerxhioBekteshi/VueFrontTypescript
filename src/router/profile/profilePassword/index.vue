@@ -4,27 +4,23 @@
       <h2 class="mb-5">Profile password</h2>
       <form @submit="handlePrevention">
         <div class="grid">
-          <div class="xs:col-12 sm:col-12 md:col-4 flex mb-3">
+          <div class="col-12">
             <InputPassword
               :name="'oldPassword'"
               :label="'Current password'"
               :id="'oldPassword'"
               :placeholder="'Current Password'"
-              :iconPosition="'right'"
             />
           </div>
-          <div class="xs:col-12 sm:col-12 md:col-4 flex mb-3">
+          <div class="col-12">
             <InputPassword
               :name="'password'"
               :label="'New password'"
               :id="'password'"
               :placeholder="'New Password'"
-              :iconPosition="'right'"
-              :handleOnBlur="handleOnBlur"
-              :handleOnKeyUp="handleOnKeyUp"
             />
           </div>
-          <div class="xs:col-12 sm:col-12 md:col-4 flex mb-3">
+          <div class="col-12">
             <InputPassword
               :name="'passwordConfirm'"
               :label="'Confirm new password'"

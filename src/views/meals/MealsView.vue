@@ -35,32 +35,41 @@
           </div>
         </template>
         <template #list="slotProps">
-          <div v-if="meals && meals.length != 0" class="col-12">
-            <MealListView
-              v-if="slotProps.data"
-              :mealData="slotProps.data"
-              :isLoading="isLoading"
-              @stock-click="onStockClick"
-              @edit-clicked="onEditClick"
-              @upload-click="onUploadClick"
-              @open-modal="openModalFunction"
-            />
+          <div v-if="meals && meals.length != 0" class="grid">
+            <div
+              v-for="(meal, index) in slotProps.items"
+              :key="index"
+              class="col-12 p-2"
+            >
+              <MealListView
+                v-if="meal"
+                :mealData="meal"
+                :isLoading="isLoading"
+                @stock-click="onStockClick"
+                @edit-clicked="onEditClick"
+                @upload-click="onUploadClick"
+                @open-modal="openModalFunction"
+              />
+            </div>
           </div>
         </template>
         <template #grid="slotProps">
-          <div
-            v-if="meals && meals.length != 0"
-            class="col-12 sm:col-6 lg:col-12 xl:col-4 p-2"
-          >
-            <MealGridView
-              v-if="slotProps.data"
-              :mealData="slotProps.data"
-              :isLoading="isLoading"
-              @stock-click="onStockClick"
-              @edit-clicked="onEditClick"
-              @upload-click="onUploadClick"
-              @open-modal="openModalFunction"
-            />
+          <div v-if="meals && meals.length != 0" class="grid">
+            <div
+              v-for="(meal, index) in slotProps.items"
+              :key="index"
+              class="col-12 sm:col-6 lg:col-12 xl:col-4 p-2"
+            >
+              <MealGridView
+                v-if="meal"
+                :mealData="meal"
+                :isLoading="isLoading"
+                @stock-click="onStockClick"
+                @edit-clicked="onEditClick"
+                @upload-click="onUploadClick"
+                @open-modal="openModalFunction"
+              />
+            </div>
           </div>
         </template>
         <template #empty>
@@ -327,14 +336,14 @@ export default defineComponent({
       component: DataViewLayoutOptions,
       props: {
         modelValue: layout.value,
-        pt: {
-          [`${layout.value}Button`]: {
-            style: {
-              backgroundColor: layout.value ? "#6366F1" : "#ffffff",
-              color: layout.value ? "#ffffff" : "#6366F1",
-            },
-          },
-        },
+        // pt: {
+        //   [`${layout.value}Button`]: {
+        //     style: {
+        //       backgroundColor: layout.value ? "#6366F1" : "#ffffff",
+        //       color: layout.value ? "#ffffff" : "#6366F1",
+        //     },
+        //   },
+        // },
       },
     });
 
