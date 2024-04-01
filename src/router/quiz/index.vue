@@ -38,6 +38,7 @@
       </template>
     </Wizard>
   </div>
+
   <Toast />
 </template>
 
@@ -46,7 +47,7 @@ import { defineComponent, onMounted } from "vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import Step from "./Step.vue";
+import Step from "@/components/Step.vue";
 import { useForm } from "vee-validate";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";

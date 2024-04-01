@@ -59,7 +59,7 @@
 </template>
 
 <script lang="ts">
-import InputSelect from "../../components/formElements/InputSelect.vue";
+import InputSelect from "@/components/formElements/InputSelect.vue";
 import { defineComponent } from "vue";
 import InputCheckBox from "@/components/formElements/InputCheckBox.vue";
 import InputRadioButton from "@/components/formElements/InputRadioButton.vue";

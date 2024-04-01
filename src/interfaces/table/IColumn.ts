@@ -11,5 +11,6 @@ export default interface IColumn<T = {}> {
   icons?: ITableIcons[];
   hasExtraData?: boolean;
   style?: any;
+  link?: string;
   field: any;
 }

@@ -39,9 +39,19 @@
       />
     </div>
     <div v-else-if="cellColumn.propertyType === eColumnType.Link">
-      <a :href="cellValue" target="_blank" rel="noopener noreferrer"
-        >Paypal Link</a
-      >
+      <div v-if="cellColumn.link !== null">
+        <a
+          :href="`${cellColumn.link}/${rowId}`"
+          target="_blank"
+          rel="noopener noreferrer"
+          >{{ cellValue }}</a
+        >
+      </div>
+      <div v-else>
+        <a :href="cellValue" target="_blank" rel="noopener noreferrer"
+          >Paypal Link</a
+        >
+      </div>
     </div>
     <div v-else-if="cellColumn.propertyType === eColumnType.Object">
       <div
@@ -91,6 +101,7 @@ import Tag from "primevue/tag";
 import { eOrderStatus } from "@/assets/enums/eOrderStatusType";
 import TableCellActions from "./TableCellActions.vue";
 import InputSwitch from "primevue/inputswitch";
+import { number } from "yup";
 
 export default defineComponent({
   name: "TableCell",
@@ -116,6 +127,9 @@ export default defineComponent({
     },
     additionalData: {
       type: null,
+    },
+    rowId: {
+      type: Number,
     },
     fieldToShowOnModalDelete: {
       type: String,
@@ -144,7 +158,6 @@ export default defineComponent({
           return "";
       }
     };
-
     const handleEditClick = (data: any, rowId: number) => {
       emit("edit-clicked", data, rowId);
     };

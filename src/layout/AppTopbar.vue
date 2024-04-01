@@ -42,13 +42,31 @@
     </div>
   </div>
 
-  <Menu
-    ref="menu"
-    id="overlay_menuProfile"
-    :model="items"
-    :popup="true"
-    @item-click="handleMenuItemClick"
-  />
+  <Menu :model="items" ref="menu" :popup="true" id="overlay_menuProfile">
+    <template #item="{ item, props }">
+      <router-link
+        v-if="item.route"
+        v-slot="{ href, navigate }"
+        :to="item.route"
+        custom
+      >
+        <a v-ripple :href="href" v-bind="props.action" @click="navigate">
+          <span :class="item.icon" />
+          <span class="ml-2">{{ item.label }}</span>
+        </a>
+      </router-link>
+      <a
+        v-else
+        v-ripple
+        :href="item.url"
+        :target="item.target"
+        v-bind="props.action"
+      >
+        <span :class="item.icon" />
+        <span class="ml-2">{{ item.label }}</span>
+      </a>
+    </template>
+  </Menu>
 </template>
 
 <script lang="ts">
@@ -159,28 +177,16 @@ export default defineComponent({
           {
             label: "Password",
             icon: "pi pi-user-edit",
-            to: "/profilePassword",
+            route: "/profilePassword",
           },
           {
             label: "Details",
             icon: "pi pi-folder",
-            to: "/profileDetails",
+            route: "/profileDetails",
           },
         ],
       },
     ]);
-
-    const handleMenuItemClick = (event) => {
-      if (event.item.to) {
-        // Prevent the default behavior (reload) for menu items with URLs
-        event.originalEvent.preventDefault();
-        router.push(event.item.to);
-        // Handle the click action as needed, for example, using Vue Router to navigate
-        // You can use router.push() or emit an event to notify the parent component
-        // In this example, I'm emitting an event to notify the parent component
-        // Modify this part according to your actual routing setup
-      }
-    };
 
     return {
       onMenuToggle,
@@ -190,7 +196,6 @@ export default defineComponent({
       menu,
       items,
       topbarMenuClasses,
-      handleMenuItemClick,
     };
   },
 });

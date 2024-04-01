@@ -181,7 +181,8 @@ class AuthManager {
         termsAgreed: user.termsAgreed,
         nipt: user.nipt,
       };
-    } else if (user.role === eRoles.User) {
+    }
+    if (user.role === eRoles.User) {
       return {
         ...baseLoggedData,
         gender: user.gender,
@@ -190,7 +191,6 @@ class AuthManager {
         quizFulfilled: user.quizFulfilled,
       };
     }
-
     return baseLoggedData;
   };
 }

@@ -26,12 +26,12 @@
             :src="`http://localhost:1112/${imageData.image}`"
             alt="imageUpload"
           />
-          <Badge
+          <!-- <Badge
             v-if="!isLoading"
             :value="'Pending'"
             size="large"
             severity="warning"
-          ></Badge>
+          ></Badge> -->
         </div>
       </template>
     </FileUpload>
@@ -73,7 +73,7 @@ export default defineComponent({
       blobImage.value = event.files[event.files.length - 1].objectURL;
     };
 
-    const handleError = (event: any) => {
+    const handleError = () => {
       toast.add({
         life: 3000,
         detail: "awd",

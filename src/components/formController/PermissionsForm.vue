@@ -47,13 +47,33 @@
       </div>
 
       <div class="gapper">
-        <InputSelect
-          :name="'subjectId'"
-          :label="'Subject'"
-          :id="'subjectId'"
-          :placeholder="'Subject'"
-          :controller="'menu/no-role-get-all'"
-        />
+        <div v-if="customSubject">
+          <InputText
+            :name="'subjectId'"
+            :label="'Subject'"
+            :id="'subjectId'"
+            :placeholder="'Subject'"
+          />
+        </div>
+        <div v-else>
+          <InputSelect
+            :name="'subjectId'"
+            :label="'Subject'"
+            :id="'subjectId'"
+            :placeholder="'Subject'"
+            :controller="'menu/no-role-get-all'"
+          />
+        </div>
+
+        <div>
+          <Button
+            label="+ new custom subject"
+            link
+            size="small"
+            style="width: fit-content"
+            @click="() => (customSubject = true)"
+          />
+        </div>
       </div>
 
       <div class="gapper">
@@ -98,6 +118,7 @@ import { eRoles } from "@/assets/enums/eRoles";
 // import ToggleButton from "primevue/togglebutton";
 import { eFormMode } from "@/assets/enums/EFormMode";
 import InputToggle from "@/components/formElements/InputToggle.vue";
+import Button from "primevue/button";
 
 export default defineComponent({
   name: "PermissionForm",
@@ -106,6 +127,7 @@ export default defineComponent({
     InputSelect,
     InputBoolean,
     // ToggleButton,
+    Button,
     InputToggle,
   },
   enums: {
@@ -126,7 +148,7 @@ export default defineComponent({
       }))
       // .filter((role: any) => role.value !== eRoles.Admin)
     );
-
+    const customSubject = ref<boolean>(false);
     const toggleStates = ref(Array(enumRoles.value.length).fill(false));
 
     return {
@@ -135,6 +157,7 @@ export default defineComponent({
       enumRoles,
       eFormMode,
       toggleStates,
+      customSubject,
     };
   },
 });

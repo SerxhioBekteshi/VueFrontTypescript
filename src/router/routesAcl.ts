@@ -7,7 +7,8 @@ import MealsConfiguration from "./mealsConfiguration/index.vue";
 import Permissions from "./permissions/index.vue";
 import ProviderEmail from "./providerEmails/index.vue";
 import Orders from "./orders/index.vue";
-import OrderDetails from "./orderDetails/index.vue";
+import OrderDetails from "./orders/orderDetails/index.vue";
+import SystemUserDetails from "./users/SystemUserDetails/index.vue";
 import Meals from "./meals/index.vue";
 import Users from "./users/index.vue";
 import PayemntProcessPage from "./user/PaymentProcessPage/index.vue";
@@ -91,13 +92,19 @@ const aclRoutes = [
         meta: { permissions: { action: "read", subject: "users" } },
       },
       {
+        path: "systemUser/:id",
+        name: "SystemUserDetails",
+        component: SystemUserDetails,
+        // meta: { permissions: { action: "read", subject: "systemUser" } },
+      },
+      {
         path: "payments/paypal",
         name: "PaymentProcessPage",
         component: PayemntProcessPage,
       },
     ],
   },
-  { path: "/:pathMatch(.*)", redirect: "/dashboard" },
+  { path: "/:pathMatch(.*)", redirect: "/404pageError" },
 ];
 
 export default aclRoutes;

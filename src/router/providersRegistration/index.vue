@@ -18,7 +18,13 @@
       <template #sourceheader> Unsubmitted accounts </template>
       <template #targetheader> Submitted accounts </template>
       <template #item="slotProps">
-        <div class="flex flex-wrap p-2 align-items-center gap-3">
+        <div
+          v-if="isLoading"
+          class="flex justify-content-center align-items-center"
+        >
+          <ProgressSpinner style="width: 50px; height: 50px" />
+        </div>
+        <div v-else class="flex flex-wrap p-2 align-items-center gap-3">
           <div class="flex-1 flex flex-column gap-2">
             <span class="font-bold">{{ slotProps.item.name }}</span>
             <div class="flex align-items-center gap-2">
@@ -69,6 +75,7 @@ import axios from "axios";
 import { defineComponent, onMounted, ref, shallowRef } from "vue";
 import Button from "primevue/button";
 import Modal from "@/components/Modal.vue";
+import ProgressSpinner from "primevue/progressspinner";
 
 interface IFieldModal {
   id?: number;
@@ -77,14 +84,15 @@ interface IFieldModal {
 
 export default defineComponent({
   name: "ProvidersRegistration",
-  components: { PickList, Message, Toast, Button, Modal },
+  components: { PickList, Message, Toast, Button, Modal, ProgressSpinner },
   setup() {
     const generalDataAccounts = ref<any>([]);
     const toast = useToast();
     const openModal = ref<boolean>(false);
     const fieldModal = ref<IFieldModal>({});
+    const isLoading = ref<boolean>(false);
 
-    const removeProviderAccount = async (id: number) => {
+    const removeProviderAccount = async () => {
       try {
         const res = await axios.delete(`user/${fieldModal.value?.id}`);
         if (res && res.data) {
@@ -92,7 +100,7 @@ export default defineComponent({
             life: 3000,
             detail: res.data.message,
             severity: "success",
-            summary: "info",
+            summary: "Info",
           });
           fetchProviders();
           openModal.value = false;
@@ -136,6 +144,7 @@ export default defineComponent({
     };
 
     const handleMoveToSource = async (event: { items: HTMLElement[] }) => {
+      isLoading.value = true;
       const res = await axios.put(
         `user/provider/controlSubmission/${
           JSON.parse(JSON.stringify(event.items))[0].id
@@ -149,10 +158,14 @@ export default defineComponent({
           severity: "success",
           summary: "info",
         });
+
         fetchProviders();
+        isLoading.value = false;
       }
     };
     const handleMoveToTarget = async (event: { items: HTMLElement[] }) => {
+      isLoading.value = true;
+
       const res = await axios.put(
         `user/provider/controlSubmission/${
           JSON.parse(JSON.stringify(event.items))[0].id
@@ -167,6 +180,7 @@ export default defineComponent({
           summary: "info",
         });
         fetchProviders();
+        isLoading.value = false;
       }
     };
 
@@ -179,6 +193,7 @@ export default defineComponent({
       openModal,
       modalActions,
       fieldModal,
+      isLoading,
       removeProviderAccount,
       handleMoveToTarget,
       handleMoveToSource,

@@ -25,22 +25,11 @@ export const defineAbilityFor = async () => {
   const userPermissions: any = store?.state;
   const accessPermissions = userPermissions?.user?.user?.accessPermissions;
 
-  // acl.buildAbility(accessPermissions);
-
-  // if(userPermissions?.user?.user?.role === eRoles.User && !userPermissions?.user?.user?.quizFulfilled) {
-  //   can("read", "quiz layout");
-  //   return build();
-  // }
-  // else
   if (accessPermissions) {
     // Dynamically define abilities based on fetched permissions
     accessPermissions.forEach((permission: any) => {
       const { action, subject } = permission;
       can(action.toLowerCase(), subject.toLowerCase());
-      // provideAbility(ability);
-      // defineAbility;
-      // console.log(ability.rules, "ABILITY");
-      // ability.can(action, subject);
     });
   } else {
     can("read", "all");

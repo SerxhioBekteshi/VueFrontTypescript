@@ -1,6 +1,6 @@
 <template>
   <div class="grid">
-    <div class="md:col-6 sm:col-12 card flex justify-content-center">
+    <div class="md:col-6 sm:col-12 card">
       <div class="flex flex-column gap-3">
         <div class="flex justify-content-center w-full">
           <ImageForm

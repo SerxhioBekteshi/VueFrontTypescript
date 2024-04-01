@@ -80,14 +80,14 @@
       </div>
     </template>
 
-    <TableHeader
+    <!-- <TableHeader
       v-if="tableColumns.length != 0"
       :columns="tableColumns"
       :rowCount="totalItems"
       :showEdit="showEdit"
       :showDelete="showDelete"
       :showCustomRowBt="showCustomRowBt"
-    />
+    /> -->
 
     <Column
       :selectionMode="showDelete ? 'multiple' : undefined"
@@ -115,6 +115,7 @@
                 : tableColumns[tableColumns.length - 1]
             "
             :cellColumn="column"
+            :rowId="slotProps.data[`id`]"
             :additionalData="slotProps"
             :fieldToShowOnModalDelete="'name'"
             @custom-row-bt-clicked="
@@ -144,11 +145,18 @@
     v-model:openModal="openModal"
     @handleClose="() => (openModal = false)"
     :title="
-      modalInformation === eFormMode.Delete ? 'Delete meal' : 'Data preview'
+      modalInformation === eFormMode.Delete
+        ? `Delete ${controller}`
+        : 'Data preview'
     "
     :actions="modalInformation === eFormMode.Delete ? modalActions : []"
   >
-    <div v-if="modalInformation === eFormMode.Delete">
+    <div
+      v-if="modalInformation === eFormMode.Delete && selectedRows.length !== 0"
+    >
+      Are you sure you want to delete these users?
+    </div>
+    <div v-else-if="modalInformation === eFormMode.Delete">
       Are you sure you want to delete
       <span v-if="fieldModalToShow" style="font-weight: bold">
         {{ fieldModalToShow.name }}
@@ -174,7 +182,7 @@ import Column from "primevue/column";
 import Toast from "primevue/toast";
 import Skeleton from "primevue/skeleton";
 import {
-  computed,
+  // computed,
   defineComponent,
   onMounted,
   ref,
@@ -187,7 +195,7 @@ import Message from "primevue/message";
 import Modal from "@/components/Modal.vue";
 import IColumn from "@/interfaces/table/IColumn";
 import GenericToolbar from "@/components/GenericToolbar.vue";
-import TableHeader from "./TableHeader.vue";
+// import TableHeader from "./TableHeader.vue";
 import TableCell from "./TableCell.vue";
 import { useToast } from "primevue/usetoast";
 import ProgressSpinner from "primevue/progressspinner";
@@ -212,7 +220,7 @@ export default defineComponent({
     Message,
     Modal,
     GenericToolbar,
-    TableHeader,
+    // TableHeader,
     TableCell,
     Toast,
     Skeleton,
@@ -279,7 +287,6 @@ export default defineComponent({
     const handleDoubleClick = (cellValue: any, type: any) => {
       modalInformation.value = eFormMode.View;
       fieldModalToShow.value = cellValue;
-      console.log(cellValue, "CELL VALUE");
       modalViewRenderType.value = type;
       openModal.value = true;
     };
@@ -336,6 +343,7 @@ export default defineComponent({
     };
 
     const selectedRows = ref<any>([]);
+
     const modalActions = shallowRef<any[]>([
       {
         component: Button,
@@ -422,6 +430,10 @@ export default defineComponent({
     watch([pageSize, currentPage, searchValue, controller], () => {
       fetchData();
     });
+
+    // watch(selectedRows, (newValue) => {
+    //   console.log("myState changed:", newValue);
+    // });
 
     onMounted(() => {
       fetchData();

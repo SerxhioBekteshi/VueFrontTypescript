@@ -12,26 +12,27 @@ export interface INotificationItem {
   title: any;
 }
 
-export interface IExtendedMenuItem extends MenuItem {
-  msg?: INotificationItem;
-}
+// export interface IExtendedMenuItem extends MenuItem {
+//   msg?: INotificationItem;
+//   to?: string;
+// }
 
-interface BaseMenuItem {
-  label?: string | Function;
-  icon?: string;
-  command?: () => void;
-  url?: string;
-  items?: MenuItem[];
-  disabled?: boolean | Function;
-  visible?: boolean | Function;
-  target?: string;
-  separator?: boolean;
-  style?: any;
-  class?: any;
-  key?: string;
-  [key: string]: any;
-}
+// interface BaseMenuItem {
+//   label?: string | Function;
+//   icon?: string;
+//   command?: () => void;
+//   url?: string;
+//   items?: MenuItem[];
+//   disabled?: boolean | Function;
+//   visible?: boolean | Function;
+//   target?: string;
+//   separator?: boolean;
+//   style?: any;
+//   class?: any;
+//   key?: string;
+//   [key: string]: any;
+// }
 
-interface ExtendedMenuItemCommandEvent extends MenuItemCommandEvent {
-  item: IExtendedMenuItem;
-}
+// interface ExtendedMenuItemCommandEvent extends MenuItemCommandEvent {
+//   item: IExtendedMenuItem;
+// }

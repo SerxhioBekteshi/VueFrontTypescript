@@ -90,7 +90,6 @@ export default defineComponent({
   components: { Button },
   props: {},
   setup() {
-    // const user = useGetUser();
     const route = useRoute();
     const token = route.query.token;
     const store = useStore();
@@ -135,8 +134,6 @@ export default defineComponent({
                   res.data.refresh_token,
                   router,
                   store
-                  // res.data.refresh_token,
-                  // dispatch
                 );
               }, 3000);
               validToken.value = true;
