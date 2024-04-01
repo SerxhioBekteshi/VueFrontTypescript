@@ -20,8 +20,8 @@
     </button>
 
     <div class="layout-topbar-menu" :class="topbarMenuClasses">
-      <div class="flex align-items-center">
-        <NotificationIcon :icon="'pi pi-circle'" v-tooltip="'Notifications'" />
+      <div class="flex align-items-center" v-tooltip="'Notifications'">
+        <NotificationIcon :icon="'pi pi-circle'" />
       </div>
       <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
         <i class="pi pi-calendar" v-tooltip="'Show date'"></i>

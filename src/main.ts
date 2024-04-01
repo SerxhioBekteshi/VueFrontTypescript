@@ -10,6 +10,7 @@ import initApp from "./utils/functions";
 import { defineAbilityFor } from "./initializers/ability";
 import { abilitiesPlugin } from "@casl/vue";
 import vuexPlugin from "./store/vuexStore/vuexPlugin";
+import Ripple from "primevue/ripple";
 
 const app = createApp(App);
 
@@ -21,10 +22,10 @@ async function initializeApp() {
   app.use(router);
   app.use(ToastPlugin, { position: "top" });
   app.use(PrimeVue, { ripple: true });
-  app
-    .use(ToastService)
-    // .use(VueDraggable)
-    .directive("tooltip", Tooltip);
+  app.use(ToastService);
+  // .use(VueDraggable)
+  app.directive("tooltip", Tooltip);
+  app.directive("ripple", Ripple);
   app.mount("#app");
 }
 
