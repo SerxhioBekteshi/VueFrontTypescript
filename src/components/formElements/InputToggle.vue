@@ -12,6 +12,7 @@
         onIcon="pi pi-check"
         offIcon="pi pi-times"
         class="w-9rem"
+        :invalid="errorMessage ? true : false"
       />
     </div>
     <!--         @input="(value: any) => toggleStates[index] = value"

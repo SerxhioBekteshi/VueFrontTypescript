@@ -16,8 +16,10 @@
 
 <script lang="ts">
 import TableData from "@/components/table/TableData.vue";
-import { defineComponent } from "vue";
+import { RootState } from "@/store/vuexStore/types";
+import { computed, defineComponent } from "vue";
 import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names

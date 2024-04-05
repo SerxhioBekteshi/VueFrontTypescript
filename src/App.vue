@@ -1,5 +1,6 @@
 <template>
   <router-view />
+  <!-- <Toast /> -->
 </template>
 
 <script lang="ts">
@@ -11,9 +12,13 @@ import {
   onUnmounted,
   provide,
   ref,
+  watch,
 } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "./store/vuexStore/types";
+// import { useToast } from "primevue/usetoast";
+// import store from "./store/vuexStore/storeModules";
+import Toast from "primevue/toast";
 
 export default defineComponent({
   name: "App",
@@ -22,6 +27,23 @@ export default defineComponent({
     const WebsocketContextKey = "WebSocketProvider";
     const connection = ref<any>(null);
     let socket: Socket | null = null;
+    // const toast = useToast();
+    // watch(
+    //   () => store.getters.getErrorMessage,
+    //   (message, prevMessage) => {
+    //     console.log("error message", message);
+    //     if (message) {
+    //       toast.add({
+    //         severity: "error",
+    //         summary: "Error",
+    //         detail: message,
+    //         group: "br",
+    //         life: 6000,
+    //       });
+    //     }
+    //   }
+    // );
+
     onMounted(() => {
       const store = useStore<RootState>();
       const user = computed(() => store.getters.getUserInfo);

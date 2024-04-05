@@ -22,6 +22,7 @@ const aclRoutes = [
         path: "dashboard",
         name: "Dashboard",
         component: Home,
+        meta: { permissions: { action: "read", subject: "dashboard" } },
       },
       {
         path: "orders",
@@ -33,6 +34,7 @@ const aclRoutes = [
         path: "orders/:id",
         name: "OrderDetails",
         component: OrderDetails,
+        meta: { permissions: { action: "read", subject: "orderDetails" } },
       },
       {
         path: "quizConfiguration",
@@ -95,12 +97,13 @@ const aclRoutes = [
         path: "systemUser/:id",
         name: "SystemUserDetails",
         component: SystemUserDetails,
-        // meta: { permissions: { action: "read", subject: "systemUser" } },
+        meta: { permissions: { action: "read", subject: "systemUser" } },
       },
       {
         path: "payments/paypal",
         name: "PaymentProcessPage",
         component: PayemntProcessPage,
+        meta: { permissions: { action: "read", subject: "payment" } },
       },
     ],
   },

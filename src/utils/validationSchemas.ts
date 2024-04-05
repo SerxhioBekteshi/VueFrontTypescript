@@ -207,7 +207,11 @@ export const permissionSchema = yup.object().shape({
   //     })
   //   );
   // }),
-  roles: yup.array().of(yup.string()).label("Roles"),
+  roles: yup
+    .array()
+    .of(yup.string())
+    .required("Roles are required")
+    .label("Roles"),
   action: yup.string().required("Action is required").label("Action"),
   description: yup.string().notRequired().label("Description"),
   isActive: yup.boolean().notRequired().label("Active permission"),

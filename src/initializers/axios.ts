@@ -4,6 +4,10 @@ import eNotificationType from "../assets/enums/eNotificationType";
 // import { navigateTo } from "../store/stores/navigation/navigation.store";
 import AuthManager from "../utils/authManager";
 import eHttpResponse from "@/assets/enums/eHttpResponse";
+import { useToast } from "primevue/usetoast";
+import { Store, useStore } from "vuex";
+import { RootState } from "@/store/vuexStore/types";
+import { eMutationTypes } from "@/assets/enums/eMutationTypes";
 
 interface IAxiosRequestConfigRetry extends AxiosRequestConfig {
   _retry: boolean;
@@ -19,30 +23,41 @@ const clearSession = () => {
 const handleResponseMessage = (
   response: any,
   notificationType: any,
-  useToast: any
+  store: Store<any>
 ) => {
-  const $toast = useToast();
+  // const $toast = useToast();
+  // const toast = useToast();
+  // const store = useStore<RootState>();
+
   if (response === "jwt expired") {
     clearSession();
     return;
   }
   switch (notificationType) {
     case eNotificationType.Success:
-      $toast.open({
-        message: response.message,
-        type: "success",
-        position: "top-right",
-        duration: 3000,
-      });
+      // $toast.open({
+      //   message: response.message,
+      //   type: "success",
+      //   position: "top-right",
+      //   duration: 3000,
+      // });
 
       break;
     case eNotificationType.Error:
-      $toast.open({
-        message: response?.data?.message,
-        type: "error",
-        position: "top-right",
-        duration: 3000,
-      });
+      store.commit(eMutationTypes.SET_ERROR_MESSAGE, response?.data?.message);
+
+      // toast.add({
+      //   life: 3000,
+      //   detail: response?.data?.message,
+      //   severity: "error",
+      //   summary: "info",
+      // });
+      // $toast.open({
+      //   message: response?.data?.message,
+      //   type: "error",
+      //   position: "top-right",
+      //   duration: 3000,
+      // });
 
       break;
     default:
@@ -50,7 +65,7 @@ const handleResponseMessage = (
   }
 };
 
-const axiosInit = async (useToast: any) => {
+const axiosInit = async (store: Store<any>) => {
   axios.defaults.baseURL = `${process.env.VUE_APP_API_URL}`;
   axios.interceptors.request.use((request: any) => {
     const jwt = JwtManager.accessToken;
@@ -93,11 +108,7 @@ const axiosInit = async (useToast: any) => {
         }
       }
       if (error.response && error.response?.data?.message) {
-        handleResponseMessage(
-          error.response,
-          eNotificationType.Error,
-          useToast
-        );
+        handleResponseMessage(error.response, eNotificationType.Error, store);
       }
       // if (error.response.status === eHttpResponse.NotFound) {
       //   Error("axiosInit: action not found");

@@ -4,7 +4,7 @@ import AuthManager from "./authManager";
 // import initStore from "@/store/redux/initStore";
 import { eFilterOperator } from "@/assets/enums/eFilterOperator";
 import axiosInit from "@/initializers/axios";
-import { useToast } from "vue-toast-notification";
+// import { useToast } from "vue-toast-notification";
 import store from "@/store/vuexStore/storeModules";
 import { eMutationTypes } from "@/assets/enums/eMutationTypes";
 
@@ -105,7 +105,7 @@ export const getKeyByValue = (object: any, value: any) => {
 };
 
 export const initApp = async () => {
-  await axiosInit(useToast);
+  await axiosInit(store);
   let currentUser: IUserState | null = null;
   try {
     if (JwtManager.accessToken) {

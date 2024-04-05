@@ -5,10 +5,10 @@ import { RootState } from "../types";
 import { IPaymentState } from "@/interfaces/other/IPaymentState";
 
 export const actions: ActionTree<PaymentState, RootState> = {
-  setUser({ commit }: any, payload: IPaymentState) {
+  setPayment({ commit }: any, payload: IPaymentState) {
     commit(eMutationTypes.SET_PAYMENT, payload);
   },
-  clearUser({ commit }: any) {
+  clearPayment({ commit }: any) {
     commit(eMutationTypes.CLEAR_PAYMENT, null);
   },
 };

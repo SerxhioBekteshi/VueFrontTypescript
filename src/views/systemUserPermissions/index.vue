@@ -17,7 +17,9 @@
     </div>
   </div>
   <div v-else>
-    <InlineMessage severity="warn">No add permissions</InlineMessage>
+    <InlineMessage severity="warn"
+      >No {{ actionName }} permissions</InlineMessage
+    >
   </div>
 </template>
 

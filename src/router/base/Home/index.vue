@@ -125,8 +125,6 @@ export default defineComponent({
           res.data.sort((a: any, b: any) => a.order - b.order);
           quizQuestion.value = res.data;
           isProccessing.value = false;
-          console.log(res.data);
-          console.log(isProccessing.value, "WHAT?");
         }
       } catch (err: any) {
         console.log(err, "ERR");

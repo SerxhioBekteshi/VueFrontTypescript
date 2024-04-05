@@ -71,7 +71,11 @@
             link
             size="small"
             style="width: fit-content"
-            @click="() => (customSubject = true)"
+            @click="
+              () => {
+                handleCustomSubjectClick();
+              }
+            "
           />
         </div>
       </div>
@@ -119,6 +123,7 @@ import { eRoles } from "@/assets/enums/eRoles";
 import { eFormMode } from "@/assets/enums/EFormMode";
 import InputToggle from "@/components/formElements/InputToggle.vue";
 import Button from "primevue/button";
+import { useToast } from "primevue/usetoast";
 
 export default defineComponent({
   name: "PermissionForm",
@@ -141,6 +146,8 @@ export default defineComponent({
     },
   },
   setup() {
+    const toast = useToast();
+
     const enumRoles = ref<any[]>(
       Object.entries(eRoles).map(([key, value]) => ({
         value,
@@ -151,6 +158,15 @@ export default defineComponent({
     const customSubject = ref<boolean>(false);
     const toggleStates = ref(Array(enumRoles.value.length).fill(false));
 
+    const handleCustomSubjectClick = () => {
+      toast.add({
+        life: 3000,
+        detail: "Swithed to custom subject",
+        severity: "info",
+        summary: "info",
+      });
+      customSubject.value = true;
+    };
     return {
       eActionMode,
       eRoles,
@@ -158,6 +174,7 @@ export default defineComponent({
       eFormMode,
       toggleStates,
       customSubject,
+      handleCustomSubjectClick,
     };
   },
 });

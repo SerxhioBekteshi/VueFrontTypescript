@@ -84,7 +84,6 @@ export default defineComponent({
             data
           );
         }
-        console.log(res, "RES HERE??");
 
         // if (res && res.status === "201") {
         //   //some custom action
@@ -106,7 +105,12 @@ export default defineComponent({
           }
         }
       } catch (err) {
-        console.log(err, "ERR");
+        toast.add({
+          life: 3000,
+          detail: err,
+          severity: "error",
+          summary: "info",
+        });
       }
     };
 
