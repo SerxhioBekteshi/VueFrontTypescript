@@ -33,6 +33,12 @@ import { permissionSchema } from "@/utils/validationSchemas";
 import DetailDrawer from "@/components/DetailDrawer.vue";
 import PermissionsForm from "@/components/formController/PermissionsForm.vue";
 import axios from "axios";
+import AuthManager from "@/utils/authManager";
+import { useStore } from "vuex";
+import { RootState } from "@/store/vuexStore/types";
+import { eMutationTypes } from "@/assets/enums/eMutationTypes";
+import { defineAbilityFor } from "@/initializers/ability";
+import { useAbility } from "@casl/vue";
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
@@ -42,10 +48,11 @@ export default defineComponent({
     const modeDrawer = ref<any>(null);
     const formData = ref<any>(null);
     const tableDataRef = ref<any>(null);
-
+    const store = useStore<RootState>();
     const handleAddClick = () => {
       modeDrawer.value = eFormMode.Add;
     };
+    const ability = useAbility();
 
     const onEditClick = async (data: any, rowId: number) => {
       try {
@@ -58,7 +65,11 @@ export default defineComponent({
       // formData.value = data;
     };
 
-    const fetchDataAfterSubmit = () => {
+    const fetchDataAfterSubmit = async () => {
+      const currentUser: any = await AuthManager.getUserData();
+      store.commit(eMutationTypes.SET_USER, currentUser);
+      const updatedAbility = await defineAbilityFor();
+      ability.update(updatedAbility.rules);
       if (tableDataRef.value) {
         tableDataRef.value.fetchData();
       }

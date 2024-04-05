@@ -34,7 +34,7 @@ const aclRoutes = [
         path: "orders/:id",
         name: "OrderDetails",
         component: OrderDetails,
-        meta: { permissions: { action: "read", subject: "orderDetails" } },
+        meta: { permissions: { action: "read", subject: "orderdetails" } },
       },
       {
         path: "quizConfiguration",
@@ -97,7 +97,7 @@ const aclRoutes = [
         path: "systemUser/:id",
         name: "SystemUserDetails",
         component: SystemUserDetails,
-        meta: { permissions: { action: "read", subject: "systemUser" } },
+        meta: { permissions: { action: "read", subject: "systemuser" } },
       },
       {
         path: "payments/paypal",

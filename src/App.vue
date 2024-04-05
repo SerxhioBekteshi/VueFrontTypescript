@@ -16,8 +16,6 @@ import {
 } from "vue";
 import { useStore } from "vuex";
 import { RootState } from "./store/vuexStore/types";
-// import { useToast } from "primevue/usetoast";
-// import store from "./store/vuexStore/storeModules";
 import Toast from "primevue/toast";
 import { useToast } from "primevue/usetoast";
 import { eMutationTypes } from "./assets/enums/eMutationTypes";
@@ -33,37 +31,20 @@ export default defineComponent({
 
     const store = useStore<RootState>();
     const notification = computed(() => store.getters.getErrorMessage);
-    console.log(notification.value, "WHY NOT?????");
 
-    watch([notification.value], () => {
-      if (notification.value !== "") {
+    watch(notification, (newValue: any, oldValue: any) => {
+      if (newValue !== "") {
         toast.add({
           severity: "error",
           summary: "Error",
           detail: notification.value,
-          group: "br",
           life: 3000,
         });
         setTimeout(() => {
           store.commit(eMutationTypes.CLEAR_ERROR_MESSAGE);
-        }, 3000);
+        }, 500);
       }
     });
-    // watch(
-    //   () => store.getters.getErrorMessage,
-    //   (message, prevMessage) => {
-    //     console.log("error message", message);
-    //     if (message) {
-    //       toast.add({
-    //         severity: "error",
-    //         summary: "Error",
-    //         detail: message,
-    //         group: "br",
-    //         life: 6000,
-    //       });
-    //     }
-    //   }
-    // );
 
     onMounted(() => {
       const user = computed(() => store.getters.getUserInfo);
@@ -99,6 +80,10 @@ export default defineComponent({
         }
       }
     });
+
+    return {
+      notification,
+    };
   },
 });
 </script>

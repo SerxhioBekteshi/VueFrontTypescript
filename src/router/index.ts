@@ -4,7 +4,6 @@ import profileRoutes from "./profile";
 import baseRoutes from "./base";
 import { useAbility } from "@casl/vue";
 import aclRoutes from "./routesAcl";
-import { useToast } from "vue-toast-notification";
 import { computed } from "vue";
 import { useStore } from "vuex";
 
@@ -34,7 +33,7 @@ router.beforeEach((to, from, next) => {
 
   if (requiredPermissions) {
     // console.log(requiredPermissions);
-    // console.log(abilities.rules);
+    console.log(abilities.rules);
     // console.log(
     //   abilities.can(requiredPermissions.action, requiredPermissions.subject)
     // );

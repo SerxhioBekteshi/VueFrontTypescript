@@ -1,12 +1,9 @@
 import axios, { AxiosRequestConfig } from "axios";
 import JwtManager from "../utils/jwtManager";
 import eNotificationType from "../assets/enums/eNotificationType";
-// import { navigateTo } from "../store/stores/navigation/navigation.store";
 import AuthManager from "../utils/authManager";
 import eHttpResponse from "@/assets/enums/eHttpResponse";
-import { useToast } from "primevue/usetoast";
-import { Store, useStore } from "vuex";
-import { RootState } from "@/store/vuexStore/types";
+import { Store } from "vuex";
 import { eMutationTypes } from "@/assets/enums/eMutationTypes";
 
 interface IAxiosRequestConfigRetry extends AxiosRequestConfig {
@@ -25,10 +22,6 @@ const handleResponseMessage = (
   notificationType: any,
   store: Store<any>
 ) => {
-  // const $toast = useToast();
-  // const toast = useToast();
-  // const store = useStore<RootState>();
-
   if (response === "jwt expired") {
     clearSession();
     return;
@@ -44,21 +37,7 @@ const handleResponseMessage = (
 
       break;
     case eNotificationType.Error:
-      console.log(response.data.message);
       store.commit(eMutationTypes.SET_ERROR_MESSAGE, response?.data?.message);
-
-      // toast.add({
-      //   life: 3000,
-      //   detail: response?.data?.message,
-      //   severity: "error",
-      //   summary: "info",
-      // });
-      // $toast.open({
-      //   message: response?.data?.message,
-      //   type: "error",
-      //   position: "top-right",
-      //   duration: 3000,
-      // });
 
       break;
     default:

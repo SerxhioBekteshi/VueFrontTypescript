@@ -97,7 +97,7 @@ export default defineComponent({
             summary: "info",
           });
           if (props.fetchDataAfterSubmit) {
-            props.fetchDataAfterSubmit();
+            await props.fetchDataAfterSubmit();
           }
           handleCloseDrawer();
           if (data[`${props.shouldRefreshPageIfFieldNull}`] == null) {
