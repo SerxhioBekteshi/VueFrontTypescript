@@ -44,6 +44,7 @@ const handleResponseMessage = (
 
       break;
     case eNotificationType.Error:
+      console.log(response.data.message);
       store.commit(eMutationTypes.SET_ERROR_MESSAGE, response?.data?.message);
 
       // toast.add({
