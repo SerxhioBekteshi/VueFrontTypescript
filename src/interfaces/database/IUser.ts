@@ -1,11 +1,8 @@
 import { eRoles } from "@/assets/enums/eRoles";
 import IMenu from "./IMeal";
 import ePaymentMethod from "@/assets/enums/ePaymentMethod";
+import IPermissions from "./IPermissions";
 
-export interface ACL {
-  action: string;
-  subject: string;
-}
 export interface IUser {
   id: Number;
   name?: string;
@@ -26,7 +23,7 @@ export interface IUser {
   verified?: boolean;
   createdBy?: String;
   phoneNumber?: string;
-  accessPermissions?: ACL[];
+  accessPermissions?: IPermissions[];
   paymentMethod?: ePaymentMethod;
   menu?: IMenu | IMenu[];
   passwordConfirm?: string;

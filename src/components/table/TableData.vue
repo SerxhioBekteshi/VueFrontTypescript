@@ -237,6 +237,7 @@ export default defineComponent({
       type: [Array, Object, String, Number, Boolean, Function],
       default: null,
     },
+    pageSizeProp: { type: Number, required: false, default: 3 },
     showExport: { type: Boolean, default: true },
     showEdit: { type: Boolean, default: true },
     showAddBt: { type: Boolean, default: true },
@@ -371,7 +372,7 @@ export default defineComponent({
     ]);
 
     const currentPage = ref<number>(1);
-    const pageSize = ref<any>(3);
+    const pageSize = ref<any>(props.pageSizeProp && props.pageSizeProp);
     const totalItems = ref<number>(0);
     const rowsPerPageOptions = ref<any>([3, 5, 10]);
     const selectColumns = ref<ISelectColumn>({ columns: [], firstColumn: {} });

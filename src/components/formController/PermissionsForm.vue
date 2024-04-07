@@ -47,36 +47,44 @@
       </div>
 
       <div class="gapper">
-        <div v-if="customSubject">
-          <InputText
-            :name="'subjectId'"
-            :label="'Subject'"
-            :id="'subjectId'"
-            :placeholder="'Subject'"
-          />
+        <div v-if="isLoading">
+          <ProgressBar mode="indeterminate" style="height: 6px"></ProgressBar>
         </div>
         <div v-else>
-          <InputSelect
-            :name="'subjectId'"
-            :label="'Subject'"
-            :id="'subjectId'"
-            :placeholder="'Subject'"
-            :controller="'menu/no-role-get-all'"
-          />
-        </div>
-
-        <div>
-          <Button
-            label="+ new custom subject"
-            link
-            size="small"
-            style="width: fit-content"
-            @click="
-              () => {
-                handleCustomSubjectClick();
-              }
-            "
-          />
+          <div v-if="customSubject">
+            <InputText
+              :name="'subjectId'"
+              :label="'Subject'"
+              :id="'subjectId'"
+              :placeholder="'Subject'"
+            />
+          </div>
+          <div v-else>
+            <InputSelect
+              :name="'subjectId'"
+              :label="'Subject'"
+              :id="'subjectId'"
+              :placeholder="'Subject'"
+              :controller="'menu/no-role-get-all'"
+            />
+          </div>
+          <div>
+            <Button
+              :label="
+                customSubject === false
+                  ? '+ Custom Subject'
+                  : 'Switch to menu subject'
+              "
+              link
+              size="small"
+              style="width: fit-content"
+              @click="
+                () => {
+                  handleCustomSubjectClick();
+                }
+              "
+            />
+          </div>
         </div>
       </div>
 
@@ -124,6 +132,7 @@ import { eFormMode } from "@/assets/enums/EFormMode";
 import InputToggle from "@/components/formElements/InputToggle.vue";
 import Button from "primevue/button";
 import { useToast } from "primevue/usetoast";
+import ProgressBar from "primevue/progressbar";
 
 export default defineComponent({
   name: "PermissionForm",
@@ -132,6 +141,7 @@ export default defineComponent({
     InputSelect,
     InputBoolean,
     // ToggleButton,
+    ProgressBar,
     Button,
     InputToggle,
   },
@@ -144,9 +154,16 @@ export default defineComponent({
     modeDrawer: {
       type: String as () => keyof typeof eFormMode,
     },
+    formData: { type: Object },
   },
-  setup() {
+  setup(props) {
     const toast = useToast();
+    const isLoading = ref<boolean>(false);
+    const customSubject = ref<boolean>(
+      props.formData && typeof props.formData.subjectId === "number"
+        ? false
+        : true
+    );
 
     const enumRoles = ref<any[]>(
       Object.entries(eRoles).map(([key, value]) => ({
@@ -155,17 +172,23 @@ export default defineComponent({
       }))
       // .filter((role: any) => role.value !== eRoles.Admin)
     );
-    const customSubject = ref<boolean>(false);
     const toggleStates = ref(Array(enumRoles.value.length).fill(false));
 
     const handleCustomSubjectClick = () => {
-      toast.add({
-        life: 3000,
-        detail: "Swithed to custom subject",
-        severity: "info",
-        summary: "info",
-      });
-      customSubject.value = true;
+      isLoading.value = true;
+      setTimeout(() => {
+        toast.add({
+          life: 3000,
+          detail:
+            customSubject.value === true
+              ? "Switched to default menu subject select"
+              : "Swithed to custom subject",
+          severity: "warn",
+          summary: "SUBJECT INPUT TYPE CHANGED",
+        });
+        customSubject.value = !customSubject.value;
+        isLoading.value = false;
+      }, 1000);
     };
     return {
       eActionMode,
@@ -173,6 +196,7 @@ export default defineComponent({
       enumRoles,
       eFormMode,
       toggleStates,
+      isLoading,
       customSubject,
       handleCustomSubjectClick,
     };

@@ -8,6 +8,7 @@
       :showExport="false"
       :showAddBt="true"
       :selectableRows="false"
+      :pageSizeProp="10"
     />
     <div v-if="modeDrawer || formData">
       <DetailDrawer
@@ -19,7 +20,7 @@
         :fetchDataAfterSubmit="fetchDataAfterSubmit"
         :shouldRefreshPageIfFieldNull="'subjectId'"
       >
-        <PermissionsForm :modeDrawer="modeDrawer" />
+        <PermissionsForm :modeDrawer="modeDrawer" :formData="formData" />
       </DetailDrawer>
     </div>
   </div>

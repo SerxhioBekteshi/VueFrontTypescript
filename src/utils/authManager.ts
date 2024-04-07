@@ -37,7 +37,6 @@ class AuthManager {
   static async getUserData(): Promise<any> {
     try {
       const res: any = await axios.get("/user/loggedUser");
-
       if (res && res.data) {
         return this.handleUserDataBasedOnRole(res.data);
       } else return null;

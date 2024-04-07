@@ -33,7 +33,7 @@ router.beforeEach((to, from, next) => {
 
   if (requiredPermissions) {
     // console.log(requiredPermissions);
-    console.log(abilities.rules);
+    // console.log(abilities.rules);
     // console.log(
     //   abilities.can(requiredPermissions.action, requiredPermissions.subject)
     // );
