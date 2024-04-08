@@ -239,6 +239,7 @@ export default defineComponent({
     const handlePermissions = (permissions: IPermissions[] | undefined) => {
       if (permissions) {
         permissions.forEach((permission: IPermissions) => {
+          console.log(actionObjects[permission.action]);
           actionObjects[permission.action].push(permission.subject);
         });
       }

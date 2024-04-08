@@ -2,7 +2,6 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router/index";
 import PrimeVue from "primevue/config";
-import ToastPlugin from "vue-toast-notification";
 import "@/assets/styles.scss";
 import Tooltip from "primevue/tooltip";
 import ToastService from "primevue/toastservice";

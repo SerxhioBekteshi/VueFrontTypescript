@@ -38,6 +38,7 @@ export default defineComponent({
         const res: any = await AuthManager.getUserData();
         if (res) {
           userDetails.value = AuthManager.handleUserDataBasedOnRole(res);
+          console.log(userDetails, "USER DETAILS");
           isLoading.value = false;
         }
       } catch (err: any) {

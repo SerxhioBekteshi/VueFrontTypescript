@@ -1,10 +1,8 @@
 import { IUserState } from "@/interfaces/other/IUserState";
 import JwtManager from "./jwtManager";
 import AuthManager from "./authManager";
-// import initStore from "@/store/redux/initStore";
 import { eFilterOperator } from "@/assets/enums/eFilterOperator";
 import axiosInit from "@/initializers/axios";
-// import { useToast } from "vue-toast-notification";
 import store from "@/store/vuexStore/storeModules";
 import { eMutationTypes } from "@/assets/enums/eMutationTypes";
 

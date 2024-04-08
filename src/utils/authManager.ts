@@ -188,6 +188,7 @@ class AuthManager {
         birthDate: user.birthDate,
         accountSubmitted: user.accountSubmitted,
         quizFulfilled: user.quizFulfilled,
+        orders: user.orders,
       };
     }
     return baseLoggedData;
