@@ -35,6 +35,7 @@ export default defineComponent({
     actionName: { type: String, required: true },
   },
   setup(props) {
+    console.log(props.actionName);
     const actionPermissionsObject = inject("actionPermissionsObject");
 
     return { actionPermissionsObject };

@@ -24,6 +24,7 @@
                   {{ userDetails.role }}
                 </p>
                 <Button
+                  v-if="userDetails.role === eRoles.Admin"
                   severity="primary"
                   label="Send Email"
                   style="width: fit-content"
@@ -44,7 +45,16 @@
                     </div>
                     Website
                   </div>
-                  <div>url website</div>
+                  <div
+                    class="website"
+                    @click="toggleSocialInput('website')"
+                    v-if="!inputSocial.website"
+                  >
+                    url website
+                  </div>
+                  <div v-else>
+                    <InputText />
+                  </div>
                 </div>
                 <div class="flex flex-wrap justify-content-between">
                   <div class="flex gap-2 align-items-center">
@@ -53,7 +63,16 @@
                     </div>
                     Instagram
                   </div>
-                  <div>url website</div>
+                  <div
+                    class="website"
+                    @click="toggleSocialInput('instagram')"
+                    v-if="!inputSocial.instagram"
+                  >
+                    url website
+                  </div>
+                  <div v-else>
+                    <InputText />
+                  </div>
                 </div>
                 <div class="flex flex-wrap justify-content-between">
                   <div class="flex gap-2 align-items-center">
@@ -62,7 +81,16 @@
                     </div>
                     Facebook
                   </div>
-                  <div>url website</div>
+                  <div
+                    class="website"
+                    @click="toggleSocialInput('facebook')"
+                    v-if="!inputSocial.facebook"
+                  >
+                    url website
+                  </div>
+                  <div v-else>
+                    <InputText />
+                  </div>
                 </div>
                 <div class="flex flex-wrap justify-content-between">
                   <div class="flex gap-2 align-items-center">
@@ -71,7 +99,16 @@
                     </div>
                     Twitter
                   </div>
-                  <div>url website</div>
+                  <div
+                    class="website"
+                    @click="toggleSocialInput('twitter')"
+                    v-if="!inputSocial.twitter"
+                  >
+                    url website
+                  </div>
+                  <div v-else>
+                    <InputText style="width: fit-content" />
+                  </div>
                 </div>
               </div>
             </template>
@@ -164,7 +201,7 @@
 </template>
 
 <script lang="ts">
-import eRoleType from "@/assets/enums/eRoleType";
+import { eRoles } from "@/assets/enums/eRoles";
 import Avatar from "primevue/avatar";
 import {
   PropType,
@@ -182,6 +219,7 @@ import IPermissions from "@/interfaces/database/IPermissions";
 import Chart from "primevue/chart";
 import SystemUserPermission from "./systemUserPermissions/index.vue";
 import { IUser } from "@/interfaces/database/IUser";
+import InputText from "primevue/inputtext";
 
 export default defineComponent({
   name: "UserDetails",
@@ -193,9 +231,10 @@ export default defineComponent({
     InputSwitch,
     Chart,
     SystemUserPermission,
+    InputText,
   },
   enums: {
-    eRoleType,
+    eRoles,
   },
   props: {
     userDetails: { type: Object as PropType<IUser>, required: true },
@@ -204,6 +243,7 @@ export default defineComponent({
     const userId = ref<number>(0);
     const profilePercentageCompleted = ref<number>();
     const isLoading = ref<boolean>(true);
+    console.log(props.userDetails);
 
     const actionObjects = {
       Read: [],
@@ -267,37 +307,27 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      chartData.value = setChartData();
+      chartData.value = setChartData(props.userDetails.orders);
       chartOptions.value = setChartOptions();
     });
 
     const chartData = ref();
     const chartOptions = ref();
 
-    const setChartData = () => {
+    const setChartData = (orders: any) => {
       const documentStyle = getComputedStyle(document.documentElement);
 
+      const mappedMonths = orders.map((order: any) => order._id.monthName);
+      const mappedValuesForMonths = orders.map((order: any) => order.count);
+
       return {
-        labels: [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December",
-        ],
+        labels: mappedMonths,
         datasets: [
           {
-            label: "Orders",
+            label: "Orders last year",
             backgroundColor: documentStyle.getPropertyValue("--cyan-500"),
             borderColor: documentStyle.getPropertyValue("--cyan-500"),
-            data: [65, 59, 80, 81, 56, 55, 40, 12, 43, 21, 43, 76],
+            data: mappedValuesForMonths,
           },
         ],
       };
@@ -346,6 +376,32 @@ export default defineComponent({
       };
     };
 
+    const inputSocial = ref({
+      website: false,
+      twitter: false,
+      facebook: false,
+      instagram: false,
+    });
+
+    const toggleSocialInput = (social: string) => {
+      switch (social) {
+        case "website":
+          inputSocial.value.website = true;
+          break;
+        case "twitter":
+          inputSocial.value.twitter = true;
+          break;
+        case "facebook":
+          inputSocial.value.facebook = true;
+          break;
+        case "instagram":
+          inputSocial.value.instagram = true;
+          break;
+        default:
+          break;
+      }
+    };
+
     return {
       userId,
       meterGroupValue,
@@ -354,6 +410,9 @@ export default defineComponent({
       chartOptions,
       isLoading,
       filteredActionObjects,
+      eRoles,
+      inputSocial,
+      toggleSocialInput,
     };
   },
 });
@@ -369,5 +428,9 @@ export default defineComponent({
 
 .twitter {
   color: var(--cyan-300);
+}
+
+.website:hover {
+  cursor: pointer;
 }
 </style>

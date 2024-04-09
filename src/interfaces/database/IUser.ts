@@ -30,6 +30,7 @@ export interface IUser {
   passwordChangedAt?: Date;
   passwordResetToken?: string;
   passwordResetExpires?: Date;
+  orders?: any[];
   gender?: string;
   birthDate?: Date;
   firstLogin?: boolean;

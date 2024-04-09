@@ -61,9 +61,11 @@
             :shouldRate="ability.can('custom', 'meals')"
           />
 
-          <Tag :value="mealData.stock" :severity="getSeverity(mealData)">{{
-            mealData.stock
-          }}</Tag>
+          <Tag
+            :value="mealData?.stock ? mealData.stock : 0"
+            :severity="getSeverity(mealData)"
+            >{{ mealData.stock }}</Tag
+          >
           <div class="flex align-items-center justify-content-center gap-2">
             <Button
               icon="pi pi-upload"
