@@ -23,7 +23,6 @@ export default defineComponent({
   components: { UserDetails, ProgressSpinner },
   enums: {},
   setup() {
-    const userId = ref<number>(0);
     const toast = useToast();
     const userDetails = ref<any>();
     const isLoading = ref<boolean>(true);
@@ -38,7 +37,6 @@ export default defineComponent({
         const res: any = await AuthManager.getUserData();
         if (res) {
           userDetails.value = AuthManager.handleUserDataBasedOnRole(res);
-          console.log(userDetails, "USER DETAILS");
           isLoading.value = false;
         }
       } catch (err: any) {
@@ -53,7 +51,6 @@ export default defineComponent({
     };
 
     return {
-      userId,
       userDetails,
       isLoading,
     };

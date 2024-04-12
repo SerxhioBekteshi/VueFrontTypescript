@@ -179,6 +179,7 @@ class AuthManager {
         ...baseLoggedData,
         termsAgreed: user.termsAgreed,
         nipt: user.nipt,
+        orders: user?.orders,
       };
     }
     if (user.role === eRoles.User) {

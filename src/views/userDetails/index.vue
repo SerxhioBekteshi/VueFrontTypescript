@@ -243,7 +243,6 @@ export default defineComponent({
     const userId = ref<number>(0);
     const profilePercentageCompleted = ref<number>();
     const isLoading = ref<boolean>(true);
-    console.log(props.userDetails);
 
     const actionObjects = {
       Read: [],
@@ -277,9 +276,11 @@ export default defineComponent({
     };
 
     const handlePermissions = (permissions: IPermissions[] | undefined) => {
-      if (permissions) {
+      console.log(permissions, actionObjects);
+      if (permissions && actionObjects) {
         permissions.forEach((permission: IPermissions) => {
-          console.log(actionObjects[permission.action]);
+          if (permission.action === "Upload" || permission.action === "Rate")
+            permission.action = "Custom";
           actionObjects[permission.action].push(permission.subject);
         });
       }
