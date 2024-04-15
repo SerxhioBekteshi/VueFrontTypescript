@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <div>
-      <DataView :value="meals" :layout="layout" dataKey="id">
+      <DataView :value="meals" :layout="layout" dataKey="id" :laze="true">
         <template #header>
           <div style="display: flex; flex-direction: column">
             <!-- <div
@@ -336,11 +336,12 @@ export default defineComponent({
       component: DataViewLayoutOptions,
       props: {
         modelValue: layout.value,
+        // unstyled: true,
         // pt: {
         //   [`${layout.value}Button`]: {
         //     style: {
-        //       backgroundColor: layout.value ? "#6366F1" : "#ffffff",
-        //       color: layout.value ? "#ffffff" : "#6366F1",
+        //       backgroundColor: layout.value ? "red" : "black",
+        //       color: layout.value ? "black" : "Red",
         //     },
         //   },
         // },
