@@ -172,6 +172,7 @@ class AuthManager {
       state: user.state,
       address: user.address,
       accessPermissions: user.accessPermissions,
+      phoneNumber: user.phoneNumber,
     };
 
     if (user.role === eRoles.Provider) {
@@ -181,6 +182,7 @@ class AuthManager {
         nipt: user.nipt,
         orders: user?.orders,
         websites: user?.websites,
+        accountSubmitted: user.accountSubmitted,
       };
     }
     if (user.role === eRoles.User) {

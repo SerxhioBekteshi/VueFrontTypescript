@@ -13,7 +13,7 @@
       :key="index"
       class=""
     >
-      <Chip :label="actionObj" />
+      <Chip :label="actionObj" style="background-color: var(--primary-300)" />
     </div>
   </div>
   <div v-else>

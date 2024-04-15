@@ -24,7 +24,7 @@
                   {{ userDetails.role }}
                 </p>
                 <Button
-                  v-if="userDetails.role === eRoles.Admin"
+                  v-if="userDetails.role !== eRoles.Admin"
                   severity="primary"
                   label="Send Email"
                   style="width: fit-content"
@@ -48,7 +48,7 @@
                 <div
                   v-for="(social, index) in socials"
                   :key="index"
-                  class="flex flex-column gap-2"
+                  class="flex flex-column py-2"
                 >
                   <div class="flex flex-wrap justify-content-between">
                     <div class="flex gap-2 align-items-center">
@@ -89,6 +89,7 @@
           <Card>
             <template #content>
               <div class="container">
+                <p class="text-xl"><strong> Quiz results </strong></p>
                 <div
                   v-for="(value, key) in userDetails.quizResults"
                   :key="key"
@@ -138,44 +139,65 @@
         <div class="md:col-6 sm:col-12">
           <Card>
             <template #content>
-              <div class="flex align-items-center gap-3 mb-2">
+              <div
+                class="flex align-items-center gap-3 mb-2 justify-content-between"
+              >
                 <span> <strong> Full Name</strong></span>
                 <span>{{ userDetails.name }} {{ userDetails.lastName }}</span>
               </div>
-              <div class="flex align-items-center gap-3 mb-2">
+              <div
+                class="flex align-items-center gap-3 mb-2 justify-content-between"
+              >
                 <span> <strong> Phone Number</strong></span>
-                <span>{{ userDetails.phoneNumber }} </span>
+                <span v-if="userDetails.phoneNumber"
+                  >{{ userDetails.phoneNumber }}
+                </span>
+                <span v-else>-</span>
               </div>
-              <div class="flex align-items-center gap-3 mb-2">
+              <div
+                class="flex align-items-center gap-3 mb-2 justify-content-between"
+              >
                 <span> <strong> Address</strong></span>
-                <span>{{ userDetails.address }} </span>
+                <span v-if="userDetails.address"
+                  >{{ userDetails.address }}
+                </span>
+                <span v-else>-</span>
               </div>
 
-              <div class="flex align-items-center gap-3 mb-2">
+              <div
+                class="flex align-items-center gap-3 mb-2 justify-content-between"
+                v-if="userDetails.role !== eRoles.Provider"
+              >
                 <span> <strong> Birth Date </strong></span>
-                <span>{{ userDetails.birthDate }} </span>
+                <span v-if="userDetails.birthDate"
+                  >{{ userDetails.birthDate }}
+                </span>
+                <span v-else>-</span>
               </div>
 
               <div
                 v-if="userDetails.role === eRoles.User"
-                class="flex align-items-center gap-3 mb-2"
+                class="flex align-items-center gap-3 mb-2 justify-content-between"
               >
                 <span> <strong> Gender </strong></span>
-                <span>{{ userDetails.gender }} </span>
+                <span v-if="userDetails.gender">{{ userDetails.gender }} </span>
+                <span v-else>-</span>
               </div>
 
-              <div class="flex align-items-center gap-3 mb-2">
+              <div
+                class="flex align-items-center gap-3 mb-2 justify-content-between"
+              >
                 <span> <strong> Account submitted </strong></span>
                 <span>
                   <InputSwitch
                     disabled
                     readonly
-                    :value="userDetails.accountSubmitted"
+                    :modelValue="userDetails.accountSubmitted"
                 /></span>
               </div>
 
               <div
-                class="flex align-items-center gap-3 mb-2"
+                class="flex align-items-center gap-3 mb-2 justify-content-between"
                 v-if="userDetails.role === eRoles.User"
               >
                 <span> <strong> Quiz fulfilled </strong></span>
@@ -183,24 +205,31 @@
                   <InputSwitch
                     disabled
                     readonly
-                    :value="userDetails.quizFulfilled"
+                    :modelValue="userDetails.quizFulfilled"
                   />
                 </span>
               </div>
               <div v-else>
-                <div class="flex align-items-center gap-3 mb-2">
+                <div
+                  v-if="userDetails.role === eRoles.Provider"
+                  class="flex align-items-center gap-3 mb-2 justify-content-between"
+                >
                   <span> <strong> Nipt </strong></span>
                   <span>
                     {{ userDetails.nipt }}
                   </span>
                 </div>
-                <div class="flex align-items-center gap-3 mb-2">
+                <div
+                  v-if="userDetails.role === eRoles.Provider"
+                  class="flex align-items-center gap-3 mb-2 justify-content-between"
+                >
                   <span> <strong> Terms agreed </strong></span>
+
                   <span>
                     <InputSwitch
                       disabled
                       readonly
-                      :value="userDetails.termsAgreed"
+                      :modelValue="userDetails.termsAgreed"
                     />
                   </span>
                 </div>
@@ -290,11 +319,21 @@ export default defineComponent({
 
     const socials = computed(() => {
       return socialsData.value.map((social) => {
-        const backendUrl =
-          props.userDetails.websites[social.name.toLowerCase()];
+        let backEndData = null;
+        if (props.userDetails.websites === undefined) {
+          const websites = {
+            website: "",
+            facebook: "",
+            instagram: "",
+            twitter: "",
+          };
+          backEndData = websites[social.name.toLowerCase()];
+        } else {
+          backEndData = props.userDetails.websites[social.name.toLowerCase()];
+        }
         return {
           ...social,
-          url: backendUrl !== null ? backendUrl : "",
+          url: backEndData !== null ? backEndData : "",
         };
       });
     });

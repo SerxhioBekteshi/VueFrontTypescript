@@ -8,12 +8,12 @@ export interface IUser {
   name?: string;
   roleId?: Number;
   role?: eRoles;
-  quizFulfilled?: Boolean;
-  accountSubmitted?: Boolean;
-  nipt?: String;
-  termsAgreed?: String;
-  address?: String;
-  state?: String;
+  quizFulfilled?: boolean;
+  accountSubmitted?: boolean;
+  nipt?: string;
+  termsAgreed?: boolean;
+  address?: string;
+  state?: string;
   image?: string;
   email?: string;
   createdAt?: Date;
