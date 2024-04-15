@@ -1,39 +1,58 @@
 <template>
-  <Dialog
-    closeIcon="true"
-    ref="target"
-    v-bind:visible="openModal"
-    position="top"
-    :header="title"
-    :draggable="true"
-    :closable="true"
-    :style="{ width: '50rem', marginTop: '5rem' }"
-    :modal="true"
-    :dismissableMask="true"
-    :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+  <OnClickOutside
+    :options="{
+      ignore: [
+        // '.p-dialog p-component',
+        '.p-dialog-header',
+        '.p-dialog-content',
+        '.p-dialog-footer',
+      ],
+    }"
+    @trigger="
+      () => {
+        if (openModal === true) {
+          handleModalClose();
+        }
+      }
+    "
   >
-    <template #closeicon>
-      <i
-        @click="handleModalClose"
-        class="pi pi-times"
-        style="font-size: 1rem"
-      ></i>
-    </template>
-    <slot></slot>
-    <template #footer>
-      <div class="actionsAlign">
-        <div v-for="(action, index) in actions" :key="index">
-          <component :is="action.component" v-bind="action.props"></component>
+    <Dialog
+      closeIcon="true"
+      ref="target"
+      v-bind:visible="openModal"
+      position="top"
+      :header="title"
+      :draggable="true"
+      :closable="true"
+      :style="{ width: '50rem', marginTop: '5rem' }"
+      :modal="true"
+      :dismissableMask="true"
+      :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+    >
+      <template #closeicon>
+        <i
+          @click="handleModalClose"
+          class="pi pi-times"
+          style="font-size: 1rem"
+        ></i>
+      </template>
+      <slot></slot>
+      <template #footer>
+        <div class="actionsAlign">
+          <div v-for="(action, index) in actions" :key="index">
+            <component :is="action.component" v-bind="action.props"></component>
+          </div>
         </div>
-      </div>
-    </template>
-  </Dialog>
+      </template>
+    </Dialog>
+  </OnClickOutside>
 </template>
 
 <script lang="ts">
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import { defineComponent } from "vue";
+import { OnClickOutside } from "@vueuse/components";
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
@@ -46,6 +65,7 @@ export default defineComponent({
   components: {
     Dialog,
     Button,
+    OnClickOutside,
   },
   methods: {
     handleModalClose(): void {

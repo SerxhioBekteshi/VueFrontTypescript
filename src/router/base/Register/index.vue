@@ -88,7 +88,7 @@
         </form>
       </template>
       <template #footer>
-        <div class="flex justify-content-space-between">
+        <div class="flex flex-wrap gap-2 justify-content-between">
           <Button
             @click="handleSubmit(handleRegister)()"
             type="submit"
@@ -113,136 +113,23 @@
       </template>
     </Card>
   </div>
-  <div>
-    <OverlayPanel ref="op" appendTo="body">
-      <div>
-        <p style="margin: 0.1rem">
-          <span
-            v-if="passwordChecks.capsLetterCheck"
-            class="pi pi-check"
-            :style="{
-              color: 'green',
-              marginRight: '0.5rem',
-            }"
-          >
-          </span>
-          <span
-            v-else
-            class="pi pi-times"
-            :style="{
-              color: 'red',
-              marginRight: '0.5rem',
-            }"
-          ></span>
-          At least 1 uppercase
-        </p>
-
-        <p style="margin: 0.1rem">
-          <span
-            v-if="passwordChecks.lowsLetterCheck"
-            class="pi pi-check"
-            :style="{
-              color: 'green',
-              marginRight: '0.5rem',
-            }"
-          >
-          </span>
-          <span
-            v-else
-            class="pi pi-times"
-            :style="{
-              color: 'red',
-              marginRight: '0.5rem',
-            }"
-          ></span>
-          At least 1 lowercase
-        </p>
-
-        <p style="margin: 0.1rem">
-          <span
-            v-if="passwordChecks.numberCheck"
-            class="pi pi-check"
-            :style="{
-              color: 'green',
-              marginRight: '0.5rem',
-            }"
-          >
-          </span>
-          <span
-            v-else
-            class="pi pi-times"
-            :style="{
-              color: 'red',
-              marginRight: '0.5rem',
-            }"
-          ></span>
-          At least 1 number
-        </p>
-
-        <p style="margin: 0.1rem">
-          <span
-            v-if="passwordChecks.pwdLengthCheck"
-            class="pi pi-check"
-            :style="{
-              color: 'green',
-              marginRight: '0.5rem',
-            }"
-          >
-          </span>
-          <span
-            v-else
-            class="pi pi-times"
-            :style="{
-              color: 'red',
-              marginRight: '0.5rem',
-            }"
-          ></span>
-          Minimum 8 characters
-        </p>
-
-        <p style="margin: 0.1rem">
-          <span
-            v-if="passwordChecks.specialCharCheck"
-            class="pi pi-check"
-            :style="{
-              color: 'green',
-              marginRight: '0.5rem',
-            }"
-          >
-          </span>
-          <span
-            v-else
-            class="pi pi-times"
-            :style="{
-              color: 'red',
-              marginRight: '0.5rem',
-            }"
-          ></span>
-          At least 1 special character
-        </p>
-      </div>
-    </OverlayPanel>
-  </div>
 
   <Toast />
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { useRoute } from "vue-router";
 import { useForm } from "vee-validate";
 import { registrationSchema } from "@/utils/validationSchemas";
 import Card from "primevue/card";
 import Button from "primevue/button";
 import Toast from "primevue/toast";
-import OverlayPanel from "primevue/overlaypanel";
 import { useToast } from "primevue/usetoast";
 
 import InputText from "@/components/formElements/InputText.vue";
 import InputPassword from "@/components/formElements/InputPassword.vue";
 import InputSelect from "@/components/formElements/InputSelect.vue";
 
-import { ICheckPassword } from "@/interfaces/other/ICheckPassword";
 import ePaymentMethod from "@/assets/enums/ePaymentMethod";
 import AuthManager from "@/utils/authManager";
 
@@ -252,7 +139,6 @@ export default defineComponent({
     Toast,
     Button,
     InputText,
-    OverlayPanel,
     Card,
     InputPassword,
     InputSelect,
@@ -263,15 +149,6 @@ export default defineComponent({
   },
   setup() {
     const toast = useToast();
-    const route = useRoute();
-
-    const passwordChecks = ref<ICheckPassword>({
-      capsLetterCheck: false,
-      lowsLetterCheck: false,
-      numberCheck: false,
-      pwdLengthCheck: false,
-      specialCharCheck: false,
-    });
 
     const { handleSubmit, resetForm } = useForm({
       validationSchema: registrationSchema,
@@ -285,13 +162,6 @@ export default defineComponent({
         address: "",
       },
     });
-
-    // const { value: name } = useField<string>("name");
-    // const { value: lastName } = useField<string>("lastName");
-    // const { value: email } = useField<string>("email");
-    // const { value: password } = useField<string>("password");
-    // const { value: passwordConfirm } = useField<string>("passwordConfirm");
-    // const { value: paymentMethod } = useField<string>("paymentMethod");
 
     const handleRegister = async (values: any) => {
       try {
@@ -310,23 +180,6 @@ export default defineComponent({
       }
     };
 
-    const handleOnKeyUp = (e: any) => {
-      const { value } = e.target;
-      const capsLetterCheck = /[A-Z]/.test(value);
-      const lowsLetterCheck = /[a-z]/.test(value);
-      const numberCheck = /[0-9]/.test(value);
-      const pwdLengthCheck = value.length >= 8;
-      const specialCharCheck = /[!@#$%^&*]/.test(value);
-
-      passwordChecks.value = {
-        capsLetterCheck,
-        lowsLetterCheck,
-        numberCheck,
-        pwdLengthCheck,
-        specialCharCheck,
-      };
-    };
-
     const handlePrevention = (event: any) => {
       event.preventDefault();
     };
@@ -334,9 +187,7 @@ export default defineComponent({
     return {
       handleRegister,
       handlePrevention,
-      handleOnKeyUp,
       resetForm,
-      passwordChecks,
       handleSubmit,
       registrationSchema,
       ePaymentMethod,
