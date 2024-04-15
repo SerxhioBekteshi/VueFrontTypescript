@@ -1,6 +1,6 @@
 <template>
   <div v-if="!isLoading">
-    <UserDetails :userDetails="userDetails" />
+    <UserDetails :userDetails="userDetails" @update-socials="handleRefetch" />
   </div>
   <div
     v-else
@@ -61,10 +61,16 @@ export default defineComponent({
       }
     };
 
+    const handleRefetch = () => {
+      console.log("wtwawrawr");
+      fetchUserDetails();
+    };
+
     return {
       userId,
       userDetails,
       isLoading,
+      handleRefetch,
     };
   },
 });

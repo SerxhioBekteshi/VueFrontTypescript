@@ -5,7 +5,8 @@ import axios from "axios";
 const fetchUserData = async () => {
   try {
     const response = await axios.get(`/user/loggedUser`);
-    if (response && response.data) return response.data;
+    if (response && response.data)
+      return AuthManager.handleUserDataBasedOnRole(response.data);
   } catch (err) {
     console.log(err, "err in vuex fetch data");
   }

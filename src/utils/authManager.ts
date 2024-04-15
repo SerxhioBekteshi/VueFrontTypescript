@@ -180,6 +180,7 @@ class AuthManager {
         termsAgreed: user.termsAgreed,
         nipt: user.nipt,
         orders: user?.orders,
+        websites: user?.websites,
       };
     }
     if (user.role === eRoles.User) {
@@ -189,6 +190,7 @@ class AuthManager {
         birthDate: user.birthDate,
         accountSubmitted: user.accountSubmitted,
         quizFulfilled: user.quizFulfilled,
+        quizResults: user.quizResults,
         orders: user?.orders,
       };
     }

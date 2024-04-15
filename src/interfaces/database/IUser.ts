@@ -34,4 +34,6 @@ export interface IUser {
   gender?: string;
   birthDate?: Date;
   firstLogin?: boolean;
+  quizResults?: any;
+  websites?: any;
 }

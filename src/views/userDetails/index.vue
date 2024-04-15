@@ -34,81 +34,68 @@
             </template>
           </Card>
         </div>
-        <div class="col-12">
+        <div class="col-12" v-if="userDetails.role === eRoles.Provider">
           <Card>
             <template #content>
-              <div class="flex flex-column gap-2">
-                <div class="flex flex-wrap justify-content-between">
-                  <div class="flex gap-2 align-items-center">
-                    <div>
-                      <span class="pi pi-link"> </span>
+              <OnClickOutside
+                :options="{
+                  ignore: [
+                    /* ... */
+                  ],
+                }"
+                @trigger="() => handleOutsideClick()"
+              >
+                <div
+                  v-for="(social, index) in socials"
+                  :key="index"
+                  class="flex flex-column gap-2"
+                >
+                  <div class="flex flex-wrap justify-content-between">
+                    <div class="flex gap-2 align-items-center">
+                      <div>
+                        <span :class="social.iconClass"> </span>
+                      </div>
+                      {{ social.name }}
                     </div>
-                    Website
-                  </div>
-                  <div
-                    class="website"
-                    @click="toggleSocialInput('website')"
-                    v-if="!inputSocial.website"
-                  >
-                    url website
-                  </div>
-                  <div v-else>
-                    <InputText />
+                    <div
+                      class="website"
+                      @click="toggleSocialInput(social.name.toLowerCase())"
+                      v-if="!inputSocial[social.name.toLowerCase()]"
+                    >
+                      <div v-if="social.url">
+                        {{ social.url }}
+                      </div>
+                      <div v-else v-tooltip="'Click to add'">-</div>
+                    </div>
+                    <div v-else>
+                      <InputText
+                        v-model="social.url"
+                        @change="
+                          updateSocialData(
+                            social.name.toLowerCase(),
+                            social.url
+                          )
+                        "
+                        style="width: 100%"
+                      />
+                    </div>
                   </div>
                 </div>
-                <div class="flex flex-wrap justify-content-between">
-                  <div class="flex gap-2 align-items-center">
-                    <div>
-                      <span class="pi pi-instagram instagram"> </span>
-                    </div>
-                    Instagram
-                  </div>
-                  <div
-                    class="website"
-                    @click="toggleSocialInput('instagram')"
-                    v-if="!inputSocial.instagram"
-                  >
-                    url website
-                  </div>
-                  <div v-else>
-                    <InputText />
-                  </div>
-                </div>
-                <div class="flex flex-wrap justify-content-between">
-                  <div class="flex gap-2 align-items-center">
-                    <div>
-                      <span class="pi pi-facebook facebook"> </span>
-                    </div>
-                    Facebook
-                  </div>
-                  <div
-                    class="website"
-                    @click="toggleSocialInput('facebook')"
-                    v-if="!inputSocial.facebook"
-                  >
-                    url website
-                  </div>
-                  <div v-else>
-                    <InputText />
-                  </div>
-                </div>
-                <div class="flex flex-wrap justify-content-between">
-                  <div class="flex gap-2 align-items-center">
-                    <div>
-                      <span class="pi pi-twitter twitter"> </span>
-                    </div>
-                    Twitter
-                  </div>
-                  <div
-                    class="website"
-                    @click="toggleSocialInput('twitter')"
-                    v-if="!inputSocial.twitter"
-                  >
-                    url website
-                  </div>
-                  <div v-else>
-                    <InputText style="width: fit-content" />
-                  </div>
+              </OnClickOutside>
+            </template>
+          </Card>
+        </div>
+        <div v-if="userDetails.quizResults" class="col-12">
+          <Card>
+            <template #content>
+              <div class="container">
+                <div
+                  v-for="(value, key) in userDetails.quizResults"
+                  :key="key"
+                  class="item"
+                >
+                  <strong>{{ key }}:</strong>
+                  {{ Array.isArray(value) ? value.join(", ") : value }}
                 </div>
               </div>
             </template>
@@ -121,19 +108,22 @@
         <div class="col-12">
           <Card>
             <template #content>
-              <Chart
-                type="bar"
-                :data="chartData"
-                :options="chartOptions"
-                class="h-13rem"
-              />
+              <div v-if="userDetails.role === eRoles.Admin">ADMIN HERE</div>
+              <div v-else>
+                <Chart
+                  type="bar"
+                  :data="chartData"
+                  :options="chartOptions"
+                  class="h-13rem"
+                />
+              </div>
             </template>
           </Card>
         </div>
         <div class="md:col-6 sm:col-12">
           <Card>
             <template #content>
-              <div>
+              <div v-if="filteredActionObjects">
                 <p><strong> Permisions </strong></p>
                 <div
                   v-for="(action, index) in filteredActionObjects"
@@ -166,7 +156,10 @@
                 <span>{{ userDetails.birthDate }} </span>
               </div>
 
-              <div class="flex align-items-center gap-3 mb-2">
+              <div
+                v-if="userDetails.role === eRoles.User"
+                class="flex align-items-center gap-3 mb-2"
+              >
                 <span> <strong> Gender </strong></span>
                 <span>{{ userDetails.gender }} </span>
               </div>
@@ -181,7 +174,10 @@
                 /></span>
               </div>
 
-              <div class="flex align-items-center gap-3 mb-2">
+              <div
+                class="flex align-items-center gap-3 mb-2"
+                v-if="userDetails.role === eRoles.User"
+              >
                 <span> <strong> Quiz fulfilled </strong></span>
                 <span>
                   <InputSwitch
@@ -190,6 +186,24 @@
                     :value="userDetails.quizFulfilled"
                   />
                 </span>
+              </div>
+              <div v-else>
+                <div class="flex align-items-center gap-3 mb-2">
+                  <span> <strong> Nipt </strong></span>
+                  <span>
+                    {{ userDetails.nipt }}
+                  </span>
+                </div>
+                <div class="flex align-items-center gap-3 mb-2">
+                  <span> <strong> Terms agreed </strong></span>
+                  <span>
+                    <InputSwitch
+                      disabled
+                      readonly
+                      :value="userDetails.termsAgreed"
+                    />
+                  </span>
+                </div>
               </div>
               <MeterGroup class="mt-3" :value="meterGroupValue" />
             </template>
@@ -208,6 +222,7 @@ import {
   computed,
   defineComponent,
   onMounted,
+  onUnmounted,
   provide,
   ref,
 } from "vue";
@@ -220,6 +235,19 @@ import Chart from "primevue/chart";
 import SystemUserPermission from "./systemUserPermissions/index.vue";
 import { IUser } from "@/interfaces/database/IUser";
 import InputText from "primevue/inputtext";
+// import type { OnClickOutsideHandler } from "@vueuse/core";
+// import { onClickOutside } from "@vueuse/core";
+import { OnClickOutside } from "@vueuse/components";
+import axios from "axios";
+import { useToast } from "primevue/usetoast";
+
+type socialItem = {
+  name: string;
+  iconClass: string;
+  url?: string;
+};
+
+export type ISocials = socialItem[];
 
 export default defineComponent({
   name: "UserDetails",
@@ -231,6 +259,7 @@ export default defineComponent({
     InputSwitch,
     Chart,
     SystemUserPermission,
+    OnClickOutside,
     InputText,
   },
   enums: {
@@ -239,10 +268,36 @@ export default defineComponent({
   props: {
     userDetails: { type: Object as PropType<IUser>, required: true },
   },
-  setup(props) {
+  emits: ["update-socials"],
+  setup(props, { emit }) {
     const userId = ref<number>(0);
     const profilePercentageCompleted = ref<number>();
+    const toast = useToast();
     const isLoading = ref<boolean>(true);
+    const filteredActionObjects = ref<any>();
+    const inputSocial = ref({
+      website: false,
+      twitter: false,
+      facebook: false,
+      instagram: false,
+    });
+    const socialsData = ref<ISocials>([
+      { name: "Website", iconClass: "pi pi-link" },
+      { name: "Instagram", iconClass: "pi pi-instagram instagram" },
+      { name: "Facebook", iconClass: "pi pi-facebook facebook" },
+      { name: "Twitter", iconClass: "pi pi-twitter twitter" },
+    ]);
+
+    const socials = computed(() => {
+      return socialsData.value.map((social) => {
+        const backendUrl =
+          props.userDetails.websites[social.name.toLowerCase()];
+        return {
+          ...social,
+          url: backendUrl !== null ? backendUrl : "",
+        };
+      });
+    });
 
     const actionObjects = {
       Read: [],
@@ -276,8 +331,10 @@ export default defineComponent({
     };
 
     const handlePermissions = (permissions: IPermissions[] | undefined) => {
-      console.log(permissions, actionObjects);
       if (permissions && actionObjects) {
+        filteredActionObjects.value = Object.entries(actionObjects).map(
+          ([key, _]) => key
+        );
         permissions.forEach((permission: IPermissions) => {
           if (permission.action === "Upload" || permission.action === "Rate")
             permission.action = "Custom";
@@ -287,10 +344,6 @@ export default defineComponent({
     };
 
     provide("actionPermissionsObject", actionObjects);
-
-    const filteredActionObjects = computed(() => {
-      return Object.entries(actionObjects).map(([key, _]) => key);
-    });
 
     const meterGroupValue = computed(() => {
       const userDetailsValue = props.userDetails;
@@ -308,8 +361,10 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      chartData.value = setChartData(props.userDetails.orders);
-      chartOptions.value = setChartOptions();
+      if (props.userDetails.orders) {
+        chartData.value = setChartData(props.userDetails.orders);
+        chartOptions.value = setChartOptions();
+      }
     });
 
     const chartData = ref();
@@ -377,13 +432,6 @@ export default defineComponent({
       };
     };
 
-    const inputSocial = ref({
-      website: false,
-      twitter: false,
-      facebook: false,
-      instagram: false,
-    });
-
     const toggleSocialInput = (social: string) => {
       switch (social) {
         case "website":
@@ -403,6 +451,56 @@ export default defineComponent({
       }
     };
 
+    const updateSocialData = (socialName: string, url: string) => {
+      const index = socialsData.value.findIndex(
+        (social) => social.name.toLowerCase() === socialName
+      );
+      if (index !== -1) {
+        socialsData.value[index].url = url;
+      }
+    };
+
+    const handleOutsideClick = async () => {
+      if (
+        Object.keys(inputSocial.value).some(
+          (key) => inputSocial.value[key] === true
+        )
+      ) {
+        const res: any = await axios.put(
+          `user/websites/${props.userDetails.id}`,
+          {
+            websites: getUrlsObject(),
+          }
+        );
+
+        if (res && res.data) {
+          toast.add({
+            severity: "success",
+            summary: res.data.message,
+            detail: "INFO",
+            life: 3000,
+          });
+          emit("update-socials");
+        }
+      }
+
+      inputSocial.value.website = false;
+      inputSocial.value.twitter = false;
+      inputSocial.value.facebook = false;
+      inputSocial.value.instagram = false;
+    };
+
+    const getUrlsObject = () => {
+      return socialsData.value.reduce((urls, social) => {
+        const key = social.name.toLowerCase();
+        urls[key] =
+          social.url !== undefined
+            ? social.url
+            : props.userDetails.websites[key] || null;
+        return urls;
+      }, {});
+    };
+
     return {
       userId,
       meterGroupValue,
@@ -413,6 +511,9 @@ export default defineComponent({
       filteredActionObjects,
       eRoles,
       inputSocial,
+      socials,
+      updateSocialData,
+      handleOutsideClick,
       toggleSocialInput,
     };
   },
@@ -433,5 +534,22 @@ export default defineComponent({
 
 .website:hover {
   cursor: pointer;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  margin-bottom: 8px;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: var(--primary-100);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.item strong {
+  margin-right: 4px;
 }
 </style>
