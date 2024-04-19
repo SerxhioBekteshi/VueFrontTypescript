@@ -255,10 +255,6 @@
       <QuizForm />
     </DetailDrawer>
   </div>
-
-  <div>
-    {{ translate("hello") }}
-  </div>
   <Toast />
 </template>
 
@@ -279,7 +275,7 @@ import SelectButton from "primevue/selectbutton";
 import draggable from "vuedraggable";
 import { questionValidationSchema } from "@/utils/validationSchemas";
 import ProgressSpinner from "primevue/progressspinner";
-import { useTranslation } from "@/hooks/useTranslation";
+
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
   name: "QuizConfiguration",
@@ -318,7 +314,6 @@ export default defineComponent({
     ]);
     const menuRef = ref();
     const isLoading = ref<boolean>(false);
-    const { translate } = useTranslation();
     const menuItem = ref<any>(null);
 
     const onDragEnd = (event: any) => {
@@ -392,7 +387,7 @@ export default defineComponent({
       modeDrawer.value = eFormMode.Add;
     };
 
-    const toggleMenuPopup = (index: number, event: any, data: any) => {
+    const toggleMenuPopup = (index: number, event: MouseEvent, data: any) => {
       menuItem.value = data;
       // menu.value.toggle(menuId);
       if (menuRef.value) menuRef.value.toggle(event);
@@ -428,7 +423,6 @@ export default defineComponent({
       handleAddClick,
       onDragEnd,
       handleOrderChange,
-      translate,
     };
   },
 });
