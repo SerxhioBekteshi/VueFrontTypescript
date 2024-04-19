@@ -10,20 +10,20 @@ import { defineAbilityFor } from "./initializers/ability";
 import { abilitiesPlugin } from "@casl/vue";
 import vuexPlugin from "./store/vuexStore/vuexPlugin";
 import Ripple from "primevue/ripple";
-import { useStore } from "vuex";
+import translationPlugin from "./hooks/useTranslation";
 
 const app = createApp(App);
 
 async function initializeApp() {
   await initApp();
-
   const ability = await defineAbilityFor();
+
+  app.use(translationPlugin);
   app.use(ToastService);
   app.use(PrimeVue, { ripple: true });
   app.use(vuexPlugin);
   app.use(abilitiesPlugin, ability);
   app.use(router);
-  // app.use(ToastPlugin, { position: "top" });
   // .use(VueDraggable)
   app.directive("tooltip", Tooltip);
   app.directive("ripple", Ripple);

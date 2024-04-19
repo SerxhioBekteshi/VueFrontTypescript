@@ -26,8 +26,11 @@
         <div
           @click="
             () => {
-              $emit('on-notification-click', item?.id);
-              router.push(`${item?.route}`);
+              console.log(item?.id, item?.route);
+              $emit('on-notification-click', {
+                id: item?.id,
+                route: item?.route,
+              });
             }
           "
         >

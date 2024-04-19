@@ -23,90 +23,107 @@
     />
   </div>
 
-  <draggable
-    :list="quizQuestion"
-    item-key="question"
-    class="list-group"
-    ghost-class="ghost"
-    @end="dragging = true"
-    @change="handleOrderChange"
+  <div
+    v-if="isLoading"
+    class="flex justify-content-center align-items-center"
+    style="height: 60vh"
   >
-    <template #item="{ element, index }">
-      <div class="list-group-item">
-        <Panel
-          :header="element.order + ' ' + element.question"
-          class="mb-2"
-          toggleable
-        >
-          <template #icons>
-            <button
-              class="p-panel-header-icon p-link mr-2"
-              :id="`overlay_menu_${index}`"
-              @click="toggleMenuPopup(index, $event, element)"
-            >
-              <span class="pi pi-cog"></span>
-            </button>
-            {{ index }}
-            <Menu
-              ref="menuRef"
-              :id="`overlay_menu_${index}`"
-              :model="menuItems"
-              :popup="true"
-            />
-          </template>
-          <div
-            style="
-              display: flex;
-              flex-direction: row;
-              justify-content: center;
-              align-items: center;
-            "
+    <ProgressSpinner />
+  </div>
+  <div v-else>
+    <draggable
+      :list="quizQuestion"
+      item-key="question"
+      class="list-group"
+      ghost-class="ghost"
+      @end="dragging = true"
+      @change="handleOrderChange"
+    >
+      <template #item="{ element, index }">
+        <div class="list-group-item">
+          <Panel
+            :header="element.order + ' ' + element.question"
+            class="mb-2"
+            toggleable
           >
-            <div v-if="element.questionType === 'select'">
-              <SelectButton
-                :options="element.questionOptions"
-                optionLabel="label"
-                multiple
-                aria-labelledby="multiple"
+            <template #icons>
+              <button
+                class="p-panel-header-icon p-link mr-2"
+                :id="`overlay_menu_${index}`"
+                @click="toggleMenuPopup(index, $event, element)"
+              >
+                <span class="pi pi-cog"></span>
+              </button>
+              {{ index }}
+              <Menu
+                ref="menuRef"
+                :id="`overlay_menu_${index}`"
+                :model="menuItems"
+                :popup="true"
               />
-            </div>
+            </template>
             <div
-              v-for="(option, index) in element.questionOptions"
-              :key="index"
+              style="
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+              "
             >
-              <div
-                v-if="element.questionType === 'radio'"
-                style="display: flex; align-items: center; padding-inline: 1rem"
-              >
-                <RadioButton
-                  class="p-invalid"
-                  :inputId="index.toString()"
-                  name="option"
+              <div v-if="element.questionType === 'select'">
+                <SelectButton
+                  :options="element.questionOptions"
+                  optionLabel="label"
+                  multiple
+                  aria-labelledby="multiple"
                 />
-                <label :for="index.toString()" class="ml-2">{{
-                  option.label
-                }}</label>
               </div>
-
               <div
-                v-if="element.questionType === 'checkbox'"
-                style="display: flex; align-items: center; padding-inline: 1rem"
+                v-for="(option, index) in element.questionOptions"
+                :key="index"
               >
-                <Checkbox
-                  class="p-invalid"
-                  :inputId="index.toString()"
-                  name="option"
-                />
-                <label :for="index.toString()" class="ml-2">{{
-                  option.label
-                }}</label>
+                <div
+                  v-if="element.questionType === 'radio'"
+                  style="
+                    display: flex;
+                    align-items: center;
+                    padding-inline: 1rem;
+                  "
+                >
+                  <RadioButton
+                    class="p-invalid"
+                    :inputId="index.toString()"
+                    name="option"
+                  />
+                  <label :for="index.toString()" class="ml-2">{{
+                    option.label
+                  }}</label>
+                </div>
+
+                <div
+                  v-if="element.questionType === 'checkbox'"
+                  style="
+                    display: flex;
+                    align-items: center;
+                    padding-inline: 1rem;
+                  "
+                >
+                  <Checkbox
+                    class="p-invalid"
+                    :inputId="index.toString()"
+                    name="option"
+                  />
+                  <label :for="index.toString()" class="ml-2">{{
+                    option.label
+                  }}</label>
+                </div>
               </div>
             </div>
-          </div>
-        </Panel>
-      </div>
-    </template>
-  </draggable>
+          </Panel>
+        </div>
+      </template>
+    </draggable>
+  </div>
 
   <!-- <div v-for="(question, i) in quizQuestion" :key="question.id">
       <Panel
@@ -239,6 +256,9 @@
     </DetailDrawer>
   </div>
 
+  <div>
+    {{ translate("hello") }}
+  </div>
   <Toast />
 </template>
 
@@ -258,6 +278,8 @@ import QuizForm from "../../components/formController/QuizForm.vue";
 import SelectButton from "primevue/selectbutton";
 import draggable from "vuedraggable";
 import { questionValidationSchema } from "@/utils/validationSchemas";
+import ProgressSpinner from "primevue/progressspinner";
+import { useTranslation } from "@/hooks/useTranslation";
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
   name: "QuizConfiguration",
@@ -272,6 +294,7 @@ export default defineComponent({
     Toast,
     SelectButton,
     draggable,
+    ProgressSpinner,
   },
   props: {},
   // enums: {
@@ -294,7 +317,8 @@ export default defineComponent({
       { id: 3, type: "checkbox" },
     ]);
     const menuRef = ref();
-
+    const isLoading = ref<boolean>(false);
+    const { translate } = useTranslation();
     const menuItem = ref<any>(null);
 
     const onDragEnd = (event: any) => {
@@ -347,11 +371,13 @@ export default defineComponent({
 
     const getQuiz = async () => {
       try {
+        isLoading.value = true;
         const res = await axios.get("/quiz/get-all");
         if (res && res.data) {
           res.data.sort((a: any, b: any) => a.order - b.order);
           quizQuestion.value = res.data;
         }
+        isLoading.value = false;
       } catch (err: any) {
         console.log(err, "ERR");
       }
@@ -395,12 +421,14 @@ export default defineComponent({
       menuItems,
       menuRef,
       // eFormMode,
+      isLoading,
       invalidateState,
       getQuiz,
       toggleMenuPopup,
       handleAddClick,
       onDragEnd,
       handleOrderChange,
+      translate,
     };
   },
 });

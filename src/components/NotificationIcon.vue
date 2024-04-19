@@ -51,7 +51,11 @@
         </div>
       </template>
       <template #item="{ item: { msg } }">
-        <NotificationSocket :item="msg" @handle-delete="handleDelete" />
+        <NotificationSocket
+          :item="msg"
+          @handle-delete="handleDelete"
+          @on-notification-click="markAsSeen"
+        />
       </template>
       <template #end>
         <div v-if="isLoading" class="flex justify-content-center">
@@ -107,6 +111,12 @@ import { useToast } from "primevue/usetoast";
 import Badge from "primevue/badge";
 import ProgressSpinner from "primevue/progressspinner";
 import Toast from "primevue/toast";
+import router from "@/router";
+
+export interface IOnNotificationClickObject {
+  id: number;
+  route: any;
+}
 
 export default defineComponent({
   name: "NotificationIcon",
@@ -235,11 +245,25 @@ export default defineComponent({
       }
     });
 
+    const markAsSeen = async (
+      onNotificationClickObject: IOnNotificationClickObject
+    ) => {
+      console.log(onNotificationClickObject);
+      const res: any = await axios.put(
+        `/notification/${onNotificationClickObject.id}`
+      );
+      if (res && res.data) {
+        router.push(onNotificationClickObject.route);
+        getAllNotifications();
+      }
+    };
+
     return {
       toggle,
       markAllRead,
       handleDelete,
       getAllNotifications,
+      markAsSeen,
       pageSize,
       numberOfUnseenNotifications,
       isLoading,
