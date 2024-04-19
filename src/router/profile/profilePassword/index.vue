@@ -33,116 +33,6 @@
       </form>
     </div>
 
-    <div>
-      <OverlayPanel ref="op" appendTo="body">
-        <div>
-          <p style="margin: 0.1rem">
-            <span
-              v-if="newPasswordChecks.capsLetterCheck"
-              class="pi pi-check"
-              :style="{
-                color: 'green',
-                marginRight: '0.5rem',
-              }"
-            >
-            </span>
-            <span
-              v-else
-              class="pi pi-times"
-              :style="{
-                color: 'red',
-                marginRight: '0.5rem',
-              }"
-            ></span>
-            At least 1 uppercase
-          </p>
-
-          <p style="margin: 0.1rem">
-            <span
-              v-if="newPasswordChecks.lowsLetterCheck"
-              class="pi pi-check"
-              :style="{
-                color: 'green',
-                marginRight: '0.5rem',
-              }"
-            >
-            </span>
-            <span
-              v-else
-              class="pi pi-times"
-              :style="{
-                color: 'red',
-                marginRight: '0.5rem',
-              }"
-            ></span>
-            At least 1 lowercase
-          </p>
-
-          <p style="margin: 0.1rem">
-            <span
-              v-if="newPasswordChecks.numberCheck"
-              class="pi pi-check"
-              :style="{
-                color: 'green',
-                marginRight: '0.5rem',
-              }"
-            >
-            </span>
-            <span
-              v-else
-              class="pi pi-times"
-              :style="{
-                color: 'red',
-                marginRight: '0.5rem',
-              }"
-            ></span>
-            At least 1 number
-          </p>
-
-          <p style="margin: 0.1rem">
-            <span
-              v-if="newPasswordChecks.pwdLengthCheck"
-              class="pi pi-check"
-              :style="{
-                color: 'green',
-                marginRight: '0.5rem',
-              }"
-            >
-            </span>
-            <span
-              v-else
-              class="pi pi-times"
-              :style="{
-                color: 'red',
-                marginRight: '0.5rem',
-              }"
-            ></span>
-            Minimum 8 characters
-          </p>
-
-          <p style="margin: 0.1rem">
-            <span
-              v-if="newPasswordChecks.specialCharCheck"
-              class="pi pi-check"
-              :style="{
-                color: 'green',
-                marginRight: '0.5rem',
-              }"
-            >
-            </span>
-            <span
-              v-else
-              class="pi pi-times"
-              :style="{
-                color: 'red',
-                marginRight: '0.5rem',
-              }"
-            ></span>
-            At least 1 special character
-          </p>
-        </div>
-      </OverlayPanel>
-    </div>
     <div class="grid">
       <div class="col-12 flex justify-content-start gap-3">
         <div>
@@ -177,10 +67,7 @@ import { defineComponent, ref } from "vue";
 import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
 import Button from "primevue/button";
-// import { IShowChangePasswordInput } from "@/interfaces/other/IShowChangePasswordInput";
-import { useField, useForm } from "vee-validate";
-import OverlayPanel from "primevue/overlaypanel";
-import { ICheckPassword } from "@/interfaces/other/ICheckPassword";
+import { useForm } from "vee-validate";
 import InputPassword from "@/components/formElements/InputPassword.vue";
 import axios from "axios";
 import { provide } from "vue";
@@ -188,18 +75,11 @@ import { passwordValidationSchema } from "@/utils/validationSchemas";
 
 export default defineComponent({
   name: "ProfilePassword",
-  components: { Toast, Button, OverlayPanel, InputPassword },
+  components: { Toast, Button, InputPassword },
   props: {},
   setup() {
     const toast = useToast();
-
-    const newPasswordChecks = ref<ICheckPassword>({
-      capsLetterCheck: false,
-      lowsLetterCheck: false,
-      numberCheck: false,
-      pwdLengthCheck: false,
-      specialCharCheck: false,
-    });
+    const op = ref();
 
     const { handleSubmit, resetForm, isSubmitting } = useForm({
       validationSchema: passwordValidationSchema,
@@ -209,43 +89,8 @@ export default defineComponent({
         passwordConfirm: "",
       },
     });
-    provide("veeValidateForm", { isSubmitting });
-
-    const { value: oldPassword } = useField<string>("oldPassword");
-    const { value: password } = useField<string>("password");
-    const { value: passwordConfirm } = useField<string>("passwordConfirm");
-
-    const op = ref();
-    const handleOnBlur = () => {
-      if (op.value) op.value.hide();
-
-      // const nextInput: any = document.querySelector(".cnp");
-      // if (nextInput) {
-      //   nextInput.focus();
-      // }
-    };
-    const handleOnFocus = (event: any) => {
-      op.value.show(event);
-    };
-
-    const handleOnKeyUp = (e: any) => {
-      const { value } = e.target;
-      const capsLetterCheck = /[A-Z]/.test(value);
-      const lowsLetterCheck = /[a-z]/.test(value);
-      const numberCheck = /[0-9]/.test(value);
-      const pwdLengthCheck = value.length >= 8;
-      const specialCharCheck = /[!@#$%^&*]/.test(value);
-
-      newPasswordChecks.value = {
-        capsLetterCheck,
-        lowsLetterCheck,
-        numberCheck,
-        pwdLengthCheck,
-        specialCharCheck,
-      };
-    };
-
-    const handlePrevention = (event: any) => {
+    // provide("veeValidateForm", { isSubmitting });
+    const handlePrevention = (event: Event) => {
       event.preventDefault();
     };
 
@@ -267,17 +112,10 @@ export default defineComponent({
     };
 
     return {
-      oldPassword,
-      password,
-      passwordConfirm,
-      newPasswordChecks,
       op,
       handleSubmit,
       resetForm,
       handlePasswordChange,
-      handleOnKeyUp,
-      handleOnBlur,
-      handleOnFocus,
       handlePrevention,
     };
   },

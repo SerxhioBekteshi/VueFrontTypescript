@@ -37,51 +37,56 @@
         <div class="col-12" v-if="userDetails.role === eRoles.Provider">
           <Card>
             <template #content>
-              <OnClickOutside
-                :options="{
-                  ignore: [
-                    /* ... */
-                  ],
-                }"
-                @trigger="() => handleOutsideClick()"
-              >
-                <div
-                  v-for="(social, index) in socials"
-                  :key="index"
-                  class="flex flex-column py-2"
+              <div v-if="isLoading" class="flex justify-content-center">
+                <ProgressSpinner />
+              </div>
+              <div v-else>
+                <OnClickOutside
+                  :options="{
+                    ignore: [
+                      /* ... */
+                    ],
+                  }"
+                  @trigger="() => handleOutsideClick()"
                 >
-                  <div class="flex flex-wrap justify-content-between">
-                    <div class="flex gap-2 align-items-center">
-                      <div>
-                        <span :class="social.iconClass"> </span>
+                  <div
+                    v-for="(social, index) in socials"
+                    :key="index"
+                    class="flex flex-column py-2"
+                  >
+                    <div class="flex flex-wrap justify-content-between">
+                      <div class="flex gap-2 align-items-center">
+                        <div>
+                          <span :class="social.iconClass"> </span>
+                        </div>
+                        {{ social.name }}
                       </div>
-                      {{ social.name }}
-                    </div>
-                    <div
-                      class="website"
-                      @click="toggleSocialInput(social.name.toLowerCase())"
-                      v-if="!inputSocial[social.name.toLowerCase()]"
-                    >
-                      <div v-if="social.url">
-                        {{ social.url }}
+                      <div
+                        class="website"
+                        @click="toggleSocialInput(social.name.toLowerCase())"
+                        v-if="!inputSocial[social.name.toLowerCase()]"
+                      >
+                        <div v-if="social.url">
+                          {{ social.url }}
+                        </div>
+                        <div v-else v-tooltip="'Click to add'">-</div>
                       </div>
-                      <div v-else v-tooltip="'Click to add'">-</div>
-                    </div>
-                    <div v-else>
-                      <InputText
-                        v-model="social.url"
-                        @change="
-                          updateSocialData(
-                            social.name.toLowerCase(),
-                            social.url
-                          )
-                        "
-                        style="width: 100%"
-                      />
+                      <div v-else>
+                        <InputText
+                          v-model="social.url"
+                          @change="
+                            updateSocialData(
+                              social.name.toLowerCase(),
+                              social.url
+                            )
+                          "
+                          style="width: 100%"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </OnClickOutside>
+                </OnClickOutside>
+              </div>
             </template>
           </Card>
         </div>
@@ -251,7 +256,6 @@ import {
   computed,
   defineComponent,
   onMounted,
-  onUnmounted,
   provide,
   ref,
 } from "vue";
@@ -269,6 +273,7 @@ import InputText from "primevue/inputtext";
 import { OnClickOutside } from "@vueuse/components";
 import axios from "axios";
 import { useToast } from "primevue/usetoast";
+import ProgressSpinner from "primevue/progressspinner";
 
 type socialItem = {
   name: string;
@@ -290,6 +295,7 @@ export default defineComponent({
     SystemUserPermission,
     OnClickOutside,
     InputText,
+    ProgressSpinner,
   },
   enums: {
     eRoles,
@@ -302,7 +308,8 @@ export default defineComponent({
     const userId = ref<number>(0);
     const profilePercentageCompleted = ref<number>();
     const toast = useToast();
-    const isLoading = ref<boolean>(true);
+    const isLoading = ref<boolean>(false);
+
     const filteredActionObjects = ref<any>();
     const inputSocial = ref({
       website: false,
@@ -500,6 +507,8 @@ export default defineComponent({
     };
 
     const handleOutsideClick = async () => {
+      isLoading.value = true;
+
       if (
         Object.keys(inputSocial.value).some(
           (key) => inputSocial.value[key] === true
@@ -519,7 +528,8 @@ export default defineComponent({
             detail: "INFO",
             life: 3000,
           });
-          emit("update-socials");
+          emit("update-socials", false);
+          isLoading.value = false;
         }
       }
 
@@ -527,6 +537,7 @@ export default defineComponent({
       inputSocial.value.twitter = false;
       inputSocial.value.facebook = false;
       inputSocial.value.instagram = false;
+      isLoading.value = false;
     };
 
     const getUrlsObject = () => {

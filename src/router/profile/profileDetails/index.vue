@@ -45,6 +45,15 @@
 
           <div class="col-12">
             <InputText
+              :name="'phoneNumber'"
+              :label="'Phone Number'"
+              :id="'phoneNumber'"
+              :placeholder="'Phone Number'"
+            />
+          </div>
+
+          <div class="col-12">
+            <InputText
               :name="'state'"
               :label="'State'"
               :id="'state'"
@@ -52,7 +61,7 @@
             />
           </div>
 
-          <div class="col-12">
+          <div class="col-12" v-if="profile.role === eRoles.User">
             <InputSelect
               :options="[
                 { gender: 'male', value: 'male' },
@@ -67,7 +76,27 @@
             />
           </div>
 
-          <div class="col-12">
+          <div class="col-12" v-if="profile.role === eRoles.Provider">
+            <InputText
+              :name="'nipt'"
+              :label="'Nipt'"
+              :id="'nipt'"
+              :disabled="true"
+              :placeholder="'Nipt'"
+            />
+          </div>
+
+          <div class="col-12" v-if="profile.role === eRoles.Provider">
+            <InputText
+              :name="'termsAgreed'"
+              :label="'Terms Agreed'"
+              :id="'termsAgreed'"
+              :disabled="true"
+              :placeholder="'Terms Agreed'"
+            />
+          </div>
+
+          <div class="col-12" v-if="profile.role === eRoles.User">
             <InputDate
               :name="'birthDate'"
               :label="'BirthDate'"
@@ -110,6 +139,7 @@ import { profileDetailsSchema } from "@/utils/validationSchemas";
 // import { setUser } from "@/store/stores/user.store";
 import { useStore } from "vuex";
 import { RootState } from "@/store/vuexStore/types";
+import { eRoles } from "@/assets/enums/eRoles";
 
 export default defineComponent({
   name: "ProfileDetails",
@@ -122,6 +152,9 @@ export default defineComponent({
     ImageForm,
   },
   props: {},
+  enums: {
+    eRoles,
+  },
   setup() {
     // const profile: any = {};
     // const store = useStore();
@@ -157,6 +190,7 @@ export default defineComponent({
     return {
       profile,
       handleSubmit,
+      eRoles,
       handleEditProfileData,
       resetForm,
     };

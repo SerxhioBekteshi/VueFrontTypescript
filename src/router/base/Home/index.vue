@@ -1,6 +1,6 @@
 <template>
   <div v-if="!isLoading">
-    <UserDetails :userDetails="userDetails" />
+    <UserDetails :userDetails="userDetails" @update-socials="refetchUserData" />
   </div>
   <div
     v-else
@@ -31,9 +31,14 @@ export default defineComponent({
       fetchUserDetails();
     });
 
-    const fetchUserDetails = async () => {
+    const refetchUserData = (shouldRefreshPage: boolean) => {
+      if (shouldRefreshPage == false) fetchUserDetails(shouldRefreshPage);
+    };
+
+    const fetchUserDetails = async (shouldRefreshPage?: boolean) => {
       try {
-        isLoading.value = true;
+        if (shouldRefreshPage == true) isLoading.value = true;
+
         const res: any = await AuthManager.getUserData();
         if (res) {
           userDetails.value = AuthManager.handleUserDataBasedOnRole(res);
@@ -46,13 +51,14 @@ export default defineComponent({
           severity: "error",
           summary: "info",
         });
-        isLoading.value = false;
+        if (shouldRefreshPage == true) isLoading.value = false;
       }
     };
 
     return {
       userDetails,
       isLoading,
+      refetchUserData,
     };
   },
 });

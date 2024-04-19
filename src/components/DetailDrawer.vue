@@ -11,7 +11,10 @@
     @handleClose="handleCloseDrawer"
     :actions="drawerActions"
   >
-    <slot></slot>
+    <div v-if="isLoading"><ProgressSpinner /></div>
+    <div v-else>
+      <slot></slot>
+    </div>
   </Drawer>
   <Toast />
 </template>
@@ -26,10 +29,11 @@ import { useToast } from "primevue/usetoast";
 import Toast from "primevue/toast";
 import { useForm, useField, FieldArray, useFieldArray } from "vee-validate"; // Import useForm
 import { provide } from "vue";
+import ProgressSpinner from "primevue/progressspinner";
 
 export default defineComponent({
   name: "DetailDrawer",
-  components: { Drawer, Toast },
+  components: { Drawer, Toast, ProgressSpinner },
   props: {
     modeDrawer: {
       type: String as () => keyof typeof eFormMode,
@@ -53,6 +57,8 @@ export default defineComponent({
   setup(props, { emit }) {
     const openDrawer = ref<boolean>(false);
     const toast = useToast();
+    const isLoading = ref<boolean>(false);
+
     const { handleSubmit, resetForm, setFieldError, setErrors } = useForm({
       initialValues: props.formData,
       validationSchema: props.validationSchema,
@@ -146,7 +152,9 @@ export default defineComponent({
     ]);
 
     onMounted(() => {
+      isLoading.value = true;
       openDrawer.value = true;
+      isLoading.value = false;
     });
 
     // watch([props.formData], ([newFormData]) => {
@@ -161,6 +169,7 @@ export default defineComponent({
       eFormMode,
       drawerActions,
       openDrawer,
+      isLoading,
       handleCloseDrawer,
     };
   },
