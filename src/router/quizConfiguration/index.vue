@@ -19,6 +19,7 @@
       style="margin-block: 1rem"
       :disabled="!dragging"
       severity="info"
+      @click="submitQuestionOrder"
       :label="'Submit new order '"
     />
   </div>
@@ -275,7 +276,17 @@ import SelectButton from "primevue/selectbutton";
 import draggable from "vuedraggable";
 import { questionValidationSchema } from "@/utils/validationSchemas";
 import ProgressSpinner from "primevue/progressspinner";
+import { IQuizQuestion } from "@/interfaces/other/IQuizQuestion";
 
+export interface IDragOPtions {
+  element: IQuizQuestion;
+  newIndex: number;
+  oldIndex: number;
+}
+
+export interface IDrag {
+  moved: IDragOPtions;
+}
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
   name: "QuizConfiguration",
@@ -364,12 +375,29 @@ export default defineComponent({
       },
     ]);
 
+    const submitQuestionOrder = async () => {
+      const res: any = await axios.put(`quiz/quiz-orders/update`, {
+        questionNewOrders: quizQuestion.value,
+      });
+
+      if (res && res.data) {
+        toast.add({
+          life: 3000,
+          detail: res.data.message,
+          severity: "success",
+          summary: "info",
+        });
+        getQuiz();
+      }
+    };
+
     const getQuiz = async () => {
       try {
         isLoading.value = true;
         const res = await axios.get("/quiz/get-all");
         if (res && res.data) {
-          res.data.sort((a: any, b: any) => a.order - b.order);
+          //sort is handled in back firstly
+          // res.data.sort((a: any, b: any) => a.order - b.order);
           quizQuestion.value = res.data;
         }
         isLoading.value = false;
@@ -389,20 +417,42 @@ export default defineComponent({
 
     const toggleMenuPopup = (index: number, event: MouseEvent, data: any) => {
       menuItem.value = data;
-      // menu.value.toggle(menuId);
       if (menuRef.value) menuRef.value.toggle(event);
     };
 
-    const handleOrderChange = (newOrder: any) => {
-      console.log(newOrder);
-      // const updatedElement = quizQuestion.value.find(
-      //   (question) => question.id === newOrder.moved.element.id
-      // );
+    const handleOrderChange = (newOrder: IDrag) => {
+      const movedElement = newOrder.moved.element;
+      const oldIndex = newOrder.moved.oldIndex;
+      const newIndex = newOrder.moved.newIndex;
 
-      // if (updatedElement) {
-      //   updatedElement.order = newOrder.moved.newIndex;
-      //   console.log(updatedElement);
-      // }
+      // Update the order property of the moved element
+      movedElement.order = newIndex;
+
+      // Update the order property of other elements if needed
+      quizQuestion.value.forEach((question: any) => {
+        if (question.id !== movedElement.id) {
+          // If an element was moved down (newIndex > oldIndex), shift elements after the new position by 1
+          if (
+            newIndex > oldIndex &&
+            question.order > oldIndex &&
+            question.order <= newIndex
+          ) {
+            question.order--;
+          }
+          // If an element was moved up (newIndex < oldIndex), shift elements before the new position by 1
+          else if (
+            newIndex < oldIndex &&
+            question.order >= newIndex &&
+            question.order < oldIndex
+          ) {
+            question.order++;
+          }
+        }
+      });
+
+      // Sort the quizQuestion array based on the updated order property
+      quizQuestion.value.sort((a: any, b: any) => a.order - b.order);
+      console.log(quizQuestion.value, "awd");
     };
 
     return {
@@ -417,6 +467,7 @@ export default defineComponent({
       menuRef,
       // eFormMode,
       isLoading,
+      submitQuestionOrder,
       invalidateState,
       getQuiz,
       toggleMenuPopup,

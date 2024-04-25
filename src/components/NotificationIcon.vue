@@ -248,13 +248,21 @@ export default defineComponent({
     const markAsSeen = async (
       onNotificationClickObject: IOnNotificationClickObject
     ) => {
-      console.log(onNotificationClickObject);
       const res: any = await axios.put(
         `/notification/${onNotificationClickObject.id}`
       );
       if (res && res.data) {
-        router.push(onNotificationClickObject.route);
-        getAllNotifications();
+        if (onNotificationClickObject.route !== "") {
+          router.push(onNotificationClickObject.route);
+          getAllNotifications();
+        } else {
+          toast.add({
+            life: 3000,
+            detail: "This is a notification without navigation",
+            severity: "error",
+            summary: "info",
+          });
+        }
       }
     };
 

@@ -105,6 +105,9 @@
                 </div>
               </div>
             </template>
+            <template #footer>
+              <Button label="Request to change quiz results" v-rippple="true" />
+            </template>
           </Card>
         </div>
       </div>
@@ -434,6 +437,13 @@ export default defineComponent({
         ],
       };
     };
+
+    // const requestQuizResultsChange = () => {
+    //   const res: any = await axios.post("quizResults/change-request");
+    //   if (res && res.data) {
+    //   }
+    // };
+
     const setChartOptions = () => {
       const documentStyle = getComputedStyle(document.documentElement);
       const textColor = documentStyle.getPropertyValue("--text-color");

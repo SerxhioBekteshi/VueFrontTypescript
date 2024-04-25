@@ -39,12 +39,13 @@
   </div> -->
 
   <Password
-    v-model="value"
-    toggleMask
+    :value="value"
+    :toggleMask="true"
     :invalid="errorMessage ? true : false"
     :placeholder="placeholder"
     :inputId="name"
     :id="id"
+    @change="handleChange"
     @keyup="handleOnKeyUp"
   >
     <template #footer>
@@ -180,10 +181,10 @@ export default defineComponent({
     iconPosition: { type: String },
   },
   setup(props) {
-    const inputType = ref<string>("password");
-    const toggleShowPassword = () => {
-      inputType.value = inputType.value === "password" ? "text" : "password";
-    };
+    // const inputType = ref<string>("password");
+    // const toggleShowPassword = () => {
+    //   inputType.value = inputType.value === "password" ? "text" : "password";
+    // };
     const newPasswordChecks = ref<ICheckPassword>({
       capsLetterCheck: false,
       lowsLetterCheck: false,
@@ -219,13 +220,13 @@ export default defineComponent({
     );
 
     return {
-      inputType,
+      // inputType,
       errorMessage,
       newPasswordChecks,
       value,
       meta,
       handleChange,
-      toggleShowPassword,
+      // toggleShowPassword,
       handleOnKeyUp,
     };
   },

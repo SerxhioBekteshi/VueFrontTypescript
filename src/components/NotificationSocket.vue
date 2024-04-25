@@ -26,7 +26,6 @@
         <div
           @click="
             () => {
-              console.log(item?.id, item?.route);
               $emit('on-notification-click', {
                 id: item?.id,
                 route: item?.route,
