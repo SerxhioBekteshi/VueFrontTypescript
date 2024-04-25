@@ -44,7 +44,7 @@ class JwtManager {
   //   return null;
   // }
 
-  static setRefreshToken(t: string | null): void {
+  static setRefreshToken(t: string | undefined): void {
     if (t) {
       AppStorageManager.setItem(JwtManager.refresh_token, t);
     } else {

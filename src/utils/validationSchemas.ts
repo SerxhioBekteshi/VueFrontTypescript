@@ -1,4 +1,3 @@
-import axios from "axios";
 import * as yup from "yup";
 // import debounce from "lodash/debounce";
 
@@ -177,16 +176,16 @@ export const registrationProviderSchema = yup.object().shape({
     ),
 });
 
-const menuPermissionNameValidation = async () => {
-  try {
-    const res: any = await axios.get("menu/no-role-get-all");
-    if (res && res.data) {
-      return res.data.map((obj: any) => obj.label);
-    }
-  } catch (err) {
-    console.log(err, "ERR");
-  }
-};
+// const menuPermissionNameValidation = async () => {
+//   try {
+//     const res: any = await axios.get("menu/no-role-get-all");
+//     if (res && res.data) {
+//       return res.data.map((obj: any) => obj.label);
+//     }
+//   } catch (err) {
+//     console.log(err, "ERR");
+//   }
+// };
 // const debouncedMenuPermissionNameValidation = debounce(
 //   menuPermissionNameValidation,
 //   1000
