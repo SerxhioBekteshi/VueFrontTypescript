@@ -40,7 +40,7 @@
               />
             </div>
 
-            <div class="col-12" style="padding: 0.75rem">
+            <!-- <div class="col-12" style="padding: 0.75rem">
               <InputSelect
                 :name="'paymentMethod'"
                 :label="'PaymentMethod'"
@@ -57,7 +57,7 @@
                   },
                 ]"
               />
-            </div>
+            </div> -->
 
             <div class="col-12" style="padding: 0.75rem">
               <InputText
@@ -128,7 +128,7 @@ import { useToast } from "primevue/usetoast";
 
 import InputText from "@/components/formElements/InputText.vue";
 import InputPassword from "@/components/formElements/InputPassword.vue";
-import InputSelect from "@/components/formElements/InputSelect.vue";
+// import InputSelect from "@/components/formElements/InputSelect.vue";
 
 import ePaymentMethod from "@/assets/enums/ePaymentMethod";
 import AuthManager from "@/utils/authManager";
@@ -141,7 +141,7 @@ export default defineComponent({
     InputText,
     Card,
     InputPassword,
-    InputSelect,
+    // InputSelect,
   },
   props: {},
   enums: {
@@ -158,7 +158,6 @@ export default defineComponent({
         email: "",
         password: "",
         passwordConfirm: "",
-        paymentMethod: "",
         address: "",
       },
     });

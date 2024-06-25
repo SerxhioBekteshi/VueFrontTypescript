@@ -241,6 +241,7 @@ export default defineComponent({
       try {
         const res: any = await axios.get("quizResult/get-all");
         if (res && res.data) {
+          console.log(quizResult, "WTF?");
           quizResult.value = res.data;
           fetchMeals();
         }
@@ -276,10 +277,13 @@ export default defineComponent({
 
     const fetchMeals = async () => {
       try {
+        console.log(quizResult.value, "awd");
         isLoading.value = true;
         let formattedFilters;
         if (profile.value.role === eRoles.User)
           formattedFilters = calculateFiltersForMeal(quizResult.value);
+
+        console.log(formattedFilters, "FORMATE FILTERs");
 
         const res: any = await axios.post("/table/meals", {
           page: currentPage.value,

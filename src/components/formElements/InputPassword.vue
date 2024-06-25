@@ -37,128 +37,128 @@
     </IconField>
     <ValidationError v-if="errorMessage">{{ errorMessage }}</ValidationError>
   </div> -->
+  <div>
+    <Password
+      v-model="value"
+      :toggleMask="true"
+      :invalid="errorMessage ? true : false"
+      :placeholder="placeholder"
+      :inputId="name"
+      :id="id"
+      @keyup="handleOnKeyUp"
+    >
+      <template #footer>
+        <Divider />
+        <div>
+          <p style="margin: 0.1rem">
+            <span
+              v-if="newPasswordChecks.capsLetterCheck"
+              class="pi pi-check"
+              :style="{
+                color: 'green',
+                marginRight: '0.5rem',
+              }"
+            >
+            </span>
+            <span
+              v-else
+              class="pi pi-times"
+              :style="{
+                color: 'red',
+                marginRight: '0.5rem',
+              }"
+            ></span>
+            At least 1 uppercase
+          </p>
 
-  <Password
-    :value="value"
-    :toggleMask="true"
-    :invalid="errorMessage ? true : false"
-    :placeholder="placeholder"
-    :inputId="name"
-    :id="id"
-    @change="handleChange"
-    @keyup="handleOnKeyUp"
-  >
-    <template #footer>
-      <Divider />
-      <div>
-        <p style="margin: 0.1rem">
-          <span
-            v-if="newPasswordChecks.capsLetterCheck"
-            class="pi pi-check"
-            :style="{
-              color: 'green',
-              marginRight: '0.5rem',
-            }"
-          >
-          </span>
-          <span
-            v-else
-            class="pi pi-times"
-            :style="{
-              color: 'red',
-              marginRight: '0.5rem',
-            }"
-          ></span>
-          At least 1 uppercase
-        </p>
+          <p style="margin: 0.1rem">
+            <span
+              v-if="newPasswordChecks.lowsLetterCheck"
+              class="pi pi-check"
+              :style="{
+                color: 'green',
+                marginRight: '0.5rem',
+              }"
+            >
+            </span>
+            <span
+              v-else
+              class="pi pi-times"
+              :style="{
+                color: 'red',
+                marginRight: '0.5rem',
+              }"
+            ></span>
+            At least 1 lowercase
+          </p>
 
-        <p style="margin: 0.1rem">
-          <span
-            v-if="newPasswordChecks.lowsLetterCheck"
-            class="pi pi-check"
-            :style="{
-              color: 'green',
-              marginRight: '0.5rem',
-            }"
-          >
-          </span>
-          <span
-            v-else
-            class="pi pi-times"
-            :style="{
-              color: 'red',
-              marginRight: '0.5rem',
-            }"
-          ></span>
-          At least 1 lowercase
-        </p>
+          <p style="margin: 0.1rem">
+            <span
+              v-if="newPasswordChecks.numberCheck"
+              class="pi pi-check"
+              :style="{
+                color: 'green',
+                marginRight: '0.5rem',
+              }"
+            >
+            </span>
+            <span
+              v-else
+              class="pi pi-times"
+              :style="{
+                color: 'red',
+                marginRight: '0.5rem',
+              }"
+            ></span>
+            At least 1 number
+          </p>
 
-        <p style="margin: 0.1rem">
-          <span
-            v-if="newPasswordChecks.numberCheck"
-            class="pi pi-check"
-            :style="{
-              color: 'green',
-              marginRight: '0.5rem',
-            }"
-          >
-          </span>
-          <span
-            v-else
-            class="pi pi-times"
-            :style="{
-              color: 'red',
-              marginRight: '0.5rem',
-            }"
-          ></span>
-          At least 1 number
-        </p>
+          <p style="margin: 0.1rem">
+            <span
+              v-if="newPasswordChecks.pwdLengthCheck"
+              class="pi pi-check"
+              :style="{
+                color: 'green',
+                marginRight: '0.5rem',
+              }"
+            >
+            </span>
+            <span
+              v-else
+              class="pi pi-times"
+              :style="{
+                color: 'red',
+                marginRight: '0.5rem',
+              }"
+            ></span>
+            Minimum 8 characters
+          </p>
 
-        <p style="margin: 0.1rem">
-          <span
-            v-if="newPasswordChecks.pwdLengthCheck"
-            class="pi pi-check"
-            :style="{
-              color: 'green',
-              marginRight: '0.5rem',
-            }"
-          >
-          </span>
-          <span
-            v-else
-            class="pi pi-times"
-            :style="{
-              color: 'red',
-              marginRight: '0.5rem',
-            }"
-          ></span>
-          Minimum 8 characters
-        </p>
-
-        <p style="margin: 0.1rem">
-          <span
-            v-if="newPasswordChecks.specialCharCheck"
-            class="pi pi-check"
-            :style="{
-              color: 'green',
-              marginRight: '0.5rem',
-            }"
-          >
-          </span>
-          <span
-            v-else
-            class="pi pi-times"
-            :style="{
-              color: 'red',
-              marginRight: '0.5rem',
-            }"
-          ></span>
-          At least 1 special character
-        </p>
-      </div>
-    </template>
-  </Password>
-  <ValidationError v-if="errorMessage">{{ errorMessage }}</ValidationError>
+          <p style="margin: 0.1rem">
+            <span
+              v-if="newPasswordChecks.specialCharCheck"
+              class="pi pi-check"
+              :style="{
+                color: 'green',
+                marginRight: '0.5rem',
+              }"
+            >
+            </span>
+            <span
+              v-else
+              class="pi pi-times"
+              :style="{
+                color: 'red',
+                marginRight: '0.5rem',
+              }"
+            ></span>
+            At least 1 special character
+          </p>
+        </div>
+      </template>
+    </Password>
+    <ValidationError v-if="errorMessage">{{ errorMessage }}</ValidationError>
+  </div>
 </template>
 
 <script lang="ts">
@@ -210,7 +210,7 @@ export default defineComponent({
       };
     };
 
-    const { value, handleChange, errorMessage, meta } = useField(
+    const { value, handleChange, errorMessage, meta } = useField<any>(
       () => props.name,
       undefined
       // {

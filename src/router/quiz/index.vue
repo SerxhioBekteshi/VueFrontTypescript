@@ -57,13 +57,14 @@ import { eMutationTypes } from "@/assets/enums/eMutationTypes";
 import { IQuizQuestion } from "@/interfaces/other/IQuizQuestion";
 import Stepper from "primevue/stepper";
 import StepperPanel from "primevue/stepperpanel";
+import Button from "primevue/button";
 export interface StepArray {
   fieldName: string;
 }
 
 export default defineComponent({
   name: "QuizLayout",
-  components: { StepperPanel, Stepper, Step, Toast },
+  components: { StepperPanel, Stepper, Step, Toast, Button },
   enums: { eQuizSlot },
   props: {},
   setup() {
