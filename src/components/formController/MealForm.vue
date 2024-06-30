@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form @onSubmit="handlePrevent" v-if="selectData">
+    <form @submit.prevent="handlePrevent" v-if="selectData">
       <div class="gapper">
         <InputText
           :name="'name'"
@@ -11,33 +11,85 @@
       </div>
 
       <div class="gapper">
-        <InputSelect
-          :name="'cousine'"
-          :label="'Cousine'"
-          :id="'cousine'"
-          :placeholder="'Cousine'"
-          :options="getQuestionOptionsByFieldName(selectData, 'cousine')"
-        />
+        <div
+          v-if="
+            !optionContainsValue('cousine', veeValidateForm.values.cousine) &&
+            modeDrawer === eFormMode.Edit.toString()
+          "
+        >
+          <InputTextPrimeVue
+            :name="'cousine'"
+            :label="'Cousine'"
+            :value="veeValidateForm.values.cousine"
+            :disabled="true"
+            style="width: 100%"
+          />
+        </div>
+        <div v-else>
+          <InputSelect
+            :name="'cousine'"
+            :label="'Cousine'"
+            :id="'cousine'"
+            :placeholder="'Cousine'"
+            :options="getQuestionOptionsByFieldName(selectData, 'cousine')"
+          />
+        </div>
       </div>
 
       <div class="gapper">
-        <InputSelect
-          :name="'dietCategory'"
-          :label="'Diet Category'"
-          :id="'dietCategory'"
-          :placeholder="'Diet Category'"
-          :options="getQuestionOptionsByFieldName(selectData, 'dietCategory')"
-        />
+        <div
+          v-if="
+            !optionContainsValue(
+              'dietCategory',
+              veeValidateForm.values.dietCategory
+            ) && modeDrawer === eFormMode.Edit.toString()
+          "
+        >
+          <InputTextPrimeVue
+            :name="'dietCategory'"
+            :label="'Diet Category'"
+            :value="veeValidateForm.values.dietCategory"
+            :disabled="true"
+            style="width: 100%"
+          />
+        </div>
+        <div v-else>
+          <InputSelect
+            :name="'dietCategory'"
+            :label="'Diet Category'"
+            :id="'dietCategory'"
+            :placeholder="'Diet Category'"
+            :options="getQuestionOptionsByFieldName(selectData, 'dietCategory')"
+          />
+        </div>
       </div>
 
       <div class="gapper">
-        <InputSelect
-          :name="'intolerance'"
-          :label="'Intolerance'"
-          :id="'intolerance'"
-          :placeholder="'Intolerance'"
-          :options="getQuestionOptionsByFieldName(selectData, 'intolerance')"
-        />
+        <div
+          v-if="
+            !optionContainsValue(
+              'intolerance',
+              veeValidateForm.values.intolerance
+            ) && modeDrawer === eFormMode.Edit.toString()
+          "
+        >
+          <InputTextPrimeVue
+            :name="'intolerance'"
+            :label="'Intolerance'"
+            :value="veeValidateForm.values.intolerance"
+            :disabled="true"
+            style="width: 100%"
+          />
+        </div>
+        <div v-else>
+          <InputSelect
+            :name="'intolerance'"
+            :label="'Intolerance'"
+            :id="'intolerance'"
+            :placeholder="'Intolerance'"
+            :options="getQuestionOptionsByFieldName(selectData, 'intolerance')"
+          />
+        </div>
       </div>
 
       <div class="gapper">
@@ -50,13 +102,31 @@
       </div>
 
       <div class="gapper">
-        <InputSelect
-          :name="'achievement'"
-          :label="'Achievement'"
-          :id="'achievement'"
-          :placeholder="'Achievement'"
-          :options="getQuestionOptionsByFieldName(selectData, 'achievement')"
-        />
+        <div
+          v-if="
+            !optionContainsValue(
+              'achievement',
+              veeValidateForm.values.achievement
+            ) && modeDrawer === eFormMode.Edit.toString()
+          "
+        >
+          <InputTextPrimeVue
+            :name="'achievement'"
+            :label="'Achievement'"
+            :value="veeValidateForm.values.achievement"
+            :disabled="true"
+            style="width: 100%"
+          />
+        </div>
+        <div v-else>
+          <InputSelect
+            :name="'achievement'"
+            :label="'Achievement'"
+            :id="'achievement'"
+            :placeholder="'Achievement'"
+            :options="getQuestionOptionsByFieldName(selectData, 'achievement')"
+          />
+        </div>
       </div>
 
       <div class="gapper">
@@ -106,7 +176,6 @@
                     :placeholder="'Ingredient name'"
                   />
                 </div>
-
                 <div>
                   <InputNumber
                     :name="`ingredients[${idx}].portion`"
@@ -116,7 +185,6 @@
                   />
                 </div>
               </div>
-
               <div>
                 <Button
                   icon="pi pi-trash"
@@ -130,7 +198,6 @@
               </div>
             </div>
           </fieldset>
-
           <div style="margin-left: 1rem; margin-top: 0.5rem">
             <Button
               label="+ new ingredient"
@@ -155,13 +222,29 @@ import InputNumber from "@/components/formElements/InputNumber.vue";
 import Button from "primevue/button";
 import InputSelect from "@/components/formElements/InputSelect.vue";
 import axios from "axios";
+import { default as InputTextPrimeVue } from "primevue/inputtext";
+import { eFormMode } from "@/assets/enums/EFormMode";
 
 export default defineComponent({
   name: "MealForm",
-  components: { InputText, InputNumber, Button, FieldArray, InputSelect },
+  components: {
+    InputText,
+    InputNumber,
+    Button,
+    FieldArray,
+    InputSelect,
+    InputTextPrimeVue,
+  },
+  props: {
+    modeDrawer: {
+      type: String as () => keyof typeof eFormMode,
+    },
+  },
+  enums: {
+    eFormMode,
+  },
   setup() {
     const veeValidateForm: any = inject("veeValidateForm");
-
     const { fields: ingredients } =
       veeValidateForm.useFieldArray("ingredients");
 
@@ -174,7 +257,6 @@ export default defineComponent({
     onMounted(async () => {
       try {
         const res: any = await axios.get(`quiz/get-all`);
-
         if (res && res.data) {
           selectData.value = res.data;
         }
@@ -190,15 +272,24 @@ export default defineComponent({
       if (question) {
         return question.questionOptions;
       }
-
       return [];
     };
 
+    const optionContainsValue = (fieldName: string, value: string) => {
+      return getQuestionOptionsByFieldName(selectData.value, fieldName).some(
+        (option: any) => option.label === value || option.value === value
+      );
+    };
+
+    console.log(veeValidateForm.values.achievement, "awdawd");
     return {
       handlePrevent,
       getQuestionOptionsByFieldName,
+      optionContainsValue,
       selectData,
       ingredients,
+      veeValidateForm,
+      eFormMode,
     };
   },
 });
@@ -207,7 +298,6 @@ export default defineComponent({
 .gapper {
   margin-top: 1.5rem;
 }
-
 .ingredients {
   border: 1px solid transparent;
   border-top-color: rgba(0, 0, 0, 0) !important;

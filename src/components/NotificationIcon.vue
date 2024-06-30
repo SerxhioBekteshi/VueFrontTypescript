@@ -112,6 +112,9 @@ import Badge from "primevue/badge";
 import ProgressSpinner from "primevue/progressspinner";
 import Toast from "primevue/toast";
 import router from "@/router";
+import { eRoles } from "@/assets/enums/eRoles";
+import { useStore } from "vuex";
+import { RootState } from "@/store/vuexStore/types";
 
 export interface IOnNotificationClickObject {
   id: number;
@@ -139,6 +142,8 @@ export default defineComponent({
     const menu = ref<any>();
     const pageSize = ref<number>(5);
     const isLoading = ref<boolean>(false);
+    const store = useStore<RootState>();
+    const profile = computed(() => store.getters.getUserInfo);
 
     const toggle = (event: any) => {
       menu.value.toggle(event);
@@ -226,13 +231,16 @@ export default defineComponent({
     onMounted(() => {
       if (socket && socket.active) {
         const handleAppNotification = (notification: any) => {
-          notifications.value = [...notifications.value, notification];
-          toast.add({
-            life: 3000,
-            detail: notification.message,
-            severity: "info",
-            summary: notification.title,
-          });
+          if (notification.role === profile.value.role) {
+            notifications.value = [...notifications.value, notification];
+
+            toast.add({
+              life: 3000,
+              detail: notification.message,
+              severity: "info",
+              summary: notification.title,
+            });
+          }
         };
 
         socket.on("AppNotification", handleAppNotification);
@@ -251,9 +259,16 @@ export default defineComponent({
       const res: any = await axios.put(
         `/notification/${onNotificationClickObject.id}`
       );
+
       if (res && res.data) {
         if (onNotificationClickObject.route !== "") {
-          router.push(onNotificationClickObject.route);
+          if (onNotificationClickObject.route.includes("suggestions")) {
+            const suggestion = onNotificationClickObject.route.split("/");
+            router.push({
+              path: "/suggestions",
+              state: { suggestion: suggestion[2] },
+            });
+          } else router.push(onNotificationClickObject.route);
           getAllNotifications();
         } else {
           toast.add({

@@ -63,7 +63,6 @@ export default defineComponent({
 
     const handleFormSubmit = async (data: any) => {
       let res: any = null;
-      console.log(data, "DATA");
       try {
         if (props.modeDrawer && props.controller) {
           if (props.modeDrawer === eFormMode.Add.toString()) {
@@ -73,6 +72,10 @@ export default defineComponent({
                 ? props.additionalDataToSubmit
                 : {}),
             });
+          } else if (props.modeDrawer === eFormMode.Delete.toString()) {
+            res = await axios.delete(
+              `${props.controller}/${props.formData && props.formData.id}`
+            );
           } else {
             res = await axios.put(
               `${props.controller}/${props.formData && props.formData.id}`,
@@ -81,7 +84,7 @@ export default defineComponent({
           }
           toast.add({
             life: 3000,
-            detail: res.data.message,
+            detail: res?.data?.message || res?.message,
             severity: "success",
             summary: "info",
           });

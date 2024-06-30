@@ -51,8 +51,11 @@
             {{ mealData.image }}
           </div>
 
-          <div class="text-2xl font-bold">
+          <div class="text-xl font-bold">
             {{ mealData.name }}
+          </div>
+          <div v-if="mealData?.suggestedTo" class="text-2xl font-bold">
+            <Badge severity="info" value="AI SUGGESTED"></Badge>
           </div>
           <Rate
             :controller="'meals/rate'"
@@ -129,14 +132,56 @@
                               /> -->
                     <span class="leaderboard__name">{{ ingredient.name }}</span>
                     <span class="leaderboard__value"
-                      >{{ ingredient.portion }}g<span>Amount</span></span
-                    >
+                      >{{ ingredient.portion }}g<span></span
+                    ></span>
                   </article>
                 </main>
               </div>
               <div v-else>
                 <InlineMessage style="width: 100%" severity="error">
                   No ingredients
+                </InlineMessage>
+              </div>
+            </AccordionTab>
+          </Accordion>
+        </div>
+
+        <div :style="{ marginTop: '1rem' }">
+          <Accordion :activeIndex="1">
+            <AccordionTab
+              :key="'NutritionValues'"
+              :header="'Nutrition Values '"
+            >
+              <div
+                v-if="
+                  mealData.nutritionValues &&
+                  mealData.nutritionValues.length !== 0
+                "
+              >
+                <main
+                  class="leaderboard_profiles"
+                  v-for="(nutrition, index) in mealData.nutritionValues"
+                  v-bind:key="index"
+                >
+                  <article
+                    class="leaderboard__profile"
+                    style="margin-bottom: 0.5rem"
+                  >
+                    <!-- <img
+                                src="https://randomuser.me/api/portraits/men/32.jpg"
+                                alt="Mark Zuckerberg"
+                                class="leaderboard__picture"
+                              /> -->
+                    <span class="leaderboard__name">{{ nutrition.name }}</span>
+                    <span class="leaderboard__value"
+                      >{{ nutrition.value }}g<span></span
+                    ></span>
+                  </article>
+                </main>
+              </div>
+              <div v-else>
+                <InlineMessage style="width: 100%" severity="error">
+                  No nutrition values yet
                 </InlineMessage>
               </div>
             </AccordionTab>
@@ -158,6 +203,7 @@ import Tag from "primevue/tag";
 import { PropType, defineComponent } from "vue";
 import MealsSkeleton from "../MealsSkeleton.vue";
 import Rate from "@/components/formElements/Rate.vue";
+import Badge from "primevue/badge";
 
 export default defineComponent({
   name: "MealsStockUpdate",
@@ -169,6 +215,7 @@ export default defineComponent({
     Button,
     MealsSkeleton,
     Rate,
+    Badge,
   },
   emits: ["stock-click", "upload-click", "edit-clicked", "open-modal"],
   props: {
@@ -334,7 +381,7 @@ export default defineComponent({
     background-color: #fff;
 
     &:hover {
-      transform: scale(0.8);
+      transform: scale(0.95);
     }
   }
 
@@ -348,7 +395,7 @@ export default defineComponent({
   &__name {
     color: #979cb0;
     font-weight: 600;
-    font-size: 20px;
+    font-size: 16px;
     letter-spacing: 0.64px;
     margin-left: 12px;
   }
@@ -356,7 +403,7 @@ export default defineComponent({
   &__value {
     color: var(--red-300);
     font-weight: 700;
-    font-size: 24px;
+    font-size: 18px;
     text-align: right;
 
     & > span {

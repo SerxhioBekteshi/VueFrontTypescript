@@ -12,6 +12,7 @@ import SystemUserDetails from "./users/SystemUserDetails/index.vue";
 import Meals from "./meals/index.vue";
 import Users from "./users/index.vue";
 import PayemntProcessPage from "./user/PaymentProcessPage/index.vue";
+import SuggestionsPage from "./suggestions/index.vue";
 
 const aclRoutes = [
   {
@@ -104,6 +105,12 @@ const aclRoutes = [
         name: "PaymentProcessPage",
         component: PayemntProcessPage,
         meta: { permissions: { action: "read", subject: "payment" } },
+      },
+      {
+        path: "suggestions",
+        name: "SuggestionsPage",
+        component: SuggestionsPage,
+        meta: { permissions: { action: "read", subject: "suggestions" } },
       },
     ],
   },

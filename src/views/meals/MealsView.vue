@@ -58,7 +58,7 @@
             <div
               v-for="(meal, index) in slotProps.items"
               :key="index"
-              class="col-12 sm:col-6 lg:col-12 xl:col-4 p-2"
+              class="md:col-6 sm:col-12 lg:col-4 p-2"
             >
               <MealGridView
                 v-if="meal"
@@ -101,12 +101,13 @@
       :validationSchema="mealSchema"
       :fetchDataAfterSubmit="fetchMeals"
       :showSubmitButton="false"
+      :width="40"
     >
       <div v-if="formDrawerMode === eFormMode.Upload">
         <ImageForm :controller="'meals'" :imageData="formData || {}" />
       </div>
       <div v-else>
-        <MealForm />
+        <MealForm :modeDrawer="formDrawerMode" />
       </div>
     </DetailDrawer>
   </div>
@@ -125,8 +126,11 @@
     <div v-if="typeof meal === 'number'">
       <DetailModal
         :customTitle="'Delete'"
-        :controller="'meal'"
+        :controller="'meals'"
         :onClose="invalidateState"
+        :formData="{ id: meal }"
+        :modeDrawer="eFormMode.Delete"
+        :fetchDataAfterSubmit="fetchMeals"
       >
         <div>
           Are you sure you want to delete
@@ -226,13 +230,13 @@ export default defineComponent({
     const meals = ref<IMeal[]>([]);
     const meal = ref<any>(undefined);
     const currentPage = ref<number>(1);
-    const pageSize = ref<number>(5);
+    const pageSize = ref<number>(3);
     const totalItems = ref<number>(0);
     const isLoading = ref<boolean>(true);
     const searchValue = ref<string>("");
     const formData = ref<IMeal>();
     const rate = ref<any>();
-    const rowsPerPageOptions = ref<number[]>([3, 5, 10]);
+    const rowsPerPageOptions = ref<number[]>([3, 6, 12]);
     const quizResult = ref<any>();
     const layout = ref<any>("grid");
     const stockModal = ref<any>();
@@ -241,7 +245,6 @@ export default defineComponent({
       try {
         const res: any = await axios.get("quizResult/get-all");
         if (res && res.data) {
-          console.log(quizResult, "WTF?");
           quizResult.value = res.data;
           fetchMeals();
         }
@@ -277,13 +280,16 @@ export default defineComponent({
 
     const fetchMeals = async () => {
       try {
-        console.log(quizResult.value, "awd");
         isLoading.value = true;
         let formattedFilters;
-        if (profile.value.role === eRoles.User)
+        if (profile.value.role === eRoles.User) {
           formattedFilters = calculateFiltersForMeal(quizResult.value);
-
-        console.log(formattedFilters, "FORMATE FILTERs");
+          // formattedFilters.push({
+          //   columnName: "suggestedTo",
+          //   value: profile.value.id,
+          //   operation: eFilterOperator.Equal,
+          // });
+        }
 
         const res: any = await axios.post("/table/meals", {
           page: currentPage.value,
@@ -300,8 +306,22 @@ export default defineComponent({
                 ]
               : formattedFilters,
         });
+
+        // const res2: any = await axios.get("/meals/suggested-get-all");
+
         if (res && res.data) {
-          meals.value = res.data.rows;
+          // if (res2 && res2.data) {
+          //   meals.value = res2.data.map((suggestedMeal: any) => {
+          //     JSON.parse(suggestedMeal.meal)["suggested"] = true;
+          //     return { ...JSON.parse(suggestedMeal.meal), suggested: true };
+          //   });
+          // }
+
+          // if (profile.value.role === eRoles.Provider) {
+          //   meals.value = [...res.data.rows];
+          // } else {
+          meals.value = [...res.data.rows];
+          // }
           totalItems.value = res.data.totalCount;
         }
         isLoading.value = false;
@@ -354,7 +374,9 @@ export default defineComponent({
 
     const openModalFunction = (m: any, cause: string) => {
       if (cause === "order") meal.value = m;
-      else meal.value = m;
+      else {
+        meal.value = m;
+      }
     };
 
     const handleCheckout = (dataComing: any) => {

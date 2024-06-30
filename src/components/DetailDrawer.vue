@@ -50,19 +50,24 @@ export default defineComponent({
       required: false,
       default: "",
     },
+    width: {
+      type: Number,
+    },
   },
   enums: {
     eFormMode,
   },
+  emits: ["validateDataBeforeSubmit"],
   setup(props, { emit }) {
     const openDrawer = ref<boolean>(false);
     const toast = useToast();
     const isLoading = ref<boolean>(false);
 
-    const { handleSubmit, resetForm, setFieldError, setErrors } = useForm({
-      initialValues: props.formData,
-      validationSchema: props.validationSchema,
-    });
+    const { handleSubmit, resetForm, setFieldError, setErrors, values } =
+      useForm({
+        initialValues: props.formData,
+        validationSchema: props.validationSchema,
+      });
 
     provide("veeValidateForm", {
       handleSubmit,
@@ -72,10 +77,23 @@ export default defineComponent({
       useField,
       FieldArray,
       useFieldArray,
+      values,
     });
 
     const handleFormSubmit = async (data: any) => {
       let res: any = null;
+      if (
+        Object.prototype.hasOwnProperty.call(emit, "validateDataBeforeSubmit")
+      ) {
+        emit("validateDataBeforeSubmit", data, async (validatedData: any) => {
+          await submitData(validatedData, res);
+        });
+      } else {
+        await submitData(data, res);
+      }
+    };
+
+    const submitData = async (data: any, res: any) => {
       try {
         if (props.modeDrawer === eFormMode.Add.toString()) {
           res = await axios.post(`${props.controller}`, {
@@ -106,14 +124,17 @@ export default defineComponent({
             await props.fetchDataAfterSubmit();
           }
           handleCloseDrawer();
-          if (data[`${props.shouldRefreshPageIfFieldNull}`] == null) {
+          if (
+            props.shouldRefreshPageIfFieldNull &&
+            data[`${props.shouldRefreshPageIfFieldNull}`] == null
+          ) {
             location.reload();
           }
         }
-      } catch (err) {
+      } catch (Error: any) {
         toast.add({
           life: 3000,
-          detail: err,
+          detail: Error,
           severity: "error",
           summary: "info",
         });

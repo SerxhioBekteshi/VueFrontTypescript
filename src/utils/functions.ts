@@ -102,6 +102,10 @@ export const getKeyByValue = (object: any, value: any) => {
   return Object.keys(object).find((key) => object[key] === value);
 };
 
+export const hasFieldWithoutValue = (meal: any, field: string) => {
+  return !meal[field] || meal[field] === "";
+};
+
 export const initApp = async () => {
   await axiosInit(store);
   let currentUser: IUserState | null = null;

@@ -19,6 +19,7 @@
         :validationSchema="permissionSchema"
         :fetchDataAfterSubmit="fetchDataAfterSubmit"
         :shouldRefreshPageIfFieldNull="'subjectId'"
+        @validateDataBeforeSubmit="handleValidationBeforeSubmit"
       >
         <PermissionsForm :modeDrawer="modeDrawer" :formData="formData" />
       </DetailDrawer>
@@ -66,6 +67,21 @@ export default defineComponent({
       // formData.value = data;
     };
 
+    const handleValidationBeforeSubmit = (
+      data: any,
+      callback: (validatedData: any) => void
+    ) => {
+      console.log(data, "DATA");
+      if (
+        data.subjectId == undefined ||
+        !Object.prototype.hasOwnProperty.call(data, "subjectId")
+      ) {
+        data.subjectId = null;
+      }
+      const validatedData = { ...data };
+      callback(validatedData);
+    };
+
     const fetchDataAfterSubmit = async () => {
       const currentUser: any = await AuthManager.getUserData();
       store.commit(eMutationTypes.SET_USER, currentUser);
@@ -90,6 +106,7 @@ export default defineComponent({
       handleAddClick,
       onEditClick,
       invalidateState,
+      handleValidationBeforeSubmit,
     };
   },
 });

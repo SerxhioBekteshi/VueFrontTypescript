@@ -13,7 +13,8 @@ export default interface IMeal {
   image?: any;
   providerId?: number;
   rating?: number;
-  price?: string;
+  price?: number;
   stock?: number;
   nutritionValues?: INutritionValues[];
+  suggestedTo?: number;
 }

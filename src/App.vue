@@ -56,6 +56,7 @@ export default defineComponent({
           query: {
             userId: user.value.id,
             adminId: user.value.id,
+            // providerId: user.value.id,
             role: user.value.role,
           },
         });

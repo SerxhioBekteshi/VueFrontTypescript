@@ -65,6 +65,7 @@ export default defineComponent({
       //     props.defaultValue !== undefined ? props.defaultValue : null,
       // }
     );
+    console.log(value, "VALUE");
 
     const toast = useToast();
 

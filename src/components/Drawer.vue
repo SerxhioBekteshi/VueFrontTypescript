@@ -21,7 +21,7 @@
     style="position: relative"
     :visible="openDrawer"
     position="right"
-    class="w-full md:w-30rem"
+    class="w-full md:w-30rem lg:w-50rem"
   >
     <template #header>
       <div class="flex">

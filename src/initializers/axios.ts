@@ -94,6 +94,7 @@ const axiosInit = async (store: Store<any>) => {
       //   Error("axiosInit: action not found");
       // }
     }
+    return Promise.reject(error);
   });
 };
 
