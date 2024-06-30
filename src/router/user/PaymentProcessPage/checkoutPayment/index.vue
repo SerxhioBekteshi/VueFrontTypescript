@@ -100,7 +100,7 @@ export default defineComponent({
             severity: "success",
             summary: details.status,
           });
-
+          router.push("/meals");
           //here i can store the details to a table
           const resyy: any = await storeDetailsToDb(details);
           if (resyy) {
