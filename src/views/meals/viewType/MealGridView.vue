@@ -65,6 +65,7 @@
           />
 
           <Tag
+            v-if="profile.role === eRoles.Provider"
             :value="mealData?.stock ? mealData.stock : 0"
             :severity="getSeverity(mealData)"
             >{{ mealData.stock }}</Tag
@@ -200,10 +201,13 @@ import AccordionTab from "primevue/accordiontab";
 import Button from "primevue/button";
 import InlineMessage from "primevue/inlinemessage";
 import Tag from "primevue/tag";
-import { PropType, defineComponent } from "vue";
+import { PropType, computed, defineComponent } from "vue";
 import MealsSkeleton from "../MealsSkeleton.vue";
 import Rate from "@/components/formElements/Rate.vue";
 import Badge from "primevue/badge";
+import { RootState } from "@/store/vuexStore/types";
+import { useStore } from "vuex";
+import { eRoles } from "@/assets/enums/eRoles";
 
 export default defineComponent({
   name: "MealsStockUpdate",
@@ -218,11 +222,15 @@ export default defineComponent({
     Badge,
   },
   emits: ["stock-click", "upload-click", "edit-clicked", "open-modal"],
+  enums: { eRoles },
   props: {
     mealData: { type: Object as PropType<IMeal>, required: true },
     isLoading: { type: Boolean, required: true },
   },
   setup(props, { emit }) {
+    const store = useStore<RootState>();
+    const profile = computed(() => store.getters.getUserInfo);
+
     const getSeverity = (product: any) => {
       switch (true) {
         case product.stock > 10:
@@ -238,8 +246,9 @@ export default defineComponent({
           return undefined;
       }
     };
+
     const ability = useAbility();
-    return { ability, getSeverity };
+    return { ability, getSeverity, profile, eRoles };
   },
 });
 </script>

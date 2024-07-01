@@ -47,7 +47,7 @@ export default defineComponent({
         if (res && res.data) {
           toast.add({
             life: 3000,
-            detail: res.data.message,
+            detail: "Email sent successfully",
             severity: "success",
             summary: "info",
           });

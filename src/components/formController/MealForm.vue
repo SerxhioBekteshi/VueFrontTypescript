@@ -209,6 +209,69 @@
           </div>
         </FieldArray>
       </div>
+
+      <div
+        style="
+          display: flex;
+          border-radius: 1rem;
+          flex-direction: column;
+          padding-block: 1rem;
+          margin-block: 0.5rem;
+          background-color: var(--cyan-50);
+        "
+      >
+        <FieldArray name="nutritionValues" v-slot="{ fields, push, remove }">
+          <div style="margin-left: 1rem; margin-bottom: 2rem">
+            <strong> Add nutrition values </strong>
+          </div>
+          <fieldset
+            v-for="(field, idx) in fields"
+            :key="field.key"
+            class="nutritionValues"
+          >
+            <div style="display: flex; justify-content: space-between">
+              <div style="display: flex">
+                <div>
+                  <InputText
+                    :name="`nutritionValues[${idx}].name`"
+                    :label="'Name'"
+                    :id="`name_${idx}`"
+                    :placeholder="'Nutrition name'"
+                  />
+                </div>
+                <div>
+                  <InputNumber
+                    :name="`nutritionValues[${idx}].value`"
+                    :label="'Value'"
+                    :id="`value_${idx}`"
+                    :placeholder="'Value'"
+                  />
+                </div>
+              </div>
+              <div>
+                <Button
+                  icon="pi pi-trash"
+                  rounded
+                  text
+                  size="small"
+                  severity="danger"
+                  @click="remove(idx)"
+                  :disabled="fields.length <= 1"
+                />
+              </div>
+            </div>
+          </fieldset>
+          <div style="margin-left: 1rem; margin-top: 0.5rem">
+            <Button
+              label="+ new nutrition"
+              link
+              size="small"
+              style="width: fit-content"
+              @click="push({ value: '', name: '' })"
+            />
+          </div>
+        </FieldArray>
+      </div>
     </form>
   </div>
 </template>
@@ -247,6 +310,9 @@ export default defineComponent({
     const veeValidateForm: any = inject("veeValidateForm");
     const { fields: ingredients } =
       veeValidateForm.useFieldArray("ingredients");
+
+    const { fields: nutritionValues } =
+      veeValidateForm.useFieldArray("nutritionValues");
 
     const selectData = ref<any>();
 
@@ -290,6 +356,7 @@ export default defineComponent({
       ingredients,
       veeValidateForm,
       eFormMode,
+      nutritionValues,
     };
   },
 });
@@ -299,6 +366,13 @@ export default defineComponent({
   margin-top: 1.5rem;
 }
 .ingredients {
+  border: 1px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0) !important;
+  border-radius: 1rem;
+  padding: 1rem !important;
+}
+
+.nutritionValues {
   border: 1px solid transparent;
   border-top-color: rgba(0, 0, 0, 0) !important;
   border-radius: 1rem;

@@ -16,6 +16,12 @@ export const mealSchema = yup.object().shape({
       portion: yup.number().required("Portion is required").label("Portion"),
     })
   ),
+  nutritionValues: yup.array().of(
+    yup.object().shape({
+      name: yup.string().required("Name is required").label("Name"),
+      value: yup.number().required("Value is required").label("Value"),
+    })
+  ),
   name: yup.string().required("Name is required").label("Name"),
   price: yup.number().required("Price is required").label("Price"),
   cousine: yup.string().required("Cousine is required").label("Cousine"),

@@ -9,16 +9,19 @@
       <Button
         label="Go back to the home page"
         link
-        @click="() => router.push(`/dashboard`)"
+        @click="() => navigateWhereNeeded()"
       />
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import { eRoles } from "@/assets/enums/eRoles";
+import { RootState } from "@/store/vuexStore/types";
 import Button from "primevue/button";
-import { defineComponent } from "vue";
+import { computed, defineComponent } from "vue";
 import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 export default defineComponent({
   name: "404NotFound",
@@ -27,8 +30,18 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
+    const store = useStore<RootState>();
+    const profile = computed(() => store.getters.getUserInfo);
 
-    return { router };
+    const navigateWhereNeeded = () => {
+      if (
+        profile.value?.role === eRoles.User &&
+        profile.value?.quizResults == undefined
+      ) {
+        router.push("/quiz");
+      } else router.push(`/dashboard`);
+    };
+    return { router, navigateWhereNeeded };
   },
 });
 </script>
