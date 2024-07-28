@@ -231,16 +231,17 @@ export default defineComponent({
     onMounted(() => {
       if (socket && socket.active) {
         const handleAppNotification = (notification: any) => {
-          if (notification.role === profile.value.role) {
-            notifications.value = [...notifications.value, notification];
+          console.log(notification, "NOTIFICATIOn");
+          // if (notification.role === profile.value.role) {
+          notifications.value = [...notifications.value, notification];
 
-            toast.add({
-              life: 3000,
-              detail: notification.message,
-              severity: "info",
-              summary: notification.title,
-            });
-          }
+          toast.add({
+            life: 3000,
+            detail: notification.message,
+            severity: "info",
+            summary: notification.title,
+          });
+          // }
         };
 
         socket.on("AppNotification", handleAppNotification);
